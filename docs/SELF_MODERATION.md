@@ -36,7 +36,7 @@ Plus two counters used for note privileges: **rater impact** (settled ratings th
 
 ### Capability gates
 
-`private.capability_check(user, capability)` returns `NULL` (allowed) or a reason key (`tier:2`, `account_age:30`, `integrity:70`, `rater_impact:5`, `writing_locked`, `frozen`, `sanctioned`, `email_unconfirmed`…). The UI renders the reason as a sentence ("Requires Trusted").
+`private.capability_check(user, capability)` returns `NULL` (allowed) or a reason key (`tier:2`, `account_age:30`, `integrity:70`, `rater_impact:5`, `writing_locked`, `frozen`, `sanctioned`, `email_unconfirmed`, `onboarding`…). The UI renders the reason as a sentence ("Requires Trusted").
 
 | Capability | Requirement |
 |---|---|
@@ -46,6 +46,8 @@ Plus two counters used for note privileges: **rater impact** (settled ratings th
 | `rate_notes` | Trusted · account ≥ 30 days · integrity ≥ 70 · not frozen (· confirmed phone if `gates.rate_notes.require_phone`) |
 | `write_notes` | `rate_notes` + Contributor · **graduated rater** (rater impact ≥ 5) · integrity ≥ 80 · not writing-locked |
 | `steward` | karma ≥ 10,000 · mod XP ≥ 150 · integrity ≥ 90 |
+
+**Social sign-ups** (Google, Apple, …) start with a placeholder username and the reason `onboarding` on every capability, until they choose a username and confirm they're an adult with `complete_onboarding()` (rate limit `rate_limit.onboarding`, default 20 per hour; it can succeed only once). After that they are ordinary Newcomers: the same karma, age and integrity gates apply, so a fresh social account is no shortcut to moderation power.
 
 **Founding raters** (granted by an admin, with an expiry, logged) bypass the karma, age and graduation requirements but not integrity. They carry the system at launch.
 

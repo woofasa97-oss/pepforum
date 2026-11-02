@@ -1,14 +1,16 @@
 import { SignUpForm } from '@/components/auth/AuthForms';
+import { SocialSignIn } from '@/components/auth/SocialSignIn';
 import { env } from '@/lib/env';
 import { pick } from '@/lib/i18n';
 import { getLocale, getNonce, getT } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
+import { getEnabledOAuthProviders, getTaxonomy } from '@/server/queries';
 
 export default async function SignUpPage() {
-  const [t, locale, nonce, taxonomy] = await Promise.all([getT(), getLocale(), getNonce(), getTaxonomy()]);
+  const [t, locale, nonce, taxonomy, providers] = await Promise.all([getT(), getLocale(), getNonce(), getTaxonomy(), getEnabledOAuthProviders()]);
   return (
     <div className="card card-p">
       <h1 className="mb16" tabIndex={-1}>{t('auth.signUpTitle')}</h1>
+      <SocialSignIn providers={providers} hint={t('auth.socialHint')} t={t} />
       <SignUpForm
         labels={pick(t, [
           'auth.email', 'auth.password', 'auth.passwordHint', 'auth.username', 'auth.usernameHint', 'auth.homeZone', 'auth.locale',

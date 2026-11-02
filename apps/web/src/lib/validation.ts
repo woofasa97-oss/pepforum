@@ -35,6 +35,15 @@ export const SignUpSchema = z.object({
   terms: checkbox,
 });
 
+/** Social sign-ups: the parts of SignUpSchema the identity provider can't supply. */
+export const OnboardingSchema = z.object({
+  username: z.string().regex(USERNAME_PATTERN),
+  homeZone: z.union([z.literal(''), z.string().regex(/^[a-z]{2,16}$/)]).optional(),
+  ageAck: checkbox,
+  terms: checkbox,
+  next: z.string().max(512).optional(),
+});
+
 export const SignInSchema = z.object({
   email: z.email().max(254),
   password: z.string().min(1).max(128),
@@ -128,7 +137,12 @@ export const ResolveReportsSchema = z
 
 export const DecideAppealSchema = z.object({ appealId: id, uphold: z.enum(['true', 'false']), note: trimmed(3, 500) });
 
-export const DeleteAccountSchema = z.object({ password: z.string().min(1).max(128), erase: z.literal('on').optional() });
+/** `password` for accounts that have one; social-only accounts confirm with a checkbox after a recent sign-in. */
+export const DeleteAccountSchema = z.object({
+  password: z.string().min(1).max(128).optional(),
+  confirm: checkbox.optional(),
+  erase: z.literal('on').optional(),
+});
 
 /** FormData → plain object; repeated keys become arrays. */
 export function formToObject(form: FormData): Record<string, unknown> {

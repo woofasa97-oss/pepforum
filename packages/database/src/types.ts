@@ -80,6 +80,8 @@ export type ProfileRow = {
   writer_impact: number;
   founding_until: string | null;
   writing_locked_until: string | null;
+  /** Social sign-ups must choose a username and confirm their age first (complete_onboarding). */
+  needs_onboarding: boolean;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -271,6 +273,8 @@ export type NoteDetailView = NoteView & {
 export type StandingView = {
   user_id: string;
   username: string;
+  /** True until a social sign-up completes onboarding; every capability is denied meanwhile. */
+  needs_onboarding: boolean;
   karma: number;
   mod_xp: number;
   tier: number;
@@ -371,6 +375,7 @@ export type Database = {
     Functions: {
       username_available: { Args: { p_username: string }; Returns: boolean };
       my_standing: { Args: Record<string, never>; Returns: StandingView };
+      complete_onboarding: { Args: { p_username: string; p_home_zone: string | null; p_adult: boolean }; Returns: undefined };
       create_post: {
         Args: {
           p_zone_id: string;

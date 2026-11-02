@@ -18,6 +18,8 @@ import type {
 } from '@pepforum/database';
 import { cache } from 'react';
 
+import { OAUTH_PROVIDERS, type OAuthProvider } from '@/lib/auth-providers';
+import { env } from '@/lib/env';
 import { type DbErrorLike, logUnexpected } from '@/lib/errors';
 
 import { getSupabase, getViewer } from './context';
@@ -53,6 +55,26 @@ export const getTaxonomy = cache(async (): Promise<Taxonomy> => {
     categories: unwrap('categories', categories),
     cities: unwrap('cities', cities),
   };
+});
+
+/**
+ * Social providers switched on in the Supabase dashboard, read from the public
+ * Auth settings endpoint (cached for five minutes). Turning a provider on or
+ * off there adds or removes its button without a deploy.
+ */
+export const getEnabledOAuthProviders = cache(async (): Promise<OAuthProvider[]> => {
+  const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = env();
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+      headers: { apikey: SUPABASE_PUBLISHABLE_KEY },
+      next: { revalidate: 300 },
+    });
+    if (!response.ok) return [];
+    const settings = (await response.json()) as { external?: Record<string, unknown> };
+    return OAUTH_PROVIDERS.filter((provider) => settings.external?.[provider] === true);
+  } catch {
+    return []; // Auth unreachable: email and password still work.
+  }
 });
 
 export interface FeedQuery {

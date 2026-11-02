@@ -53,6 +53,12 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           </nav>
         </div>
       </header>
+      {standing?.needs_onboarding ? (
+        <div className="onboard-bar" role="status">
+          <span>{t('auth.finishBanner')}</span>
+          <Link className="btn red sm" href="/auth/welcome">{t('auth.finishSetup')}</Link>
+        </div>
+      ) : null}
       <div className="zonebar">
         <nav className="zonebar-in" id="zones" aria-label={t('nav.zones')}>
           <span className="lbl">{t('nav.zones')}</span>

@@ -108,6 +108,12 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
 .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
 .narrow { max-width: 760px; margin: 0 auto; }
 .auth-wrap { max-width: 440px; margin: 30px auto; }
+.social-btns { display: grid; gap: 8px; }
+.social-btn { gap: 10px; padding: 10px 14px; font-size: 14px; }
+.social-btn svg { width: 18px; height: 18px; flex: none; }
+.or { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: var(--text-3); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.onboard-bar { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 8px 20px; background: var(--amber-soft); color: var(--amber); font-size: 13px; font-weight: 600; }
 .rail { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 72px; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow); }
 .card-p { padding: 16px; }

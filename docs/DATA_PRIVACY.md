@@ -5,6 +5,7 @@
 | Data | Where | Why | Retention |
 |---|---|---|---|
 | Email, password hash, sessions, MFA factors | Supabase Auth (ca-central-1) | Sign-in | Until account deletion (the worker removes the auth user) |
+| Social sign-in identity: provider user id, email, and usually the name and photo the provider sends | Supabase Auth (`auth.identities`, user metadata) | Sign-in only. Never copied to `profiles` or shown: members pick a username at onboarding | Until account deletion, with the auth user |
 | Username, bio, conflicts of interest, home zone, locale | `profiles` | Public profile | Tombstoned on deletion (username replaced, fields cleared) |
 | Posts, revisions, comments | `posts`, `post_revisions`, `comments` | Core service | Kept (attributed to the anonymised account) unless the member chooses "erase my content" |
 | Votes, ratings, reports | `post_votes`, `note_ratings`, `reports` | Scoring and moderation | Kept as anonymous records |
@@ -27,7 +28,7 @@
 |---|---|
 | Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports, ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
 | Correction | Profile fields are editable; anything else via privacy@pepforum.ca |
-| Deletion | Settings → Delete account. The member re-enters their password. `request_account_deletion()` tombstones the profile immediately and the worker deletes the auth user within about 10 minutes. Optionally erases authored content. |
+| Deletion | Settings → Delete account. The member re-enters their password or, for social-only accounts, must have signed in within the last 10 minutes. `request_account_deletion()` tombstones the profile immediately and the worker deletes the auth user within about 10 minutes. Optionally erases authored content. |
 | Information about automated decisions (Loi 25 s. 12.1) | Note status, karma and tiers are automated. The rules are published (`/legal/community-notes`), every change is listed in the member's ledger, and human review is available via appeals or the privacy officer. |
 | Withdrawal of consent | No optional processing exists in v1. Add toggles here if analytics are ever introduced. |
 
@@ -43,3 +44,4 @@ Deleting a member's ledger rows would silently change *other* members' standing.
 - [ ] Set up an incident register and a CAI notification procedure (Loi 25 s. 3.5–3.8)
 - [ ] Enable Supabase PITR backups; document the retention period
 - [ ] Sign a DPA with Supabase and Render
+- [ ] For each social provider you enable, list it in the privacy policy and point its consent screen at `/legal/privacy` (the provider learns that the member uses Pepforum)

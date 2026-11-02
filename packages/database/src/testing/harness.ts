@@ -45,6 +45,12 @@ export interface CreateUserOptions {
   readonly karma?: number;
   readonly locale?: 'en' | 'fr';
   readonly homeZone?: string;
+  /**
+   * Simulates a social sign-up: Supabase Auth sets `raw_app_meta_data.provider`
+   * and fills `raw_user_meta_data` from the identity provider (no username).
+   */
+  readonly provider?: string;
+  readonly providerMetadata?: Record<string, string>;
 }
 
 let userCounter = 0;
@@ -134,14 +140,15 @@ export class TestDb {
     userCounter += 1;
     const username = options.username ?? `user_${userCounter}_${crypto.randomUUID().slice(0, 5)}`;
     const email = options.email ?? `${username.toLowerCase()}@example.test`;
-    const metadata: Record<string, string> = { username, locale: options.locale ?? 'en' };
+    const metadata: Record<string, string> = options.providerMetadata ?? { username, locale: options.locale ?? 'en' };
     if (options.homeZone) metadata.home_zone = options.homeZone;
+    const appMetadata = { provider: options.provider ?? 'email' };
 
     const { id } = await this.sqlOne<{ id: string }>(
-      `insert into auth.users (email, email_confirmed_at, raw_user_meta_data, created_at)
-       values ($1, case when $2 then now() end, $3::jsonb, now() - make_interval(days => $4))
+      `insert into auth.users (email, email_confirmed_at, raw_user_meta_data, raw_app_meta_data, created_at)
+       values ($1, case when $2 then now() end, $3::jsonb, $4::jsonb, now() - make_interval(days => $5))
        returning id`,
-      [email, options.emailConfirmed ?? true, JSON.stringify(metadata), options.ageDays ?? 60],
+      [email, options.emailConfirmed ?? true, JSON.stringify(metadata), JSON.stringify(appMetadata), options.ageDays ?? 60],
     );
     if (options.karma) await this.giveKarma(id, options.karma);
     return id;

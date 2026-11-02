@@ -19,7 +19,7 @@ const SPECIFIC_MESSAGES = new Set<string>([
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([
-  'not_authenticated', 'no_profile', 'email_unconfirmed', 'sanctioned', 'frozen', 'writing_locked', 'phone_unconfirmed',
+  'not_authenticated', 'no_profile', 'onboarding', 'email_unconfirmed', 'sanctioned', 'frozen', 'writing_locked', 'phone_unconfirmed',
 ]);
 
 /** Turns a capability reason key ("tier:2", "account_age:30", …) into a sentence fragment. */

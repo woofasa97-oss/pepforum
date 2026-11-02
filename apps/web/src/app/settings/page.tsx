@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { DeleteAccountForm, MfaSetup, ProfileForm } from '@/components/settings/SettingsForms';
 import { Icon } from '@/components/ui/Icon';
+import { hasPassword } from '@/lib/auth-providers';
 import { pick } from '@/lib/i18n';
 import { getLocale, getSupabase, getT, getViewer } from '@/server/context';
 import { getTaxonomy } from '@/server/queries';
@@ -14,9 +15,10 @@ export default async function SettingsPage() {
   if (!viewer) redirect('/auth/sign-in?next=/settings');
 
   const supabase = await getSupabase();
-  const [{ data: profile }, { data: factors }] = await Promise.all([
+  const [{ data: profile }, { data: factors }, { data: account }] = await Promise.all([
     supabase.from('profiles').select('bio, coi, locale, home_zone_id').eq('id', viewer.id).single(),
     supabase.auth.mfa.listFactors(),
+    supabase.auth.getUser(),
   ]);
   const mfaEnabled = (factors?.totp ?? []).some((f) => f.status === 'verified');
 
@@ -51,7 +53,10 @@ export default async function SettingsPage() {
           <details className="mt16">
             <summary className="bold" style={{ cursor: 'pointer', color: 'var(--accent)' }}>{t('settings.delete')}</summary>
             <div className="mt12">
-              <DeleteAccountForm labels={pick(t, ['settings.deleteBody', 'settings.deleteErase', 'settings.deleteConfirm', 'settings.deleteSubmit'])} />
+              <DeleteAccountForm
+                labels={pick(t, ['settings.deleteBody', 'settings.deleteErase', 'settings.deleteConfirm', 'settings.deleteSubmit', 'settings.deleteSocial', 'settings.deleteSocialConfirm', 'settings.deleteReauthLink'])}
+                hasPassword={hasPassword(account.user?.identities)}
+              />
             </div>
           </details>
         </section>

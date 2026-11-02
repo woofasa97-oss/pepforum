@@ -41,7 +41,7 @@ enabled = false
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/auth/confirm"]
+additional_redirect_urls = ["http://localhost:3000/auth/confirm**"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
@@ -87,6 +87,24 @@ content_path = "./supabase/templates/recovery.html"
 [auth.email.template.email_change]
 subject = "Confirm your new email · Confirmez votre nouveau courriel"
 content_path = "./supabase/templates/email_change.html"
+
+[auth.email.template.magic_link]
+subject = "Your Pepforum sign-in link · Votre lien de connexion Pepforum"
+content_path = "./supabase/templates/magic_link.html"
+
+# Social sign-in. Every provider Supabase offers works the same way; the web
+# app shows a button for each one enabled here (or in the dashboard). Redirect
+# URI to register with the provider: <SUPABASE_URL>/auth/v1/callback.
+[auth.external.google]
+enabled = false
+client_id = "env(SUPABASE_AUTH_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_GOOGLE_SECRET)"
+skip_nonce_check = false
+
+[auth.external.apple]
+enabled = false
+client_id = "env(SUPABASE_AUTH_APPLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_APPLE_SECRET)"
 
 [auth.mfa]
 max_enrolled_factors = 10

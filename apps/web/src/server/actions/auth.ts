@@ -9,17 +9,21 @@
  *     step; moderator powers require the resulting aal2 session (enforced in
  *     the database, not here).
  *   * `next` redirects are restricted to same-site paths.
+ *   * Sign-in links (magic links) never create accounts: new members go through
+ *     the sign-up form or social onboarding, which collect username and age.
  */
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import type { ActionState } from '@/lib/action-state';
 import { env } from '@/lib/env';
+import { logUnexpected, messageForDbError } from '@/lib/errors';
 import { safeRedirectPath } from '@/lib/safe-redirect';
 import {
   EmailOnlySchema,
   MfaCodeSchema,
   NewPasswordSchema,
+  OnboardingSchema,
   SignInSchema,
   SignUpSchema,
   fieldErrors,
@@ -83,6 +87,44 @@ export async function signInAction(_prev: ActionState, form: FormData): Promise<
     redirect(`/auth/mfa?next=${encodeURIComponent(next)}`);
   }
   redirect(next);
+}
+
+export async function sendSignInLinkAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const t = await getT();
+  const parsed = EmailOnlySchema.safeParse(formToObject(form));
+  if (parsed.success) {
+    const supabase = await getSupabase();
+    await supabase.auth.signInWithOtp({
+      email: parsed.data.email,
+      options: { shouldCreateUser: false, emailRedirectTo: `${env().SITE_URL}/auth/confirm`, captchaToken: captchaToken(form) },
+    });
+  }
+  // Identical response for unknown emails.
+  return { ok: true, message: t('auth.linkSent') };
+}
+
+const USERNAME_ERRORS = new Set(['username_taken', 'invalid_username', 'reserved_username']);
+
+export async function completeOnboardingAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const t = await getT();
+  if (!(await getViewer())) return { ok: false, message: t('errors.signInRequired') };
+  const parsed = OnboardingSchema.safeParse(formToObject(form));
+  if (!parsed.success) return { ok: false, message: t('errors.invalid'), fieldErrors: fieldErrors(parsed.error) };
+  const input = parsed.data;
+  const supabase = await getSupabase();
+
+  const { error } = await supabase.rpc('complete_onboarding', {
+    p_username: input.username,
+    p_home_zone: input.homeZone || null,
+    p_adult: true, // OnboardingSchema requires the checkbox
+  });
+  if (error && USERNAME_ERRORS.has(error.message)) return { ok: false, fieldErrors: { username: t('auth.usernameTaken') } };
+  if (error && error.message !== 'already_onboarded') {
+    logUnexpected('complete_onboarding', error);
+    return { ok: false, message: messageForDbError(error, t) };
+  }
+  revalidatePath('/', 'layout'); // header drops the "finish setting up" banner
+  redirect(safeRedirectPath(input.next));
 }
 
 export async function forgotPasswordAction(_prev: ActionState, form: FormData): Promise<ActionState> {

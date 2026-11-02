@@ -7,7 +7,9 @@ import { FieldError, FormMessage } from '@/components/ui/Bits';
 import { SubmitButton } from '@/components/ui/SubmitButton';
 import { initialActionState } from '@/lib/action-state';
 import {
+  completeOnboardingAction,
   forgotPasswordAction,
+  sendSignInLinkAction,
   signInAction,
   signUpAction,
   updatePasswordAction,
@@ -94,6 +96,54 @@ export function SignUpForm({ labels, zones, locale, captcha }: { labels: Labels;
       <Turnstile {...captcha} />
       <SubmitButton className="btn dark block">{labels['auth.submitSignUp']}</SubmitButton>
       <p className="small muted mt12"><Link className="link" href="/auth/sign-in">{labels['auth.haveAccount']}</Link></p>
+    </form>
+  );
+}
+
+/** Passwordless sign-in for existing accounts (it never creates one). */
+export function SignInLinkForm({ labels, captcha }: { labels: Labels; captcha: Captcha }) {
+  const [state, action] = useActionState(sendSignInLinkAction, initialActionState);
+  if (state.ok) return <FormMessage ok message={state.message} />;
+  return (
+    <form action={action}>
+      <div className="field">
+        <label htmlFor="link-email">{labels['auth.email']}</label>
+        <input id="link-email" name="email" type="email" className="input" autoComplete="email" required />
+      </div>
+      <Turnstile {...captcha} />
+      <SubmitButton className="btn block">{labels['auth.sendLink']}</SubmitButton>
+    </form>
+  );
+}
+
+/** First social sign-in: what the identity provider can't tell us. */
+export function OnboardingForm({ labels, zones, next }: { labels: Labels; zones: Array<{ id: string; name: string }>; next: string }) {
+  const [state, action] = useActionState(completeOnboardingAction, initialActionState);
+  const errors = state.fieldErrors ?? {};
+  return (
+    <form action={action}>
+      <FormMessage ok={false} message={state.message} />
+      <input type="hidden" name="next" value={next} />
+      <div className="field">
+        <label htmlFor="ob-user">{labels['auth.username']}</label>
+        <input id="ob-user" name="username" className="input" autoComplete="username" pattern="[A-Za-z0-9_]{3,20}" required
+          aria-invalid={Boolean(errors.username)} aria-describedby="ob-user-hint" />
+        <span id="ob-user-hint" className="hint">{labels['auth.usernameHint']}</span>
+        <FieldError message={errors.username} />
+      </div>
+      <div className="field">
+        <label htmlFor="ob-zone">{labels['auth.homeZone']}</label>
+        <select id="ob-zone" name="homeZone" className="input" defaultValue="">
+          <option value="">—</option>
+          {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+        </select>
+      </div>
+      <label className="check mb12"><input type="checkbox" name="ageAck" required /><span>{labels['auth.ageAck']}</span></label>
+      <label className="check mb16">
+        <input type="checkbox" name="terms" required />
+        <span>{labels['auth.terms']} <Link className="link" href="/legal/terms">↗</Link></span>
+      </label>
+      <SubmitButton className="btn dark block">{labels['auth.finishSetup']}</SubmitButton>
     </form>
   );
 }

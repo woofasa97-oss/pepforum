@@ -6,6 +6,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import type { ActionState } from '@/lib/action-state';
+import { hasPassword } from '@/lib/auth-providers';
 import { env } from '@/lib/env';
 import { logUnexpected, messageForDbError } from '@/lib/errors';
 import { LOCALE_COOKIE } from '@/lib/i18n';
@@ -71,6 +72,8 @@ export async function setThemeAction(form: FormData): Promise<void> {
  * Account deletion re-authenticates with the password first: a stolen session
  * cookie alone can't erase an account.
  */
+const RECENT_SIGN_IN_SECONDS = 10 * 60;
+
 export async function deleteAccountAction(_prev: ActionState, form: FormData): Promise<ActionState> {
   const t = await getT();
   if (!(await getViewer())) return { ok: false, message: t('errors.signInRequired') };
@@ -79,10 +82,22 @@ export async function deleteAccountAction(_prev: ActionState, form: FormData): P
 
   const supabase = await getSupabase();
   const { data: userData } = await supabase.auth.getUser();
-  const email = userData.user?.email;
-  if (!email) return { ok: false, message: t('errors.unexpected') };
-  const { error: reauthError } = await supabase.auth.signInWithPassword({ email, password: parsed.data.password });
-  if (reauthError) return { ok: false, fieldErrors: { password: t('auth.invalidCredentials') } };
+  const account = userData.user;
+  if (!account) return { ok: false, message: t('errors.unexpected') };
+
+  // Re-authenticate: the password if the account has one, otherwise a sign-in
+  // (e.g. with Google) within the last few minutes, so a stolen or forgotten
+  // session alone can't erase the account.
+  if (hasPassword(account.identities)) {
+    if (!account.email || !parsed.data.password) return { ok: false, fieldErrors: { password: t('auth.invalidCredentials') } };
+    const { error: reauthError } = await supabase.auth.signInWithPassword({ email: account.email, password: parsed.data.password });
+    if (reauthError) return { ok: false, fieldErrors: { password: t('auth.invalidCredentials') } };
+  } else {
+    if (parsed.data.confirm !== 'on') return { ok: false, fieldErrors: { confirm: t('errors.invalid') } };
+    const { data: session } = await supabase.auth.getClaims();
+    const signedInAt = Math.max(0, ...(session?.claims.amr ?? []).map((m) => (typeof m === 'string' ? 0 : m.timestamp)));
+    if (Date.now() / 1000 - signedInAt > RECENT_SIGN_IN_SECONDS) return { ok: false, message: t('settings.deleteReauth') };
+  }
 
   const { error } = await supabase.rpc('request_account_deletion', { p_erase_content: parsed.data.erase === 'on' });
   if (error) {

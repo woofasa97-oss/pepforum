@@ -94,7 +94,7 @@ export function MfaSetup({ labels }: { labels: Labels }) {
   );
 }
 
-export function DeleteAccountForm({ labels }: { labels: Labels }) {
+export function DeleteAccountForm({ labels, hasPassword }: { labels: Labels; hasPassword: boolean }) {
   const [state, action] = useActionState(deleteAccountAction, initialActionState);
   return (
     <form action={action}>
@@ -104,11 +104,24 @@ export function DeleteAccountForm({ labels }: { labels: Labels }) {
         <input type="checkbox" name="erase" />
         <span>{labels['settings.deleteErase']}</span>
       </label>
-      <div className="field">
-        <label htmlFor="del-pw">{labels['settings.deleteConfirm']}</label>
-        <input id="del-pw" name="password" type="password" className="input" autoComplete="current-password" required aria-invalid={Boolean(state.fieldErrors?.password)} />
-        <FieldError message={state.fieldErrors?.password} />
-      </div>
+      {hasPassword ? (
+        <div className="field">
+          <label htmlFor="del-pw">{labels['settings.deleteConfirm']}</label>
+          <input id="del-pw" name="password" type="password" className="input" autoComplete="current-password" required aria-invalid={Boolean(state.fieldErrors?.password)} />
+          <FieldError message={state.fieldErrors?.password} />
+        </div>
+      ) : (
+        <>
+          <p className="small muted mb12">
+            {labels['settings.deleteSocial']} <a className="link" href="/auth/sign-in?next=/settings">{labels['settings.deleteReauthLink']}</a>
+          </p>
+          <label className="check mb12">
+            <input type="checkbox" name="confirm" required />
+            <span>{labels['settings.deleteSocialConfirm']}</span>
+          </label>
+          <FieldError message={state.fieldErrors?.confirm} />
+        </>
+      )}
       <SubmitButton className="btn danger">{labels['settings.deleteSubmit']}</SubmitButton>
     </form>
   );
