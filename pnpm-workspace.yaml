@@ -5,6 +5,7 @@ packages:
 # Supply-chain hardening: only these packages may run install scripts.
 onlyBuiltDependencies:
   - sharp
+  - supabase          # postinstall downloads the pinned CLI binary
   - unrs-resolver
 
 # Don't resolve versions published less than a day ago (minutes). Pinned here so

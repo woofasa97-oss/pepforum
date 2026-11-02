@@ -3,10 +3,11 @@
 ## 1. Supabase (database and Auth)
 
 1. **Create the project** in region **Canada (Central)** — `ca-central-1`. The Pro plan is recommended, for PITR backups and leaked-password protection.
-2. **Apply the migrations:**
+2. **Apply the migrations** with the Supabase CLI, which `pnpm install` provides (pinned in `package.json`). `<ref>` is the project ID in your dashboard URL, `supabase.com/dashboard/project/<ref>`; `link` asks for the database password.
    ```bash
-   supabase link --project-ref <ref>
-   supabase db push              # applies supabase/migrations; never runs seed.sql
+   pnpm supabase login
+   pnpm supabase link --project-ref <ref>
+   pnpm supabase db push         # applies supabase/migrations; never runs seed.sql
    ```
    Then run the self-audit in the SQL editor. It must return no rows:
    ```sql
@@ -63,8 +64,8 @@
 
 ```bash
 pnpm install
-supabase start                         # needs Docker; applies migrations + seed.sql
-cp .env.example apps/web/.env.local    # fill from `supabase status`
+pnpm supabase start                    # needs Docker; applies migrations + seed.sql
+cp .env.example apps/web/.env.local    # fill from `pnpm supabase status`
 pnpm dev                               # http://localhost:3000, demo password: pepforum-demo-2026
 pnpm worker:dry-run                    # no Supabase needed: PGlite + seed
 ```

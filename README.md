@@ -25,11 +25,11 @@ pnpm check                    # lint + typecheck + all tests (no Docker needed)
 pnpm worker:dry-run           # score the demo seed in an in-process Postgres
 ```
 
-To run the web app against a local Supabase (needs Docker and the Supabase CLI):
+To run the web app against a local Supabase (needs Docker; `pnpm install` provides the Supabase CLI):
 
 ```bash
-supabase start                # applies migrations + seed.sql
-cp .env.example apps/web/.env.local   # fill SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY from `supabase status`
+pnpm supabase start           # applies migrations + seed.sql
+cp .env.example apps/web/.env.local   # fill SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY from `pnpm supabase status`
 pnpm dev                      # http://localhost:3000 · demo accounts use password pepforum-demo-2026
 ```
 
