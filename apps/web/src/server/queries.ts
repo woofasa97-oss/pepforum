@@ -14,6 +14,8 @@ import type {
   NoteView,
   PostDetailRow,
   ProfileView,
+  SiteAnnouncement,
+  TransparencyStats,
   ZoneRow,
 } from '@pepforum/database';
 import { cache } from 'react';
@@ -80,6 +82,34 @@ export const getEnabledOAuthProviders = cache(async (): Promise<OAuthProvider[]>
     console.error(`[auth] provider settings unavailable: ${error instanceof Error ? error.name : 'unknown'}`);
     return [];
   }
+});
+
+/** Every category, archived ones included (for the admin editor). */
+export const getAllCategories = cache(async (): Promise<CategoryRow[]> => {
+  const supabase = await getSupabase();
+  return unwrap('categories', await supabase.from('categories').select('*').order('sort_order'));
+});
+
+/** The site-wide banner, if one is set and not past its end date. Fails soft. */
+export const getAnnouncement = cache(async (): Promise<SiteAnnouncement | null> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.from('app_config').select('value').eq('key', 'site.announcement').maybeSingle();
+  if (error || !data) return null;
+  const value = data.value as SiteAnnouncement;
+  if (!value.en && !value.fr) return null;
+  if (value.until && value.until < new Date().toISOString().slice(0, 10)) return null;
+  return value;
+});
+
+/** Public monthly transparency numbers; null if unavailable. */
+export const getTransparency = cache(async (month: string | null): Promise<TransparencyStats | null> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('transparency_stats', { p_month: month });
+  if (error) {
+    logUnexpected('transparency_stats', error);
+    return null;
+  }
+  return data;
 });
 
 export interface FeedQuery {

@@ -11,6 +11,9 @@
 | Votes, ratings, reports | `post_votes`, `note_ratings`, `reports` | Scoring and moderation | Kept as anonymous records |
 | Karma ledger, strikes, sanctions, moderator log | `ledger_events`, `strikes`, `sanctions`, `mod_actions` | Accountability, appeals | Kept; ledger rows point at the anonymised id |
 | Rate-limit events | `private.rate_limit_events` | Abuse prevention | 2 days |
+| Staff notes on members | `staff_notes` | Moderation context (staff only, append-only) | Kept with the moderation record |
+| Sourcing-shield holds (member + rule matched, never the text) | `shield_hits` | Abuse prevention | Kept; reviewed in the admin console |
+| Staff access to an email (lookup or reveal) | `mod_actions` (`lookup_email`, `reveal_email`) | Accountability for staff access to personal information | Kept with the moderation record |
 | Server logs | Render | Operations | Per Render plan. Logs hold error codes and opaque ids, never content |
 
 **Not collected:** health information, real names, date of birth, location beyond province or zone, advertising or analytics profiles. The composer warns members not to include identifying details.
@@ -44,4 +47,5 @@ Deleting a member's ledger rows would silently change *other* members' standing.
 - [ ] Set up an incident register and a CAI notification procedure (Loi 25 s. 3.5–3.8)
 - [ ] Enable Supabase PITR backups; document the retention period
 - [ ] Sign a DPA with Supabase and Render
+- [ ] Limit the admin role to people who need it; review **Admin → Moderation → Log** for `reveal_email` / `lookup_email` entries monthly
 - [ ] For each social provider you enable, list it in the privacy policy and point its consent screen at `/legal/privacy` (the provider learns that the member uses Pepforum)

@@ -15,3 +15,9 @@ export function compactNumber(n: number, locale: string): string {
 export function formatDate(iso: string, locale: string): string {
   return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-CA' : 'en-CA', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(iso));
 }
+
+/** A calendar date ("2026-11-02") shown as-is, without shifting it through a time zone. */
+export function formatDay(isoDate: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale === 'fr' ? 'fr-CA' : 'en-CA', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+    .format(new Date(`${isoDate.slice(0, 10)}T00:00:00Z`));
+}

@@ -40,6 +40,10 @@
 | **Elevation of privilege** | Calling internal functions | `private` schema not exposed by PostgREST; EXECUTE revoked from PUBLIC globally; audit check | `…001_foundation.sql`, `…010_security_audit.sql` |
 | | `search_path` hijack of definer functions | Every definer function pins `search_path = ''` and uses fully qualified names; audit check | `security_audit()` |
 | | Moderator deciding their own appeal or acting on their own content | `conflict_of_interest` checks in SQL | `decide_appeal`, `resolve_reports` |
+| | Stolen or rogue admin session | Every admin RPC requires aal2 (MFA); every write needs a reason, is rate-limited (`rate_limit.admin_action`) and logged with the actor; no self-role changes; the last admin can't be removed | `…015_admin_console.sql` |
+| | Admin "fixing" karma or forcing a note's status | No RPC exists for either. Penalties are undone by reversing their cause; notes can only be hidden, which closes them with no payout ([ADR-0006](adr/0006-admin-limits.md)) | `admin_restore_content`, `admin_set_note_hidden` |
+| **Information disclosure** | Staff browsing members' emails | Emails are never listed: profiles show a masked address; exact-email lookup and Reveal are logged (`lookup_email`, `reveal_email`) and the looked-up address is not stored | `admin_find_by_email`, `admin_reveal_email` |
+| | Formula injection through CSV exports | Cells starting with `=`, `+`, `-`, `@`, tab or CR are prefixed with `'`; no email is exported | `apps/web/src/lib/csv.ts` |
 
 ## Web-layer threats
 
@@ -67,7 +71,8 @@ These are covered in depth in [SELF_MODERATION.md](SELF_MODERATION.md).
 | Using notes as a weapon | Strikes only for *misleading* notes that settle Helpful, on non-experience posts the author didn't correct; capped karma loss |
 | Vote rings and sock puppets | Votes from new or low-integrity accounts don't count; 5 counted votes per voter per author every 30 days; 100 per day per author; optional phone gate for raters |
 | Report-based censorship | Collapse (never delete) needs weight from 3 established reporters; Trusted+ authors need a Steward reporter; reverts after 48 hours without review; abusive reports cost XP |
-| Rogue moderator | MFA; full audit log; appeals to a different moderator; suspensions and bans are admin-only |
+| Rogue moderator | MFA; full audit log (admins see who acted); moderator performance shows overturned decisions; appeals to a different moderator; suspensions and bans are admin-only |
+| Vendor spam and sourcing | Sourcing shield: blocked domains are refused everywhere (posts, comments, note sources, bare mentions); watched phrases hold content out of view until reviewed. Held content never reopens on its own. Enforced by triggers, so every write path is covered |
 
 ## Security review log
 

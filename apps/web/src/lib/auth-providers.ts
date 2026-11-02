@@ -29,3 +29,8 @@ export function isOAuthProvider(value: string): value is OAuthProvider {
 export function hasPassword(identities: ReadonlyArray<{ provider: string }> | undefined): boolean {
   return (identities ?? []).some((identity) => identity.provider === 'email');
 }
+
+/** Brand name for a sign-in provider id; null for email/password (callers label it). */
+export function providerName(id: string): string | null {
+  return id === 'email' ? null : isOAuthProvider(id) ? PROVIDER_NAMES[id] : id;
+}

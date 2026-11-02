@@ -5,14 +5,15 @@ import { Icon } from '@/components/ui/Icon';
 import { signOutAction } from '@/server/actions/auth';
 import { setLocaleAction, setThemeAction } from '@/server/actions/settings';
 import { getLocale, getStanding, getT, getViewer } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
+import { getAnnouncement, getTaxonomy } from '@/server/queries';
 
 import { Logo } from './Logo';
 import { NavLink } from './NavLink';
 
 /** Global header + zone bar. Server-rendered; forms work without JavaScript. */
 export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefined }) {
-  const [t, locale, viewer, standing, taxonomy] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getTaxonomy()]);
+  const [t, locale, viewer, standing, taxonomy, announcement] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getTaxonomy(), getAnnouncement()]);
+  const announcementText = announcement ? (locale === 'fr' ? announcement.fr || announcement.en : announcement.en || announcement.fr) : '';
 
   return (
     <>
@@ -24,6 +25,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
             {viewer ? <NavLink href="/karma" className="hide-sm">{t('nav.karma')}</NavLink> : null}
             {standing?.is_moderator ? <NavLink href="/mod" className="hide-sm">{t('nav.mod')}</NavLink> : null}
+            {standing?.is_admin ? <NavLink href="/admin" className="hide-sm">{t('nav.admin')}</NavLink> : null}
             <form action={setLocaleAction}>
               <input type="hidden" name="locale" value={locale === 'fr' ? 'en' : 'fr'} />
               <button type="submit" className="navbtn" lang={locale === 'fr' ? 'en' : 'fr'}>{t('nav.language')}</button>
@@ -53,6 +55,12 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           </nav>
         </div>
       </header>
+      {announcementText ? (
+        <div className={`site-banner ${announcement?.tone === 'warn' ? 'warn' : 'info'}`} role="status">
+          <Icon name={announcement?.tone === 'warn' ? 'alert' : 'info'} />
+          <span>{announcementText}</span>
+        </div>
+      ) : null}
       {standing?.needs_onboarding ? (
         <div className="onboard-bar" role="status">
           <span>{t('auth.finishBanner')}</span>

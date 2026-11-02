@@ -32,6 +32,7 @@ export async function resolveReportsAction(_prev: ActionState, form: FormData): 
     return { ok: false, message: messageForDbError(error, t) };
   }
   revalidatePath('/mod');
+  revalidatePath('/admin', 'layout');
   return { ok: true, message: t('mod.done') };
 }
 
@@ -50,6 +51,7 @@ export async function decideAppealAction(_prev: ActionState, form: FormData): Pr
     return { ok: false, message: messageForDbError(error, t) };
   }
   revalidatePath('/mod');
+  revalidatePath('/admin', 'layout');
   return { ok: true, message: t('mod.done') };
 }
 

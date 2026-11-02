@@ -72,6 +72,7 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
           <span className="sep" />
           <time dateTime={post.created_at}>{relativeTime(post.created_at, t)}</time>
           {post.edited_at ? <span className="xs">· {t('post.edited')}</span> : null}
+          {post.pinned ? <span className="pill blue"><Icon name="pin" />{t('post.pinned')}</span> : null}
           {'has_helpful_note' in post && post.has_helpful_note ? <span className="pill green"><Icon name="note" />{t('post.hasHelpfulNote')}</span> : null}
           {'has_open_note' in post && post.has_open_note && !post.has_helpful_note ? <span className="pill amber">{t('post.hasOpenNote')}</span> : null}
         </div>
@@ -80,6 +81,9 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
           {full ? post.title : <Link href={`/post/${post.id}`}>{post.title}</Link>}
         </Heading>
 
+        {post.status === 'held' ? (
+          <div className="banner warn mt8 mb8"><Icon name="shield" />{t('post.held')}</div>
+        ) : null}
         {post.status === 'collapsed' ? (
           <div className="banner warn mt8 mb8"><Icon name="alert" />{t('post.collapsed')}</div>
         ) : null}

@@ -2,7 +2,7 @@
  * The worker's only view of the outside world. Jobs depend on this interface,
  * not on Supabase, so they run unchanged against PGlite in tests and dry runs.
  */
-import type { Json } from '@pepforum/database';
+import type { JobName, Json } from '@pepforum/database';
 
 import type { NoteScore } from './scoring/types.ts';
 
@@ -31,6 +31,8 @@ export interface WorkerStore {
   /** Deletes the auth user (email, password hash, sessions). Idempotent. */
   deleteAuthUser(userId: string): Promise<void>;
   markAccountDeletionProcessed(userId: string): Promise<void>;
+  /** Heartbeat for /admin/system: one row per job run, with a small summary (no member data). */
+  recordJobRun(job: JobName, startedAt: string, ok: boolean, summary: Json): Promise<void>;
 }
 
 export function toResultsPayload(results: readonly NoteScore[]): Json {

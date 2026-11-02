@@ -28,6 +28,7 @@ export function CommentTree({ comments, postId, t, signedIn }: Props) {
         <span className="sep" />
         <time dateTime={node.created_at}>{relativeTime(node.created_at, t)}</time>
       </div>
+      {node.status === 'held' ? <p className="xs" style={{ color: 'var(--amber)' }}>{t('comment.held')}</p> : null}
       <p className="cmt-x">{node.status === 'deleted' ? t('comment.deleted') : node.body}</p>
       {node.status === 'visible' || node.status === 'collapsed' ? (
         <div className="actions">

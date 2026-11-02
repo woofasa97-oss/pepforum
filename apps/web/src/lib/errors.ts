@@ -16,6 +16,8 @@ export interface DbErrorLike {
 const SPECIFIC_MESSAGES = new Set<string>([
   'self_vote', 'own_post', 'own_note', 'own_content', 'already_reported', 'already_noted', 'note_locked',
   'thread_too_deep', 'invalid_source_url', 'conflict_of_interest', 'appeal_window_closed', 'already_appealed', 'no_changes',
+  // Admin console and sourcing shield (…015, …016)
+  'blocked_by_shield', 'comments_locked', 'pin_limit', 'already_pinned', 'last_admin', 'config_out_of_range', 'config_type_mismatch', 'reason_required', 'not_removed', 'already_hidden', 'not_hidden', 'username_taken', 'invalid_domain', 'invalid_phrase',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

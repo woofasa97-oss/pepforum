@@ -137,6 +137,25 @@ The strike costs 15 integrity for 90 days and −10 karma, capped at −30 note-
 - **Moderator identity:** members see what was done to them and why, but not which moderator did it (anti-retaliation). Moderators see it in the mod tools.
 - **Appeals:** one appeal per action, within 30 days, decided by a *different* moderator. An upheld appeal reverses the karma, strike and freeze. The reversal is itself a ledger row.
 
+## Admin controls and the sourcing shield
+
+Admins run the community from `/admin` ([ADMIN.md](ADMIN.md)). They can sanction, restore content, pin up to two posts per zone (`posts.pinned_at`), lock comments on a post, and hide a note that breaks the rules itself. They **can't** edit karma, XP or tiers, or set a note's status ([ADR-0006](adr/0006-admin-limits.md)): hiding an open note closes it as Needs More Ratings, which settles with no rewards and no strike.
+
+The **sourcing shield** checks every post, comment, edit and note:
+- **Blocked domains** are refused wherever they appear.
+- **Watched phrases** either `block` the text, or `hold` it with status `held`. Held content is visible only to its author and the zone's moderators until a moderator keeps or removes it from the queue, and it never reopens on its own.
+- Moderators' own content is exempt. Notes can't be held, so any matching rule refuses them.
+- Seeded hold-phrases: dm me, telegram, whatsapp, signal me, wickr, discount code, promo code, coupon code.
+
+New settings:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
+| `site.announcement` | empty | Site-wide banner `{en, fr, tone: info\|warn, until}` |
+
+Numeric settings now carry `app_config.bounds` (min/max), which `admin_set_config` checks along with the shape of `tiers.thresholds` and the `rate_limit.*` objects.
+
 ## Launch playbook (cold start)
 
 1. Grant **founding rater** status, with a 90–180 day expiry, to 20–50 people you trust: verified clinicians and known community members.

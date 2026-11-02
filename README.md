@@ -54,6 +54,7 @@ docs/               Architecture, self-moderation spec, threat model, privacy, d
 | [docs/SELF_MODERATION.md](docs/SELF_MODERATION.md) | Karma, tiers, notes, scoring, settlement, reports, appeals; every tunable |
 | [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) | STRIDE table, abuse cases, residual risks |
 | [docs/DATA_PRIVACY.md](docs/DATA_PRIVACY.md) | PIPEDA / Loi 25: inventory, residency, rights, pre-launch checklist |
+| [docs/ADMIN.md](docs/ADMIN.md) | The `/admin` console: what each section does, the rules admins can't break, a daily routine |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) · [docs/RUNBOOK.md](docs/RUNBOOK.md) | Supabase + Render setup, smoke test, operations |
 | [docs/adr/](docs/adr) | Why things are the way they are |
 | [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) | Workflow; reporting vulnerabilities |

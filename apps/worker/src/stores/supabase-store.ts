@@ -2,7 +2,7 @@
  * Production store: Supabase via the secret key (bypasses RLS). The key never
  * leaves this process; nothing here is reachable from the web.
  */
-import type { Database } from '@pepforum/database';
+import type { Database, JobName, Json } from '@pepforum/database';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 import type { WorkerEnv } from '../config.ts';
@@ -34,6 +34,11 @@ export class SupabaseStore implements WorkerStore {
     });
     if (error) throw new Error(`apply_note_scores failed: ${error.code ?? ''} ${error.message}`);
     return data;
+  }
+
+  async recordJobRun(job: JobName, startedAt: string, ok: boolean, summary: Json): Promise<void> {
+    const { error } = await this.client.rpc('record_job_run', { p_job: job, p_started_at: startedAt, p_ok: ok, p_summary: summary });
+    if (error) throw new Error(`record_job_run failed: ${error.message}`);
   }
 
   async runMaintenance(): Promise<Record<string, number>> {

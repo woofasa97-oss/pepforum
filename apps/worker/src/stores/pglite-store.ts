@@ -2,6 +2,7 @@
  * Development/test store backed by the PGlite harness: the real migrations,
  * the real SQL functions, executed as service_role. Never used in production.
  */
+import type { JobName, Json } from '@pepforum/database';
 import { type TestDb, service } from '@pepforum/database/testing';
 
 import { type ApplyScoresRequest, type ApplyScoresResult, type WorkerStore, toResultsPayload } from '../store.ts';
@@ -25,6 +26,10 @@ export class PgliteStore implements WorkerStore {
       [request.runId, request.snapshot, request.mode, JSON.stringify(toResultsPayload(request.results)), JSON.stringify(request.shadow)],
     );
     return result;
+  }
+
+  async recordJobRun(job: JobName, startedAt: string, ok: boolean, summary: Json): Promise<void> {
+    await this.db.as(service, `select public.record_job_run($1, $2, $3, $4::jsonb)`, [job, startedAt, ok, JSON.stringify(summary)]);
   }
 
   async runMaintenance(): Promise<Record<string, number>> {

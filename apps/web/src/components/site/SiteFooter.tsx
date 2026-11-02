@@ -18,6 +18,7 @@ export async function SiteFooter() {
           <h2>Pepforum</h2>
           <Link href="/notes">{t('nav.notes')}</Link>
           <Link href="/legal/community-notes">{t('footer.howNotes')}</Link>
+          <Link href="/transparency">{t('footer.transparency')}</Link>
         </div>
         <div>
           <h2>{t('footer.legal')}</h2>

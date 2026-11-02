@@ -10,7 +10,10 @@ import {
   RATING_REASONS,
   RATING_VALUES,
   REPORT_REASONS,
+  SANCTION_KINDS,
+  SHIELD_ACTIONS,
   SOURCE_KINDS,
+  STAFF_NOTE_LABELS,
   VIOLATIONS,
 } from '@pepforum/database';
 import { z } from 'zod';
@@ -142,6 +145,51 @@ export const DeleteAccountSchema = z.object({
   password: z.string().min(1).max(128).optional(),
   confirm: checkbox.optional(),
   erase: z.literal('on').optional(),
+});
+
+// ── Admin console (every action carries a logged reason) ────────────────────
+const reason = trimmed(3, 500);
+const username = z.string().regex(USERNAME_PATTERN);
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const onOff = z.enum(['true', 'false']);
+
+export const RevealEmailSchema = z.object({ userId: id, reason });
+export const FindByEmailSchema = z.object({ email: z.email().max(254) });
+export const SanctionSchema = z
+  .object({ userId: id, kind: z.enum(SANCTION_KINDS), days: z.coerce.number().int().min(1).max(365).optional(), reason })
+  .refine((v) => !(v.kind === 'freeze' || v.kind === 'suspension') || v.days !== undefined, { path: ['days'] });
+export const RevokeSanctionSchema = z.object({ sanctionId: id, reason });
+export const StaffNoteSchema = z.object({ userId: id, label: z.enum(STAFF_NOTE_LABELS), body: trimmed(3, 1000) });
+export const SetRoleSchema = z.object({ username, admin: onOff, reason });
+export const SetModeratorSchema = z.object({ username, zone: z.string().regex(/^[a-z]{2,16}$/), appoint: onOff, reason });
+export const FoundingSchema = z.object({ username, until: isoDate.optional(), end: z.literal('true').optional(), reason });
+export const MemberReasonSchema = z.object({ userId: id, reason });
+export const RenameMemberSchema = z.object({ userId: id, username, reason });
+export const RevokeStrikeSchema = z.object({ strikeId: id, reason });
+export const ContentReasonSchema = z.object({ kind: z.enum(['post', 'comment']), id, reason });
+export const AdminRemoveSchema = z.object({ kind: z.enum(['post', 'comment']), id, violation: z.enum(VIOLATIONS), reason });
+export const ToggleSchema = z.object({ id, on: onOff, reason });
+export const ShieldAddSchema = z.object({ kind: z.enum(['domain', 'phrase']), value: trimmed(2, 253), action: z.enum(SHIELD_ACTIONS).optional(), reason });
+export const ShieldRemoveSchema = z.object({ kind: z.enum(['domain', 'phrase']), value: trimmed(2, 253), reason });
+export const ShieldTestSchema = z.object({ text: trimmed(1, 10000) });
+/** `raw` (JSON) is used by Revert; otherwise the value is built from typed inputs. */
+export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });
+export const AnnouncementSchema = z.object({
+  en: z.string().trim().max(280), fr: z.string().trim().max(280), tone: z.enum(['info', 'warn']),
+  until: z.union([z.literal(''), isoDate]), reason,
+});
+export const CategorySchema = z.object({
+  id: slug, nameEn: trimmed(2, 60), nameFr: trimmed(2, 60), icon: z.string().regex(/^[a-z]{2,20}$/),
+  descriptionEn: z.string().trim().max(500), descriptionFr: z.string().trim().max(500),
+  rulesEn: z.string().max(2000), rulesFr: z.string().max(2000),
+  minNoteRatings: z.union([z.literal(''), z.coerce.number().int().min(3).max(200)]),
+  sortOrder: z.coerce.number().int().min(0).max(999), reason,
+});
+export const ArchiveCategorySchema = z.object({ id: slug, archived: onOff, reason });
+export const CitySchema = z.object({ id: slug, zone: z.string().regex(/^[a-z]{2,16}$/), name: trimmed(2, 60), sortOrder: z.coerce.number().int().min(0).max(999), reason });
+export const ZoneSchema = z.object({
+  id: z.string().regex(/^[a-z]{2,16}$/), nameEn: trimmed(2, 60), nameFr: trimmed(2, 60), shortName: trimmed(2, 20),
+  descriptionEn: z.string().trim().max(500), descriptionFr: z.string().trim().max(500), reason,
 });
 
 /** FormData → plain object; repeated keys become arrays. */

@@ -61,7 +61,9 @@ export default async function PostPage({ params }: Props) {
 
           <section className="card card-p" id="comments" aria-label={t('post.comments', { n: post.comment_count })}>
             <h2>{t('post.comments', { n: post.comment_count })}</h2>
-            {signedIn ? (
+            {post.comments_locked ? (
+              <div className="banner mt8"><Icon name="lock" /><div>{t('comment.locked')}</div></div>
+            ) : signedIn ? (
               <CommentForm postId={post.id} labels={{ placeholder: t('comment.add'), submit: t('comment.post'), hint: t('comment.rules') }} />
             ) : (
               <div className="banner mt8"><Icon name="lock" /><div>{t('comment.signIn')} <Link className="link" href={`/auth/sign-in?next=/post/${post.id}`}>{t('nav.signIn')}</Link></div></div>
