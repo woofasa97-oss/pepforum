@@ -132,7 +132,7 @@ export class TestDb {
   /** Creates an auth user; the sign-up trigger creates the profile. */
   async createUser(options: CreateUserOptions = {}): Promise<string> {
     userCounter += 1;
-    const username = options.username ?? `user_${userCounter}_${Math.random().toString(36).slice(2, 7)}`;
+    const username = options.username ?? `user_${userCounter}_${crypto.randomUUID().slice(0, 5)}`;
     const email = options.email ?? `${username.toLowerCase()}@example.test`;
     const metadata: Record<string, string> = { username, locale: options.locale ?? 'en' };
     if (options.homeZone) metadata.home_zone = options.homeZone;
