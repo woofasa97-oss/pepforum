@@ -59,21 +59,26 @@ export const getTaxonomy = cache(async (): Promise<Taxonomy> => {
 
 /**
  * Social providers switched on in the Supabase dashboard, read from the public
- * Auth settings endpoint (cached for five minutes). Turning a provider on or
- * off there adds or removes its button without a deploy.
+ * Auth settings endpoint (cached for a minute). Turning a provider on or off
+ * there adds or removes its button without a deploy.
  */
 export const getEnabledOAuthProviders = cache(async (): Promise<OAuthProvider[]> => {
   const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = env();
   try {
-    const response = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+    const response = await fetch(new URL('/auth/v1/settings', SUPABASE_URL), {
       headers: { apikey: SUPABASE_PUBLISHABLE_KEY },
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
     });
-    if (!response.ok) return [];
+    if (!response.ok) {
+      console.error(`[auth] provider settings unavailable: HTTP ${response.status}`);
+      return [];
+    }
     const settings = (await response.json()) as { external?: Record<string, unknown> };
     return OAUTH_PROVIDERS.filter((provider) => settings.external?.[provider] === true);
-  } catch {
-    return []; // Auth unreachable: email and password still work.
+  } catch (error) {
+    // Auth unreachable: email and password still work.
+    console.error(`[auth] provider settings unavailable: ${error instanceof Error ? error.name : 'unknown'}`);
+    return [];
   }
 });
 
