@@ -4,6 +4,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Must exceed minimumReleaseAge in pnpm-workspace.yaml, or pnpm rejects the update.
+    cooldown:
+      default-days: 3
     open-pull-requests-limit: 10
     groups:
       next-react:

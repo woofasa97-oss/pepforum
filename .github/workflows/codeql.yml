@@ -8,11 +8,15 @@ on:
     - cron: "17 6 * * 1"
 
 permissions:
+  actions: read        # private repos: the analyze step reads the workflow run
   contents: read
   security-events: write
 
 jobs:
   analyze:
+    # Code scanning on a private repo needs GitHub Code Security. Set the
+    # repository variable CODE_SECURITY_ENABLED=true once it is turned on.
+    if: vars.CODE_SECURITY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

@@ -4,7 +4,7 @@
 
 1. Branch from `main` (`feat/…`, `fix/…`).
 2. Make the change. Database changes follow `.claude/skills/new-migration/SKILL.md`.
-3. Run `pnpm check` (lint, typecheck, all tests). CI runs the same steps plus a build, dependency audit, secret scan and CodeQL.
+3. Run `pnpm check` (lint, typecheck, all tests). CI runs the same steps plus a build, dependency audit and secret scan (plus CodeQL and dependency review when GitHub Code Security is enabled).
 4. Open a PR using the template checklist. Changes to `supabase/migrations/`, `apps/worker/src/scoring/` or anything touching auth need a second reviewer.
 
 ## Ground rules

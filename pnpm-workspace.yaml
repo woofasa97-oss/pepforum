@@ -6,3 +6,7 @@ packages:
 onlyBuiltDependencies:
   - sharp
   - unrs-resolver
+
+# Don't resolve versions published less than a day ago (minutes). Pinned here so
+# local installs, CI and Dependabot behave the same whatever the pnpm version.
+minimumReleaseAge: 1440

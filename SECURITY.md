@@ -22,5 +22,6 @@ Please email **security@pepforum.ca** with steps to reproduce. Don't open a publ
 Pepforum enforces permissions in Postgres (RLS plus `security definer` RPCs), not in the web app. See [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) and [docs/adr/0001](docs/adr/0001-database-as-security-boundary.md). Automated checks:
 - the catalog self-audit `private.security_audit()`;
 - the RLS and grant test suite;
-- CodeQL, gitleaks and dependency review in CI;
-- Dependabot.
+- gitleaks and `pnpm audit` in CI;
+- CodeQL and dependency review, once GitHub Code Security is enabled (repository variable `CODE_SECURITY_ENABLED=true`);
+- Dependabot, with a release-age cooldown matching pnpm's `minimumReleaseAge`.

@@ -53,7 +53,8 @@ jobs:
 
   dependency-review:
     name: Dependency review
-    if: github.event_name == 'pull_request'
+    # Needs GitHub Code Security on a private repo (see codeql.yml).
+    if: github.event_name == 'pull_request' && vars.CODE_SECURITY_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
