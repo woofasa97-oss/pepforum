@@ -11,7 +11,8 @@ import { z } from 'zod';
 const EnvSchema = z.object({
   SUPABASE_URL: z.url({ protocol: /^https?$/ }),
   SUPABASE_PUBLISHABLE_KEY: z.string().min(20),
-  SITE_URL: z.url({ protocol: /^https?$/ }),
+  // Normalised to the bare origin, so "https://example.com/" doesn't produce "//auth/confirm".
+  SITE_URL: z.url({ protocol: /^https?$/, error: 'expected a full URL such as https://example.com' }).transform((url) => new URL(url).origin),
   TURNSTILE_SITE_KEY: z.string().min(1).optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
@@ -22,9 +23,16 @@ let cached: ServerEnv | undefined;
 
 export function env(): ServerEnv {
   if (cached) return cached;
-  const parsed = EnvSchema.safeParse(process.env);
+  // Empty strings (a blank line copied from .env.example) mean "not set".
+  const source = Object.fromEntries(Object.entries(process.env).filter(([, value]) => value !== ''));
+  const parsed = EnvSchema.safeParse({
+    ...source,
+    // Without SITE_URL, use the https://<service>.onrender.com URL Render sets on web services.
+    SITE_URL: source.SITE_URL ?? source.RENDER_EXTERNAL_URL,
+  });
   if (!parsed.success) {
-    const fields = parsed.error.issues.map((issue) => issue.path.join('.')).join(', ');
+    // Zod messages describe the problem without echoing the value.
+    const fields = parsed.error.issues.map((issue) => `${issue.path.join('.')} (${issue.message})`).join(', ');
     throw new Error(`Invalid server environment: ${fields}. See .env.example.`);
   }
   if ('SUPABASE_SECRET_KEY' in process.env && parsed.data.NODE_ENV === 'production') {

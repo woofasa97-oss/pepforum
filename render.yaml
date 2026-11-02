@@ -27,7 +27,7 @@ services:
         sync: false
       - key: SUPABASE_PUBLISHABLE_KEY
         sync: false
-      - key: SITE_URL
+      - key: SITE_URL          # https://<domain>; blank = RENDER_EXTERNAL_URL
         sync: false
       - key: TURNSTILE_SITE_KEY
         sync: false

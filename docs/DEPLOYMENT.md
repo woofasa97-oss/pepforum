@@ -43,6 +43,7 @@
    - `pepforum-worker`: a cron job running every 10 minutes.
 2. **Fill in the `sync: false` variables:**
    - **web:** `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL`, `TURNSTILE_SITE_KEY` (optional);
+     - `SITE_URL` is the full public origin, with the scheme: `https://pepforum.ca`, not `pepforum.ca`. Leave it blank to use Render's `https://<service>.onrender.com` URL (`RENDER_EXTERNAL_URL`), and set it once you add a custom domain. It must match the Site URL in Supabase Auth (step 1).
    - **worker:** `SUPABASE_URL`, `SUPABASE_SECRET_KEY`.
    - **Never** put the secret key on the web service; the app refuses to start in production if it finds it.
 3. **Custom domain and TLS** are set in the Render dashboard. HSTS preload is on, so serve every subdomain over HTTPS.
