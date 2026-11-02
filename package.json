@@ -1,0 +1,28 @@
+{
+  "name": "pepforum",
+  "private": true,
+  "description": "Canada's peptide-discussion forum: karma, community notes and self-moderation on Supabase + Render.",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @pepforum/web dev",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "db:test": "pnpm --filter @pepforum/database test",
+    "worker:dry-run": "pnpm --filter @pepforum/worker dry-run",
+    "db:types": "supabase gen types typescript --linked --schema public > packages/database/src/generated.types.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.4",
+    "globals": "17.14.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1"
+  }
+}

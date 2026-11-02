@@ -1,0 +1,156 @@
+# Self-moderation system
+
+Pepforum's moderation is done mostly by members. Reddit-style karma measures community standing; X-style Community Notes add context to misleading posts; a progression system rewards members who moderate *accurately*. This document is the specification. Every number here is a default in `app_config` (migration `…011_reference_data.sql`) and can be changed in production with `admin_set_config()`, which is logged.
+
+## Design principles
+
+1. **Reward accuracy, never volume.** Moderation rewards are paid only when the outcome is known (a note *settles*, a moderator acts on a report), and only for agreeing with an outcome reached across perspectives.
+2. **Correct claims, protect people.** Notes add context. Penalties apply only to an uncorrected misleading *claim* that raters with different track records agree on. First-hand experience reports are never penalised.
+3. **Popularity can't buy moderation power.** Karma opens the door to notes, but writing notes and Steward powers require a proven rating record and clean integrity.
+4. **Everything is explainable.** Each point is a ledger row with a reason; each capability gate returns the exact unmet requirement; each moderator action is in an append-only log and can be appealed to a different moderator.
+5. **The database enforces it.** All of this lives in SQL behind RLS and `security definer` functions, so it holds even if someone calls the API directly.
+
+## Three measures of standing
+
+| Measure | Range | Comes from | Unlocks / gates |
+|---|---|---|---|
+| **Karma** (community track, public) | unbounded | Votes on your posts and comments | Posting tiers; entry gate for notes |
+| **Moderation XP** (moderation track, private) | unbounded | Accurate ratings, helpful notes you wrote, reports a moderator acted on | Steward powers (with karma and integrity) |
+| **Integrity** | 0–100 | Starts at 100; minus active strikes (each expires after 90 days) | Can switch privileges off |
+
+Plus two counters used for note privileges: **rater impact** (settled ratings that matched the outcome minus those that didn't) and **writer impact** (Helpful notes minus Not Helpful notes).
+
+**Why the moderation track is private.** Moderation XP, rater impact, writer impact and rater status change when a note settles. If they were public, anyone could compare profiles before and after a scoring run, unmask the pseudonymous writer, and see how each rater voted. They are therefore readable only by their owner (`/karma`, `my_standing()`) and by staff in an MFA session. For the same reason, note writers are paid moderation XP only, never public karma: a karma jump at settlement would reveal them. This is how X keeps Community Notes contributors anonymous.
+
+### Tiers (karma)
+
+| Tier | Karma | Unlocks |
+|---|---|---|
+| 0 Newcomer | 0 | Comment, vote, report |
+| 1 Member | 100 | Text posts |
+| 2 Trusted | 1,000 | Link posts; start rating notes (probation) |
+| 3 Contributor | 3,000 | Write notes, once a graduated rater |
+| 4 Steward | 10,000 | Steward powers, with mod XP ≥ 150 and integrity ≥ 90 |
+
+**Hysteresis:** you're promoted the moment you reach a threshold, but demoted only when karma falls below 90% of your current tier's threshold (`tiers.demotion_ratio`), so privileges don't flicker.
+
+### Capability gates
+
+`private.capability_check(user, capability)` returns `NULL` (allowed) or a reason key (`tier:2`, `account_age:30`, `integrity:70`, `rater_impact:5`, `writing_locked`, `frozen`, `sanctioned`, `email_unconfirmed`…). The UI renders the reason as a sentence ("Requires Trusted").
+
+| Capability | Requirement |
+|---|---|
+| `vote`, `comment`, `report` | confirmed email, no suspension/ban |
+| `post_text` | Member · integrity ≥ 30 · not frozen (one post/day below integrity 50) |
+| `post_link` | Trusted |
+| `rate_notes` | Trusted · account ≥ 30 days · integrity ≥ 70 · not frozen (· confirmed phone if `gates.rate_notes.require_phone`) |
+| `write_notes` | `rate_notes` + Contributor · **graduated rater** (rater impact ≥ 5) · integrity ≥ 80 · not writing-locked |
+| `steward` | karma ≥ 10,000 · mod XP ≥ 150 · integrity ≥ 90 |
+
+**Founding raters** (granted by an admin, with an expiry, logged) bypass the karma, age and graduation requirements but not integrity. They carry the system at launch.
+
+## Votes → karma
+
+- Self-votes are rejected.
+- Whether a vote moves karma is decided once, when it's cast (`post_votes.counts_for_karma`). It doesn't count if:
+  - the voter's account is younger than 7 days, or the voter's integrity is below 50;
+  - the voter has already given this author 5 counted votes in 30 days (fans, vote rings);
+  - the author has already received 100 counted votes today (brigades, viral spikes).
+- One item can cost its author at most **5** karma (`karma.vote_floor_per_item`).
+- The score shown to readers counts every vote; only the karma effect is filtered.
+
+## Community notes
+
+### Lifecycle
+
+```
+proposed → needs_more_ratings ⇄ helpful | not_helpful → locked (settled)
+```
+
+- **Writing:** a note has a classification, a body of 20–500 characters, 1–5 sources (specific `https://` pages, not homepages) and a language. A writer can't note their own post, and writes at most one note per post. Publicly the writer appears as a stable pseudonym ("Contributor 3FA2").
+- **Rating:** Helpful, Somewhat or Not helpful, plus 1–6 reason tags valid for that value. Nobody can rate their own note or a note on their own post.
+- **Rating weight:**
+  - Probationary raters weigh **0**: their ratings build impact but don't move status.
+  - Graduated and founding raters weigh **1** on notes the queue assigned them (`next_note_to_rate`) and **0.5** on notes they navigated to themselves (`notes.unassigned_weight`). This makes targeted brigades expensive.
+  - The queue can't be re-rolled to fish for a target. A rater holds one outstanding assignment at a time: asking again returns the same note until it is rated, closes, or 24 hours pass. New draws are rate-limited (`rate_limit.queue`).
+- **Herding:** the helpful/not-helpful breakdown stays hidden until the note locks. A rating cast (or changed) after the note's status became public earns no accuracy credit. That includes a note that showed a status and later fell back to Needs More Ratings.
+- **Locking:** a note locks when its status has been stable for 72 hours with at least `min_ratings` full-weight ratings (5 by default; Regulation uses 7), or when it reaches 14 days. Rewards and penalties are paid only at lock, so a flip-flopping status never pays out twice.
+
+### Scoring
+
+The worker (`apps/worker`) computes statuses every 10 minutes and applies them atomically with `apply_note_scores()`.
+
+- **Bootstrap mode** is the default at launch. Weighted helpful share (Helpful = 1, Somewhat = 0.5, Not = 0):
+  - **Helpful** when the 90% Wilson lower bound is ≥ 0.60. Five unanimous ratings clear this bound; a single dissent among six does not.
+  - **Not Helpful** when the upper bound is ≤ 0.40.
+  - Otherwise **Needs More Ratings**.
+- **Bridging mode** is matrix factorisation, X's model: `r̂ = μ + i_rater + i_note + f_rater·f_note`, with L2 regularisation of 0.15 on intercepts and 0.03 on factors.
+  - **Helpful** when `i_note ≥ 0.40` and `|f_note| < 0.5`.
+  - **Not Helpful** when `i_note ≤ −0.05 − 0.8·|f_note|`.
+  - The factor absorbs agreement that is explained by viewpoint. A note therefore needs support from both sides.
+- **Shadow runs:** both scorers run on every pass; the inactive one is stored in `scoring_runs.shadow` along with the agreement rate.
+- **Switching:** set `scoring.mode` to `bridging` once at least 150 raters have 10 or more ratings and shadow agreement is ≥ 85%. A guard keeps applying bootstrap if the rater pool is too small.
+
+The test suite contains the motivating case. When one camp outnumbers the other 85:15, the bootstrap scorer marks that camp's partisan notes Helpful. The bridging scorer does not.
+
+### Settlement (at lock)
+
+| Who | Note settles Helpful | Note settles Not Helpful | Locks as Needs More Ratings |
+|---|---|---|---|
+| Writer (private moderation track) | +15 mod XP, +1 per helpful rating (max +10) | −10 mod XP | nothing |
+| Rater (definite rating cast before the result was public) | `xp = 2 × (match − π)` | same formula | nothing |
+| Post author | strike + karma loss, only under the conditions below | nothing | nothing |
+
+**Base rate π:** π is the recent probability (90 days) that a rating of that value matched the final outcome. It defaults to 0.5 until there are 20 samples. Paying `2 × (match − π)` makes always voting with the majority, or guessing, worth zero on average. "Somewhat" ratings are neutral.
+
+**Rater impact** is recomputed for every rater of the note:
+- reaching **+5** graduates a probationary rater, so their ratings start carrying weight;
+- falling to **−5** sends an active rater back to probation.
+
+**Writer lock:** if 5 or more of a writer's last 10 settled notes are Not Helpful, and fewer than 30% of them are Helpful, note writing pauses for 30 days.
+
+**Author strike:** the post author gets a strike only when **all** of these hold:
+- the note's classification is in `notes.strike_classifications` (default: `misleading` only);
+- it settled **Helpful**;
+- the post is **not** an Experience post;
+- the author did **not** correct the post within 72 hours of the note first being shown. A correction prevents the strike. It must actually change the post compared with the revision the note was written against; no-op edits are rejected, and every revision is public.
+
+The strike costs 15 integrity for 90 days and −10 karma, capped at −30 note-related karma per rolling 30 days. Deleting the post afterwards doesn't undo it.
+
+## Reports and moderators
+
+- **Reports:** weight is 0.5–1.5 depending on the reporter's integrity. Each member can file 10 per day, once per item.
+- **Auto-collapse:** content collapses (it is never deleted) when the open reports reach total weight ≥ 3 from at least 3 distinct reporters whose accounts are at least 14 days old.
+  - Content by a Trusted+ author collapses only if a Steward is among the reporters.
+  - If no moderator reviews it within 48 hours, the collapse reverts.
+- **Moderator decisions:** a moderator of that zone, in an MFA (aal2) session, removes or keeps the content.
+  - **Removal** costs the author 25 karma (100 for sourcing), a strike, and a 7-day freeze. Every reporter earns +3 mod XP.
+  - **Keep** dismisses the reports at no cost, except reports the moderator explicitly marks *abusive*, which cost −2 mod XP.
+- **Reporter XP:** a moderator earns nothing for resolving their own report. Reporter XP is reversed if the removal is later overturned on appeal.
+- **Sanctions:**
+  - Zone moderators can warn or freeze. Only admins can suspend or ban.
+  - Nobody can lift their own sanction. A moderator can only undo a warning or freeze they issued; everything else goes through an admin or an appeal.
+  - Frozen members can't post or edit posts.
+- **Staff reads need MFA too.** Note authorship, other members' ledgers, sanctions, reports and pre-lock breakdowns require an aal2 session, just like staff actions.
+- **Moderator identity:** members see what was done to them and why, but not which moderator did it (anti-retaliation). Moderators see it in the mod tools.
+- **Appeals:** one appeal per action, within 30 days, decided by a *different* moderator. An upheld appeal reverses the karma, strike and freeze. The reversal is itself a ledger row.
+
+## Launch playbook (cold start)
+
+1. Grant **founding rater** status, with a 90–180 day expiry, to 20–50 people you trust: verified clinicians and known community members.
+2. Keep `scoring.mode = bootstrap`. Watch `scoring_runs.shadow.agreement`.
+3. Consider lowering `gates.rate_notes.min_tier` to 1 for the first months, so probationary raters start building impact early. Their ratings carry no weight until they graduate, so this is safe.
+4. Turn on `gates.rate_notes.require_phone` (needs an SMS provider in Supabase Auth) the moment sock-puppet ratings appear.
+5. Switch to `bridging` when the guard conditions are met. Raise `notes.min_ratings` as volume grows.
+
+## Where the code lives
+
+| Concern | Location |
+|---|---|
+| Capabilities, integrity, tiers | `supabase/migrations/…003_identity.sql` |
+| Ledger and reconcile | `…004_ledger.sql` |
+| Votes and vote karma | `…005_content.sql` |
+| Notes, rating, settlement | `…006_notes.sql` |
+| Reports, moderation, appeals | `…007_moderation.sql` |
+| Scoring algorithms | `apps/worker/src/scoring/` |
+| Behavioural tests | `packages/database/tests/{content,notes,moderation}.test.ts`, `apps/worker/tests/` |

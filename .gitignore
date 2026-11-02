@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+.next/
+dist/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# env & secrets — never commit real values
+.env
+.env.*
+!.env.example
+
+# supabase local state
+supabase/.branches/
+supabase/.temp/
+
+# tooling
+coverage/
+.vitest-cache/
+.DS_Store
+*.log
+.vscode/*
+!.vscode/extensions.json
+packages/database/src/generated.types.ts

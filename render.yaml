@@ -1,0 +1,52 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+#
+# Region: Render has no Canadian region; Ohio is closest to Toronto/Montréal.
+# Personal data is stored in Supabase ca-central-1; requests transit the US
+# (disclosed in the privacy policy and Loi 25 notice; see docs/DATA_PRIVACY.md).
+#
+# Secrets are `sync: false`: Render prompts for them on first deploy and never
+# reads them from this file.
+
+services:
+  - type: web
+    name: pepforum-web
+    runtime: node
+    region: ohio
+    plan: starter
+    branch: main
+    autoDeployTrigger: checksPass   # deploy only after CI is green
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @pepforum/web build
+    startCommand: pnpm --filter @pepforum/web start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: TURNSTILE_SITE_KEY
+        sync: false
+
+  - type: cron
+    name: pepforum-worker
+    runtime: node
+    region: ohio
+    plan: starter
+    branch: main
+    autoDeployTrigger: checksPass
+    schedule: "*/10 * * * *"
+    # Node 22.18+ runs the TypeScript sources directly (type stripping).
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --filter @pepforum/worker...
+    startCommand: pnpm --filter @pepforum/worker start
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false

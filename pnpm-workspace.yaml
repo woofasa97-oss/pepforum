@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Supply-chain hardening: only these packages may run install scripts.
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver

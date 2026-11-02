@@ -1,0 +1,95 @@
+# Threat model
+
+**Assets:**
+- member accounts and sessions;
+- the integrity of karma, tiers and note status (the trust layer itself);
+- personal information (email, posting history);
+- moderator powers;
+- the secret key.
+
+**Adversaries:**
+- vendors and sourcing spammers;
+- brigades and vote rings;
+- sock-puppet farms;
+- a malicious insider holding a moderator account;
+- an attacker who obtains a member's JWT and calls PostgREST directly;
+- generic web attackers (XSS, CSRF, open redirect).
+
+## STRIDE
+
+| Threat | Example | Mitigation | Where |
+|---|---|---|---|
+| **Spoofing** | Credential stuffing; fake sign-ups | Confirmed email; 12+ character passwords plus leaked-password check (Pro); Turnstile CAPTCHA; Supabase Auth rate limits; generic login and reset messages (no enumeration) | `supabase/config.toml`, `server/actions/auth.ts` |
+| | Stolen session used to erase the account | Deleting an account re-checks the password | `deleteAccountAction` |
+| | Hijacked moderator account | TOTP MFA required; checked in SQL via `aal = 'aal2'` from the verified JWT | `private.require_aal2()` |
+| **Tampering** | Member sets their own karma or tier through the REST API | No write grants; column grant limited to bio/coi/locale/zone; values derived from the ledger | `…003_identity.sql`, `security.test.ts` |
+| | Forged scoring results | `apply_note_scores` executable by service_role only; idempotent per run; stale-snapshot check | `…006_notes.sql` |
+| | Editing the audit trail | Triggers make `ledger_events`, `mod_actions`, `note_status_history` and `app_config_history` append-only, even for the owner | `private.forbid_mutation` |
+| | Privileges smuggled through user metadata | Sign-up trigger reads only username, locale and zone, and validates them; privileges come from tables | `handle_new_auth_user` |
+| **Repudiation** | "I never removed that post" | Every moderator and admin action is in `mod_actions` with actor, reason and metadata; config changes are logged with old and new values | `…007_moderation.sql` |
+| **Information disclosure** | Who rated what; who wrote a note | `note_ratings` readable only by the rater; writers shown as pseudonyms; moderation-track counters private (column grants); writers paid moderation XP, not public karma; votes private | RLS, column grants, read API |
+| | Removed content shown to the public | Masked in `get_comments` (NULL-safe; regression test) | `…009_read_api.sql` |
+| | Secret key leaked through the web app | Key lives only on the worker; the web app refuses to boot in production if it sees it | `lib/env.ts` |
+| | Error details reach the client | Errors mapped to localised text; unknown errors become generic; logs carry codes only | `lib/errors.ts` |
+| **Denial of service** | Spamming votes, comments, reports or notes | Sliding-window limits in SQL per action (and stricter below integrity 50); Supabase Auth limits | `private.enforce_rate_limit` |
+| | Overlapping scoring runs | `pg_try_advisory_xact_lock` | `apply_note_scores` |
+| **Elevation of privilege** | Calling internal functions | `private` schema not exposed by PostgREST; EXECUTE revoked from PUBLIC globally; audit check | `…001_foundation.sql`, `…010_security_audit.sql` |
+| | `search_path` hijack of definer functions | Every definer function pins `search_path = ''` and uses fully qualified names; audit check | `security_audit()` |
+| | Moderator deciding their own appeal or acting on their own content | `conflict_of_interest` checks in SQL | `decide_appeal`, `resolve_reports` |
+
+## Web-layer threats
+
+- **XSS:**
+  - React escapes all output, and `dangerouslySetInnerHTML` is a lint error.
+  - The CSP allows only nonce-carrying scripts (`'strict-dynamic'`); there are no inline event handlers.
+  - Styles allow `'unsafe-inline'`, needed for React style attributes. This is accepted because CSS injection without script execution is low impact.
+- **CSRF:**
+  - Server Actions are POST-only, and Next.js checks the Origin header.
+  - Cookies are `SameSite=Lax`.
+  - The data export rejects cross-site `Sec-Fetch-Site`.
+- **Clickjacking:** `frame-ancestors 'none'` and `X-Frame-Options: DENY`.
+- **Open redirect:** every `next=` parameter goes through `safeRedirectPath`, which is unit-tested against `//host`, `/\host`, schemes and control characters.
+- **Malicious links:** links must be https; they render with `rel="nofollow ugc noopener noreferrer"` and a "not reviewed" label. Note sources must be specific pages.
+- **Caching sessions:** the proxy forwards @supabase/ssr's `no-store` headers whenever auth cookies change, and the export route sets `private, no-store`.
+
+## Abuse of the trust system
+
+These are covered in depth in [SELF_MODERATION.md](SELF_MODERATION.md).
+
+| Abuse | Defence |
+|---|---|
+| Farming moderation XP by guessing | Base-rate-adjusted rewards (expected value 0); paid only at settlement; no credit after the status is public |
+| Brigading a note | Bridging scoring (both sides must agree); probation weighs new raters at 0; queue assignment (self-picked notes weigh 0.5); 72-hour stability before lock |
+| Using notes as a weapon | Strikes only for *misleading* notes that settle Helpful, on non-experience posts the author didn't correct; capped karma loss |
+| Vote rings and sock puppets | Votes from new or low-integrity accounts don't count; 5 counted votes per voter per author every 30 days; 100 per day per author; optional phone gate for raters |
+| Report-based censorship | Collapse (never delete) needs weight from 3 established reporters; Trusted+ authors need a Steward reporter; reverts after 48 hours without review; abusive reports cost XP |
+| Rogue moderator | MFA; full audit log; appeals to a different moderator; suspensions and bans are admin-only |
+
+## Security review log
+
+### 2026-11-02 · Independent adversarial review (before first deploy)
+
+A separate reviewer with no access to the design rationale attacked the working tree under this threat model. It confirmed there is no way to mint karma, write the ledger directly, call private functions or escalate to moderator/admin. It found 12 issues, proved 11 of them with exploit tests, and all 12 are now fixed. Each fix has a test in `packages/database/tests/review-regressions.test.ts` or `apps/web/tests/security.test.ts`.
+
+| # | Severity | Finding | Fix |
+|---|---|---|---|
+| 1 | High | Public profile counters (`writer_impact`, `mod_xp`, …) and writer karma payouts let anyone unmask note writers and raters by diffing profiles | Column-level SELECT grants on `profiles`; moderation-track fields private in `get_profile`; writers paid moderation XP only |
+| 2 | Medium | Open redirect: `/.//evil.com` normalised to `//evil.com` | `safeRedirectPath` re-checks the normalised path |
+| 3 | Medium | Moderator *reads* didn't require MFA | `private.staff_session()` added to every staff read policy and projection |
+| 4 | Medium | Rating queue could be re-rolled to pick a brigade target | One outstanding assignment per rater, plus a rate limit on new draws |
+| 5 | Medium | A no-op edit counted as a correction and cancelled a strike | Identical edits rejected; a correction must differ from the noted revision |
+| 6 | Medium | A moderator could revoke their own freeze, or anyone's | No self-revocation; moderators may revoke only what they issued; otherwise admin |
+| 7 | Low | `NULL` sources created a note without sources | Explicit NULL check |
+| 8 | Low | Herding credit after a Helpful → Needs More Ratings flip | Any past status change marks later ratings as public |
+| 9 | Low | Moderators could pay themselves report XP; XP kept after an upheld appeal | No XP for the resolver's own reports; reversal on upheld appeal |
+| 10 | Low | Frozen members could still edit posts | `edit_post` requires `post_text` |
+| 11 | Low | Comments under removed posts were readable directly | `comments_read` requires a visible parent post |
+| 12 | Low | Sanctioned members could see which moderator acted | Column grants withhold `actor_id`, `issued_by`, `decided_by` |
+
+## Residual risks and follow-ups
+
+- **Bootstrap mode** can be carried by a coordinated majority. Mitigated by founding raters and probation; removed by switching to bridging.
+- **Reciprocal vote rings** across many accounts aren't detected yet (roadmap).
+- **Cross-border transit:** Render has no Canadian region (see [DATA_PRIVACY.md](DATA_PRIVACY.md)).
+- **Hand-maintained types** can drift from the schema; the contract test covers the enums, and `pnpm db:types` covers the rest.
+- **Supabase plan features:** PITR backups and leaked-password protection need the Pro plan.

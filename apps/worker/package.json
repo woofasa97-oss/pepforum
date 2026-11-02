@@ -1,0 +1,24 @@
+{
+  "name": "@pepforum/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Render cron job: scores community notes (bootstrap Wilson bound or bridging matrix factorisation), applies results atomically, and runs maintenance.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.ts",
+    "dry-run": "node src/dev/dry-run.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@pepforum/database": "workspace:*",
+    "@supabase/supabase-js": "2.118.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0",
+    "@electric-sql/pglite": "0.5.14"
+  }
+}

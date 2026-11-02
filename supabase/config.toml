@@ -1,0 +1,99 @@
+# Supabase CLI configuration (local development: `supabase start`).
+# Hosted-project settings that must match are listed in docs/DEPLOYMENT.md.
+
+project_id = "pepforum"
+
+[api]
+enabled = true
+port = 54321
+# Only `public` is exposed through PostgREST. The `private` schema (business
+# logic, rate-limit state, secrets) must never be added here. GraphQL is not
+# exposed (smaller attack surface; the app doesn't use it).
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[realtime]
+# Not used in v1; votes/ratings/reports must never be broadcast.
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+# Image uploads are a later phase (Trusted-only bucket policy + scanning).
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/confirm"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+enable_manual_linking = false
+# Long passphrases beat composition rules (NIST SP 800-63B).
+minimum_password_length = 12
+password_requirements = ""
+
+[auth.rate_limit]
+email_sent = 2
+sms_sent = 0
+anonymous_users = 0
+token_refresh = 150
+sign_in_sign_ups = 30
+token_verifications = 30
+
+[auth.captcha]
+# Enable in production with Cloudflare Turnstile; the web app sends the token
+# when TURNSTILE_SITE_KEY is set.
+enabled = false
+provider = "turnstile"
+secret = "env(SUPABASE_AUTH_CAPTCHA_SECRET)"
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+secure_password_change = true
+max_frequency = "1m0s"
+otp_length = 6
+otp_expiry = 3600
+
+[auth.email.template.confirmation]
+subject = "Confirm your Pepforum account · Confirmez votre compte Pepforum"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Pepforum password · Réinitialisez votre mot de passe"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new email · Confirmez votre nouveau courriel"
+content_path = "./supabase/templates/email_change.html"
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.sms]
+enable_signup = false

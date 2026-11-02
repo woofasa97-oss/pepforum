@@ -1,0 +1,122 @@
+'use client';
+
+import { POST_TYPES, type PostType } from '@pepforum/database';
+import { useActionState, useState } from 'react';
+
+import { FieldError, FormMessage } from '@/components/ui/Bits';
+import { SubmitButton } from '@/components/ui/SubmitButton';
+import { initialActionState } from '@/lib/action-state';
+import { createPostAction, editPostAction } from '@/server/actions/content';
+
+interface Option {
+  readonly id: string;
+  readonly name: string;
+  readonly zoneId?: string;
+}
+
+interface Props {
+  readonly labels: Record<string, string>;
+  readonly zones: Option[];
+  readonly cities: Option[];
+  readonly categories: Option[];
+  readonly locale: 'en' | 'fr';
+  readonly canPostLinks: boolean;
+  readonly defaults?: { zone?: string | undefined; category?: string | undefined };
+  /** Present when editing an existing post. */
+  readonly edit?: { postId: string; title: string; body: string; link: string | null; type: PostType };
+}
+
+export function PostForm({ labels, zones, cities, categories, locale, canPostLinks, defaults, edit }: Props) {
+  const [state, action] = useActionState(edit ? editPostAction : createPostAction, initialActionState);
+  const [zone, setZone] = useState(defaults?.zone ?? 'national');
+  const [type, setType] = useState<PostType>(edit?.type ?? 'question');
+  const errors = state.fieldErrors ?? {};
+  const zoneCities = cities.filter((c) => c.zoneId === zone);
+  const showLink = type === 'resource' || Boolean(edit?.link);
+
+  return (
+    <form action={action} className="card card-p">
+      <FormMessage ok={state.ok} message={state.message} />
+      {edit ? <input type="hidden" name="postId" value={edit.postId} /> : null}
+
+      {!edit ? (
+        <>
+          <div className="row wrap" style={{ gap: 12, alignItems: 'flex-start' }}>
+            <div className="field grow">
+              <label htmlFor="pf-zone">{labels['submit.zone']}</label>
+              <select id="pf-zone" name="zone" className="input" value={zone} onChange={(e) => setZone(e.target.value)}>
+                {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+              </select>
+            </div>
+            {zoneCities.length > 0 ? (
+              <div className="field grow">
+                <label htmlFor="pf-city">{labels['submit.city']}</label>
+                <select id="pf-city" name="city" className="input" defaultValue="">
+                  <option value="">{labels['submit.wholeZone']}</option>
+                  {zoneCities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+            ) : null}
+            <div className="field grow">
+              <label htmlFor="pf-category">{labels['submit.category']}</label>
+              <select id="pf-category" name="category" className="input" defaultValue={defaults?.category ?? categories[0]?.id} aria-invalid={Boolean(errors.category)}>
+                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <fieldset className="field">
+            <legend>{labels['submit.type']}</legend>
+            <div className="col">
+              {POST_TYPES.map((pt) => (
+                <label key={pt} className="radio-card">
+                  <input type="radio" name="type" value={pt} checked={type === pt} disabled={pt === 'resource' && !canPostLinks}
+                    onChange={() => setType(pt)} />
+                  <span>
+                    <span className="small bold">{labels[`post.type.${pt}`]}</span>
+                    <span className="xs faint" style={{ display: 'block' }}>{labels[`submit.type.${pt}Hint`]}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </>
+      ) : null}
+
+      <div className="field">
+        <label htmlFor="pf-title">{labels['submit.postTitle']}</label>
+        <input id="pf-title" name="title" className="input" minLength={8} maxLength={140} required defaultValue={edit?.title}
+          aria-invalid={Boolean(errors.title)} aria-describedby="pf-title-hint" />
+        <span id="pf-title-hint" className="hint">{labels['submit.titleHint']}</span>
+        <FieldError message={errors.title} />
+      </div>
+
+      <div className="field">
+        <label htmlFor="pf-body">{labels['submit.body']}</label>
+        <textarea id="pf-body" name="body" className="input" maxLength={10000} defaultValue={edit?.body} aria-invalid={Boolean(errors.body)} />
+        <FieldError message={errors.body} />
+      </div>
+
+      {showLink && canPostLinks ? (
+        <div className="field">
+          <label htmlFor="pf-link">{labels['submit.link']}</label>
+          <input id="pf-link" name="link" type="url" className="input" placeholder="https://" pattern="https://.+" defaultValue={edit?.link ?? ''}
+            required={type === 'resource'} aria-invalid={Boolean(errors.link)} />
+          <FieldError message={errors.link} />
+        </div>
+      ) : null}
+
+      {!edit ? (
+        <>
+          <input type="hidden" name="language" value={locale} />
+          <label className="check mb16">
+            <input type="checkbox" name="ack" required />
+            <span>{labels['submit.ack']}</span>
+          </label>
+        </>
+      ) : null}
+
+      <SubmitButton>{edit ? labels['submit.save'] : labels['submit.publish']}</SubmitButton>
+    </form>
+  );
+}

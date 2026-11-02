@@ -1,0 +1,87 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import { NoteCard } from '@/components/notes/NoteCard';
+import { CommentForm } from '@/components/post/CommentForm';
+import { CommentTree } from '@/components/post/CommentTree';
+import { PostCard } from '@/components/post/PostCard';
+import { Icon } from '@/components/ui/Icon';
+import { describeRequirement } from '@/lib/errors';
+import { isUuid } from '@/lib/params';
+import { deletePostAction } from '@/server/actions/content';
+import { getLocale, getStanding, getT } from '@/server/context';
+import { getComments, getPost, getPostNotes, getTaxonomy } from '@/server/queries';
+
+interface Props {
+  params: Promise<{ postId: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { postId } = await params;
+  if (!isUuid(postId)) return {};
+  const post = await getPost(postId);
+  return post ? { title: post.title, description: post.body.slice(0, 160) } : {};
+}
+
+const MEDICAL_CATEGORIES = new Set(['weight', 'clinician', 'recovery']);
+
+export default async function PostPage({ params }: Props) {
+  const { postId } = await params;
+  if (!isUuid(postId)) notFound();
+
+  const [t, locale, standing, taxonomy, post] = await Promise.all([getT(), getLocale(), getStanding(), getTaxonomy(), getPost(postId)]);
+  if (!post) notFound();
+  const [notes, comments] = await Promise.all([getPostNotes(post.id), getComments(post.id)]);
+  const signedIn = Boolean(standing);
+  const canWriteNotes = standing?.capabilities.write_notes === null && !post.is_mine;
+
+  return (
+    <div className="page">
+      <div className="grid2">
+        <main id="main" className="feed">
+          <PostCard post={post} t={t} locale={locale} taxonomy={taxonomy} signedIn={signedIn} canWriteNotes={canWriteNotes} full />
+
+          {notes.map((note) => <NoteCard key={note.id} note={note} t={t} />)}
+
+          {MEDICAL_CATEGORIES.has(post.category_id) ? (
+            <div className="banner warn"><Icon name="alert" /><div>{t('post.medicalBanner')}</div></div>
+          ) : null}
+
+          {post.is_mine && post.status !== 'deleted' ? (
+            <details className="card card-p">
+              <summary className="small bold" style={{ cursor: 'pointer' }}>{t('post.delete')}</summary>
+              <form action={deletePostAction} className="mt8">
+                <p className="small muted mb8">{t('post.deleteConfirm')}</p>
+                <input type="hidden" name="postId" value={post.id} />
+                <button type="submit" className="btn danger sm">{t('post.delete')}</button>
+              </form>
+            </details>
+          ) : null}
+
+          <section className="card card-p" id="comments" aria-label={t('post.comments', { n: post.comment_count })}>
+            <h2>{t('post.comments', { n: post.comment_count })}</h2>
+            {signedIn ? (
+              <CommentForm postId={post.id} labels={{ placeholder: t('comment.add'), submit: t('comment.post'), hint: t('comment.rules') }} />
+            ) : (
+              <div className="banner mt8"><Icon name="lock" /><div>{t('comment.signIn')} <Link className="link" href={`/auth/sign-in?next=/post/${post.id}`}>{t('nav.signIn')}</Link></div></div>
+            )}
+            <CommentTree comments={comments} postId={post.id} t={t} signedIn={signedIn} />
+          </section>
+        </main>
+
+        <aside className="rail right">
+          <div className="card card-p">
+            <h2 className="row" style={{ fontSize: 15 }}><Icon name="note" />{t('notes.whatIs')}</h2>
+            <p className="small muted mt8">{t('notes.explain')}</p>
+            {canWriteNotes ? (
+              <Link className="btn sm mt12" href={`/post/${post.id}/note/new`}>{t('post.suggestNote')}</Link>
+            ) : standing ? (
+              <p className="xs faint mt12">{t('cap.write_notes')}: {describeRequirement(standing.capabilities.write_notes, t)}</p>
+            ) : null}
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
