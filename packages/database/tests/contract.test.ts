@@ -6,7 +6,9 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
+  APPEAL_STATUSES,
   CONTENT_STATUSES,
+  MOD_ACTIONS,
   NOTE_CLASSIFICATIONS,
   NOTE_STATUSES,
   POST_TYPES,
@@ -14,7 +16,11 @@ import {
   RATING_REASONS,
   RATING_VALUES,
   REPORT_REASONS,
+  REPORT_STATUSES,
+  SANCTION_KINDS,
+  SHIELD_ACTIONS,
   SOURCE_KINDS,
+  STAFF_NOTE_LABELS,
   inferSourceKind,
 } from '../src/index.ts';
 import { TestDb } from '../src/testing/index.ts';
@@ -51,6 +57,13 @@ describe('domain vocabulary matches the schema', () => {
     ['note_ratings', 'value', RATING_VALUES],
     ['reports', 'reason', REPORT_REASONS],
     ['profiles', 'rater_status', RATER_STATUSES],
+    ['comments', 'status', CONTENT_STATUSES],
+    ['reports', 'status', REPORT_STATUSES],
+    ['appeals', 'status', APPEAL_STATUSES],
+    ['sanctions', 'kind', SANCTION_KINDS],
+    ['mod_actions', 'action', MOD_ACTIONS],
+    ['staff_notes', 'label', STAFF_NOTE_LABELS],
+    ['shield_phrases', 'action', SHIELD_ACTIONS],
   ])('%s.%s', async (table, column, values) => {
     expect(await checkValues(table, column)).toEqual([...values].sort());
   });

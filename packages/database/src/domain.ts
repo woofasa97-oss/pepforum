@@ -14,7 +14,7 @@ export type Locale = (typeof LOCALES)[number];
 export const POST_TYPES = ['experience', 'claim', 'question', 'resource'] as const;
 export type PostType = (typeof POST_TYPES)[number];
 
-export const CONTENT_STATUSES = ['visible', 'collapsed', 'removed', 'deleted'] as const;
+export const CONTENT_STATUSES = ['visible', 'collapsed', 'held', 'removed', 'deleted'] as const;
 export type ContentStatus = (typeof CONTENT_STATUSES)[number];
 
 export const NOTE_CLASSIFICATIONS = [
@@ -73,6 +73,35 @@ export const CAPABILITIES = [
   'steward',
 ] as const;
 export type Capability = (typeof CAPABILITIES)[number];
+
+export const SANCTION_KINDS = ['warning', 'freeze', 'suspension', 'ban'] as const;
+export type SanctionKind = (typeof SANCTION_KINDS)[number];
+
+export const REPORT_STATUSES = ['open', 'actioned', 'dismissed', 'abusive'] as const;
+export type ReportStatus = (typeof REPORT_STATUSES)[number];
+
+export const APPEAL_STATUSES = ['open', 'upheld', 'denied'] as const;
+export type AppealStatus = (typeof APPEAL_STATUSES)[number];
+
+/** Every kind of entry in the moderation log (mod_actions.action). */
+export const MOD_ACTIONS = [
+  'remove', 'restore', 'auto_collapse', 'auto_uncollapse', 'dismiss_reports',
+  'sanction', 'revoke_sanction', 'grant_founding_rater', 'appoint_moderator',
+  'remove_moderator', 'appeal_upheld', 'appeal_denied', 'config_change',
+  'grant_admin', 'revoke_admin', 'end_founding_rater', 'rename_user', 'revoke_strike', 'clear_writing_lock',
+  'hide_note', 'unhide_note', 'pin', 'unpin', 'lock_comments', 'unlock_comments',
+  'shield_rule_added', 'shield_rule_removed', 'shield_hold', 'taxonomy_change',
+  'lookup_email', 'reveal_email',
+] as const;
+export type ModAction = (typeof MOD_ACTIONS)[number];
+
+/** Labels on staff notes (Reddit-style mod notes on a member). */
+export const STAFF_NOTE_LABELS = ['note', 'watch', 'warned', 'good_contributor'] as const;
+export type StaffNoteLabel = (typeof STAFF_NOTE_LABELS)[number];
+
+/** Sourcing-shield phrase actions: hold for review, or reject outright. */
+export const SHIELD_ACTIONS = ['hold', 'block'] as const;
+export type ShieldAction = (typeof SHIELD_ACTIONS)[number];
 
 /** SQLSTATE codes raised by the database (see 0001_foundation). */
 export const DB_ERROR_CODES = {

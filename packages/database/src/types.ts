@@ -11,6 +11,27 @@
  * mutations go through the RPCs under `Functions`.
  */
 import type {
+  AdminConfigChange,
+  AdminConfigEntry,
+  AdminContentRow,
+  AdminLogEntry,
+  AdminMember,
+  AdminMetrics,
+  AdminNotesHealth,
+  AdminOverview,
+  AdminPersonRow,
+  AdminShield,
+  AdminSystemStatus,
+  AdminTeam,
+  ContentKind,
+  JobName,
+  Page,
+  PeopleFilter,
+  PeopleSort,
+  ShieldMatch,
+  TransparencyStats,
+} from './admin-types.ts';
+import type {
   ContentStatus,
   Locale,
   NoteClassification,
@@ -18,7 +39,9 @@ import type {
   PostType,
   RaterStatus,
   RatingValue,
+  ShieldAction,
   SourceKind,
+  StaffNoteLabel,
 } from './domain.ts';
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -104,6 +127,7 @@ export type AppConfigRow = {
   value: Json;
   description: string;
   is_public: boolean;
+  bounds: { min: number; max: number } | null;
   updated_at: string;
 };
 
@@ -125,6 +149,8 @@ export type NoteRow = {
   scoring_mode: 'bootstrap' | 'bridging' | null;
   scored_at: string | null;
   post_corrected_at: string | null;
+  hidden_at: string | null;
+  hidden_reason: string | null;
   created_at: string;
 };
 
@@ -198,6 +224,8 @@ export type FeedRow = {
   my_vote: -1 | 1 | null;
   has_helpful_note: boolean;
   has_open_note: boolean;
+  /** Pinned by an admin; leads its zone's feed. */
+  pinned: boolean;
 };
 
 export type PostDetailRow = {
@@ -223,6 +251,8 @@ export type PostDetailRow = {
   edited_at: string | null;
   my_vote: -1 | 1 | null;
   can_moderate: boolean;
+  pinned: boolean;
+  comments_locked: boolean;
 };
 
 export type CommentRow = {
@@ -316,6 +346,9 @@ export type ModQueueItem = {
   target_kind: 'post' | 'comment';
   target_id: string;
   post_id: string;
+  zone_id: string;
+  /** Set when the sourcing shield is holding the content (the rule that matched). */
+  held_reason: string | null;
   excerpt: string;
   body: string;
   status: ContentStatus;
@@ -340,6 +373,8 @@ export type AppealView = {
   reason: string;
   acted_by: string | null;
   acted_at: string;
+  /** null for sanction appeals, which only admins decide. */
+  zone_id: string | null;
   can_decide: boolean;
 };
 
@@ -463,8 +498,65 @@ export type Database = {
         Returns: NoteView[];
       };
       get_profile: { Args: { p_username: string }; Returns: ProfileView | null };
-      mod_queue: { Args: { p_zone: string }; Returns: ModQueueItem[] };
-      open_appeals: { Args: { p_zone: string }; Returns: AppealView[] };
+      /** p_zone null = every zone (admins only). */
+      mod_queue: { Args: { p_zone: string | null }; Returns: ModQueueItem[] };
+      open_appeals: { Args: { p_zone: string | null }; Returns: AppealView[] };
+
+      // ── Admin console (admin + aal2) ──────────────────────────────────────
+      admin_overview: { Args: Record<string, never>; Returns: AdminOverview };
+      admin_metrics: { Args: { p_days: 7 | 30 | 90 }; Returns: AdminMetrics };
+      admin_people: {
+        Args: { p_query: string | null; p_filter: PeopleFilter; p_sort: PeopleSort; p_page: number };
+        Returns: Page<AdminPersonRow>;
+      };
+      admin_member: { Args: { p_username: string }; Returns: AdminMember };
+      admin_find_by_email: { Args: { p_email: string }; Returns: string | null };
+      admin_reveal_email: { Args: { p_user: string; p_reason: string }; Returns: string };
+      admin_content: {
+        Args: { p_kind: ContentKind; p_query: string | null; p_status: string | null; p_zone: string | null; p_page: number };
+        Returns: Page<AdminContentRow>;
+      };
+      admin_mod_log: {
+        Args: { p_action: string | null; p_actor: string | null; p_zone: string | null; p_target: string | null; p_before: string | null };
+        Returns: AdminLogEntry[];
+      };
+      admin_team: { Args: Record<string, never>; Returns: AdminTeam };
+      admin_notes_health: { Args: Record<string, never>; Returns: AdminNotesHealth };
+      admin_config: { Args: Record<string, never>; Returns: AdminConfigEntry[] };
+      admin_config_history: { Args: { p_key: string }; Returns: AdminConfigChange[] };
+      admin_system_status: { Args: Record<string, never>; Returns: AdminSystemStatus };
+      admin_shield: { Args: Record<string, never>; Returns: AdminShield };
+      admin_shield_test: { Args: { p_text: string }; Returns: ShieldMatch[] };
+      admin_shield_add: { Args: { p_kind: 'domain' | 'phrase'; p_value: string; p_action: ShieldAction | null; p_reason: string }; Returns: string };
+      admin_shield_remove: { Args: { p_kind: 'domain' | 'phrase'; p_value: string; p_reason: string }; Returns: undefined };
+      admin_restore_content: { Args: { p_kind: 'post' | 'comment'; p_id: string; p_reason: string }; Returns: undefined };
+      admin_set_role: { Args: { p_user: string; p_admin: boolean; p_reason: string }; Returns: undefined };
+      admin_end_founding: { Args: { p_user: string; p_reason: string }; Returns: undefined };
+      admin_rename_user: { Args: { p_user: string; p_username: string; p_reason: string }; Returns: undefined };
+      admin_revoke_strike: { Args: { p_strike: string; p_reason: string }; Returns: undefined };
+      admin_clear_writing_lock: { Args: { p_user: string; p_reason: string }; Returns: undefined };
+      add_staff_note: { Args: { p_user: string; p_label: StaffNoteLabel; p_body: string }; Returns: string };
+      admin_set_note_hidden: { Args: { p_note: string; p_hidden: boolean; p_reason: string }; Returns: undefined };
+      admin_set_pinned: { Args: { p_post: string; p_pinned: boolean; p_reason: string }; Returns: undefined };
+      admin_set_comments_locked: { Args: { p_post: string; p_locked: boolean; p_reason: string }; Returns: undefined };
+      admin_upsert_category: {
+        Args: {
+          p_id: string; p_name_en: string; p_name_fr: string; p_icon: string;
+          p_description_en: string; p_description_fr: string; p_rules_en: string[]; p_rules_fr: string[];
+          p_min_note_ratings: number | null; p_sort_order: number; p_reason: string;
+        };
+        Returns: undefined;
+      };
+      admin_archive_category: { Args: { p_id: string; p_archived: boolean; p_reason: string }; Returns: undefined };
+      admin_upsert_city: { Args: { p_id: string; p_zone_id: string; p_name: string; p_sort_order: number; p_reason: string }; Returns: undefined };
+      admin_update_zone: {
+        Args: { p_id: string; p_name_en: string; p_name_fr: string; p_short_name: string; p_description_en: string; p_description_fr: string; p_reason: string };
+        Returns: undefined;
+      };
+      /** service_role only (worker heartbeat). */
+      record_job_run: { Args: { p_job: JobName; p_started_at: string; p_ok: boolean; p_summary?: Json }; Returns: undefined };
+      /** Public monthly aggregates (no member data). */
+      transparency_stats: { Args: { p_month: string | null }; Returns: TransparencyStats };
     };
   };
 };
