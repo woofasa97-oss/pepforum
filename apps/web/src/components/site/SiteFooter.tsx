@@ -1,7 +1,8 @@
 import Link from 'next/link';
 
-import { Leaf } from '@/components/ui/Icon';
 import { getT } from '@/server/context';
+
+import { Logo } from './Logo';
 
 export async function SiteFooter() {
   const t = await getT();
@@ -9,7 +10,7 @@ export async function SiteFooter() {
     <footer className="ftr">
       <div className="ftr-in">
         <div>
-          <Link className="logo" href="/"><Leaf /><span>PEP<span className="lt">FORUM</span></span></Link>
+          <Logo tag={t('app.brandTag')} />
           <p className="small mt8" style={{ color: 'rgba(255,255,255,.75)', maxWidth: 360 }}>{t('app.tagline')}</p>
           <p className="xs mt8" style={{ color: 'rgba(255,255,255,.65)' }}>{t('app.disclaimer')}</p>
         </div>

@@ -1,12 +1,13 @@
 import Link from 'next/link';
 
 import { Avatar } from '@/components/ui/Bits';
-import { Icon, Leaf } from '@/components/ui/Icon';
+import { Icon } from '@/components/ui/Icon';
 import { signOutAction } from '@/server/actions/auth';
 import { setLocaleAction, setThemeAction } from '@/server/actions/settings';
 import { getLocale, getStanding, getT, getViewer } from '@/server/context';
 import { getTaxonomy } from '@/server/queries';
 
+import { Logo } from './Logo';
 import { NavLink } from './NavLink';
 
 /** Global header + zone bar. Server-rendered; forms work without JavaScript. */
@@ -17,10 +18,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
     <>
       <header className="hdr">
         <div className="hdr-in">
-          <Link className="logo" href="/" aria-label="Pepforum">
-            <Leaf />
-            <span className="wordmark">PEP<span className="lt">FORUM</span></span>
-          </Link>
+          <Logo tag={t('app.brandTag')} preload />
           <nav className="nav" aria-label="Primary">
             <NavLink href="/" className="hide-sm">{t('nav.home')}</NavLink>
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
@@ -56,7 +54,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
         </div>
       </header>
       <div className="zonebar">
-        <nav className="zonebar-in" aria-label={t('nav.zones')}>
+        <nav className="zonebar-in" id="zones" aria-label={t('nav.zones')}>
           <span className="lbl">{t('nav.zones')}</span>
           {taxonomy.zones.map((z) => {
             const href = z.id === 'national' ? '/' : `/zone/${z.id}`;

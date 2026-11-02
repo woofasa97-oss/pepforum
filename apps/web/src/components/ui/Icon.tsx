@@ -8,6 +8,7 @@ const PATHS = {
   link: 'M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1',
   external: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3',
   shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
+  flask: 'M9 3h6M10 3v6L4 20a1 1 0 0 0 1 1.5h14A1 1 0 0 0 20 20L14 9V3',
   star: 'm12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z',
   check: 'm20 6-11 11-5-5',
   x: 'M18 6 6 18M6 6l12 12',
@@ -35,9 +36,15 @@ export function Icon({ name, className = 'i' }: { name: IconName; className?: st
   );
 }
 
-/** The maple leaf from the prototype's logo. */
+/** The maple leaf from the prototype (a single polygon in a 100×100 box). */
 export const LEAF_PATH =
   'M50 0 54.6 11.7 61.3 8.2 59.7 20.4 68.9 17.9 66.4 27.6 83.3 24.5 81.1 33.2 97.6 42 92 48.7 100 60.5 80.6 61.3 82.6 71.2 61.2 66 62.7 77.9 52.8 73.7 52.8 100 47.2 100 47.2 73.7 37.3 77.9 38.8 66 17.4 71.2 19.4 61.3 0 60.5 8 48.7 2.4 42 18.9 33.2 16.7 24.5 33.6 27.6 31.1 17.9 40.3 20.4 38.7 8.2 45.4 11.7Z';
+
+/** LEAF_PATH's vertices, for extruding the 3D hero leaf. */
+export const LEAF_POINTS: readonly (readonly [number, number])[] = Array.from(
+  LEAF_PATH.matchAll(/(-?[\d.]+) (-?[\d.]+)/g),
+  (m) => [Number(m[1]), Number(m[2])] as const,
+);
 
 export function Leaf({ className }: { className?: string }) {
   return (

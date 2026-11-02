@@ -1,12 +1,17 @@
 import '@/styles/globals.css';
 
 import type { Metadata, Viewport } from 'next';
+import { Inter, Montserrat } from 'next/font/google';
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
 
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { getLocale, getT } from '@/server/context';
+
+// The prototype's typefaces, self-hosted by Next at build time (CSP font-src 'self').
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const montserrat = Montserrat({ subsets: ['latin'], weight: ['300', '600', '700', '800'], variable: '--font-montserrat', display: 'swap' });
 
 export const metadata: Metadata = {
   title: { default: 'Pepforum', template: '%s · Pepforum' },
@@ -27,7 +32,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const theme = themeCookie === 'dark' || themeCookie === 'light' ? themeCookie : undefined;
 
   return (
-    <html lang={locale === 'fr' ? 'fr-CA' : 'en-CA'} data-theme={theme}>
+    <html lang={locale === 'fr' ? 'fr-CA' : 'en-CA'} data-theme={theme} className={`${inter.variable} ${montserrat.variable}`}>
       <body>
         <a className="skip" href="#main">{t('app.skip')}</a>
         <SiteHeader theme={theme} />
