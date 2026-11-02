@@ -1,0 +1,2 @@
+# Fake publishable key in a unit test (replaced in the next commit); gitleaks scans all history.
+ed5106d5b17fdb19b755fcf49d0335a920a1f605:apps/web/tests/env.test.ts:generic-api-key:11

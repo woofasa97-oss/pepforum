@@ -8,7 +8,7 @@ async function loadEnv() {
 
 beforeEach(() => {
   vi.stubEnv('SUPABASE_URL', 'https://project.supabase.co');
-  vi.stubEnv('SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_0123456789abcdef');
+  vi.stubEnv('SUPABASE_PUBLISHABLE_KEY', 'x'.repeat(32));
   vi.stubEnv('SITE_URL', undefined);
   vi.stubEnv('RENDER_EXTERNAL_URL', undefined);
   vi.stubEnv('TURNSTILE_SITE_KEY', undefined);
