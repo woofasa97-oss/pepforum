@@ -20,13 +20,15 @@ interface Props {
   readonly cities: Option[];
   readonly categories: Option[];
   readonly locale: 'en' | 'fr';
-  readonly canPostLinks: boolean;
+  /** Why link posts are locked ("Requires Member"), or null when allowed. */
+  readonly linkRequirement: string | null;
   readonly defaults?: { zone?: string | undefined; category?: string | undefined };
   /** Present when editing an existing post. */
   readonly edit?: { postId: string; title: string; body: string; link: string | null; type: PostType };
 }
 
-export function PostForm({ labels, zones, cities, categories, locale, canPostLinks, defaults, edit }: Props) {
+export function PostForm({ labels, zones, cities, categories, locale, linkRequirement, defaults, edit }: Props) {
+  const canPostLinks = linkRequirement === null;
   const [state, action] = useActionState(edit ? editPostAction : createPostAction, initialActionState);
   const [zone, setZone] = useState(defaults?.zone ?? 'national');
   const [type, setType] = useState<PostType>(edit?.type ?? 'question');
@@ -74,7 +76,9 @@ export function PostForm({ labels, zones, cities, categories, locale, canPostLin
                     onChange={() => setType(pt)} />
                   <span>
                     <span className="small bold">{labels[`post.type.${pt}`]}</span>
-                    <span className="xs faint" style={{ display: 'block' }}>{labels[`submit.type.${pt}Hint`]}</span>
+                    <span className="xs faint" style={{ display: 'block' }}>
+                      {labels[`submit.type.${pt}Hint`]}{pt === 'resource' && linkRequirement ? ` · ${linkRequirement}` : null}
+                    </span>
                   </span>
                 </label>
               ))}

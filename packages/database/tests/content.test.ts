@@ -17,27 +17,42 @@ afterAll(async () => {
 });
 
 describe('posting gates', () => {
-  it('newcomers cannot post; members can post text but not links', async () => {
+  it('newcomers can post text from sign-up; links unlock at Member', async () => {
     const newcomer = await db.createUser();
-    const error = await db.expectError(
+    await expect(createPost(db, newcomer, { type: 'question' })).resolves.toMatch(/^[0-9a-f-]{36}$/);
+
+    const link = 'https://clinicaltrials.gov/study/NCT03548935';
+    const linkError = await db.expectError(
       user(newcomer),
-      `select public.create_post('on', 'basics', 'question', 'How do I read a trial registry?', 'Beginner here.')`,
+      `select public.create_post('on', 'research', 'resource', 'A link to the primary source', '', $1)`,
+      [link],
     );
-    expect(error).toMatchObject({ code: 'PF403', message: 'capability_denied', detail: 'post_text:tier:1' });
+    expect(linkError).toMatchObject({ code: 'PF403', message: 'capability_denied', detail: 'post_link:tier:1' });
 
     const member = await db.createUser({ karma: TIER.member });
-    await expect(createPost(db, member)).resolves.toMatch(/^[0-9a-f-]{36}$/);
+    await expect(createPost(db, member, { type: 'resource', body: '', link })).resolves.toBeTruthy();
+  });
 
-    const linkError = await db.expectError(
-      user(member),
-      `select public.create_post('on', 'research', 'resource', 'A link to the primary source', '', 'https://clinicaltrials.gov/study/NCT03548935')`,
+  it('newcomers start a few posts a day; reaching Member lifts the limit', async () => {
+    const newcomer = await db.createUser();
+    for (let i = 0; i < 3; i += 1) await createPost(db, newcomer);
+    const error = await db.expectError(
+      user(newcomer),
+      `select public.create_post('on', 'basics', 'question', 'One post too many today', 'Body.')`,
     );
-    expect(linkError.detail).toBe('post_link:tier:2');
+    expect(error).toMatchObject({ code: 'PF429', message: 'rate_limited', detail: 'post_newcomer' });
 
-    const trusted = await db.createUser({ karma: TIER.trusted });
-    await expect(
-      createPost(db, trusted, { type: 'resource', body: '', link: 'https://clinicaltrials.gov/study/NCT03548935' }),
-    ).resolves.toBeTruthy();
+    const member = await db.createUser({ karma: TIER.member });
+    for (let i = 0; i < 4; i += 1) await createPost(db, member);
+  });
+
+  it('newcomers still need a confirmed email to post', async () => {
+    const unconfirmed = await db.createUser({ emailConfirmed: false });
+    const error = await db.expectError(
+      user(unconfirmed),
+      `select public.create_post('on', 'basics', 'question', 'How do I read a trial registry?', 'Beginner here.')`,
+    );
+    expect(error.detail).toBe('post_text:email_unconfirmed');
   });
 
   it('rejects javascript: and plain-http links', async () => {

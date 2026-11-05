@@ -65,7 +65,7 @@ export function messageForDbError(error: DbErrorLike, t: Translate): string {
     case DB_ERROR_CODES.notFound:
       return t('errors.notFound');
     case DB_ERROR_CODES.rateLimited:
-      return t('errors.rateLimited');
+      return error.details === 'post_newcomer' ? t('errors.rateLimitedNewcomer') : t('errors.rateLimited');
     case DB_ERROR_CODES.mfaRequired:
       return t('errors.mfaRequired');
     case DB_ERROR_CODES.invalidInput:

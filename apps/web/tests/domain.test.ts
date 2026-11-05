@@ -18,6 +18,7 @@ describe('error mapping', () => {
 
   it('maps known codes and specific messages', () => {
     expect(messageForDbError({ code: 'PF429', message: 'rate_limited' }, t)).toBe(en['errors.rateLimited']);
+    expect(messageForDbError({ code: 'PF429', message: 'rate_limited', details: 'post_newcomer' }, t)).toBe(en['errors.rateLimitedNewcomer']);
     expect(messageForDbError({ code: 'PF422', message: 'self_vote' }, t)).toBe(en['errors.self_vote']);
     expect(messageForDbError({ code: 'PF428', message: 'mfa_required' }, t)).toBe(en['errors.mfaRequired']);
   });

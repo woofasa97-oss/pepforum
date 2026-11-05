@@ -35,7 +35,7 @@
 | | Removed content shown to the public | Masked in `get_comments` (NULL-safe; regression test) | `…009_read_api.sql` |
 | | Secret key leaked through the web app | Key lives only on the worker; the web app refuses to boot in production if it sees it | `lib/env.ts` |
 | | Error details reach the client | Errors mapped to localised text; unknown errors become generic; logs carry codes only | `lib/errors.ts` |
-| **Denial of service** | Spamming votes, comments, reports or notes | Sliding-window limits in SQL per action (and stricter below integrity 50); Supabase Auth limits | `private.enforce_rate_limit` |
+| **Denial of service** | Spamming votes, comments, reports or notes | Sliding-window limits in SQL per action (stricter for Newcomers' posts and below integrity 50); Supabase Auth limits | `private.enforce_rate_limit` |
 | | Overlapping scoring runs | `pg_try_advisory_xact_lock` | `apply_note_scores` |
 | **Elevation of privilege** | Calling internal functions | `private` schema not exposed by PostgREST; EXECUTE revoked from PUBLIC globally; audit check | `…001_foundation.sql`, `…010_security_audit.sql` |
 | | `search_path` hijack of definer functions | Every definer function pins `search_path = ''` and uses fully qualified names; audit check | `security_audit()` |

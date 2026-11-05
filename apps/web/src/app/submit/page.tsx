@@ -36,7 +36,7 @@ export default async function SubmitPage({ searchParams }: { searchParams: Promi
           <PostForm
             labels={pick(t, POST_FORM_LABEL_KEYS)}
             locale={locale}
-            canPostLinks={standing.capabilities.post_link === null}
+            linkRequirement={standing.capabilities.post_link ? describeRequirement(standing.capabilities.post_link, t) : null}
             zones={taxonomy.zones.map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
             cities={taxonomy.cities.map((c) => ({ id: c.id, name: c.name, zoneId: c.zone_id }))}
             categories={taxonomy.categories.map((c) => ({ id: c.id, name: locale === 'fr' ? c.name_fr : c.name_en }))}

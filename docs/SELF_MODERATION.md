@@ -26,11 +26,13 @@ Plus two counters used for note privileges: **rater impact** (settled ratings th
 
 | Tier | Karma | Unlocks |
 |---|---|---|
-| 0 Newcomer | 0 | Comment, vote, report |
-| 1 Member | 100 | Text posts |
-| 2 Trusted | 1,000 | Link posts; start rating notes (probation) |
+| 0 Newcomer | 0 | Text posts (3 a day), comment, vote, report |
+| 1 Member | 100 | Link posts; the normal posting limit (10 a day) |
+| 2 Trusted | 1,000 | Start rating notes (probation) |
 | 3 Contributor | 3,000 | Write notes, once a graduated rater |
 | 4 Steward | 10,000 | Steward powers, with mod XP ≥ 150 and integrity ≥ 90 |
+
+**Taking part is never gated.** A new member can post the moment they confirm their email (or finish onboarding after a social sign-up). Karma unlocks what carries more risk: links, then moderating other people. A Newcomer's posts face the same checks as everyone else's: the sourcing shield, collapse on reports, and the integrity gates. On top of the normal limit, a Newcomer can start `rate_limit.post_newcomer` posts a day (default 3); reaching Member lifts it.
 
 **Hysteresis:** you're promoted the moment you reach a threshold, but demoted only when karma falls below 90% of your current tier's threshold (`tiers.demotion_ratio`), so privileges don't flicker.
 
@@ -41,8 +43,8 @@ Plus two counters used for note privileges: **rater impact** (settled ratings th
 | Capability | Requirement |
 |---|---|
 | `vote`, `comment`, `report` | confirmed email, no suspension/ban |
-| `post_text` | Member · integrity ≥ 30 · not frozen (one post/day below integrity 50) |
-| `post_link` | Trusted |
+| `post_text` | integrity ≥ 30 · not frozen (3 posts/day as a Newcomer; one post/day below integrity 50) |
+| `post_link` | Member |
 | `rate_notes` | Trusted · account ≥ 30 days · integrity ≥ 70 · not frozen (· confirmed phone if `gates.rate_notes.require_phone`) |
 | `write_notes` | `rate_notes` + Contributor · **graduated rater** (rater impact ≥ 5) · integrity ≥ 80 · not writing-locked |
 | `steward` | karma ≥ 10,000 · mod XP ≥ 150 · integrity ≥ 90 |
@@ -152,6 +154,7 @@ New settings:
 | Key | Default | Meaning |
 |---|---|---|
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
+| `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `site.announcement` | empty | Site-wide banner `{en, fr, tone: info\|warn, until}` |
 
 Numeric settings now carry `app_config.bounds` (min/max), which `admin_set_config` checks along with the shape of `tiers.thresholds` and the `rate_limit.*` objects.

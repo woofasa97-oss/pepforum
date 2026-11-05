@@ -68,8 +68,8 @@
 ## 3. Smoke test after deploying
 
 1. Sign up, then confirm the email: you land signed in.
-2. A newcomer is blocked from posting, and the page says "Requires Member".
-3. With a seeded Member account, post. Vote from a second account older than 7 days; the author's ledger shows `post_votes +1`.
+2. The new account can start a text post right away. The Resource (link) option is greyed out and says "Requires Member".
+3. Vote from a second account older than 7 days; the author's ledger shows `post_votes +1`.
 4. As a founding rater, propose a note. Rate it from five graduated or founding accounts. Within 10 minutes the worker marks it Helpful, and the cron log shows `scoring run complete`.
 5. Report a post from three accounts older than 14 days: it collapses. A moderator in an MFA session resolves it.
 6. Download the data export; delete a test account. Within 10 minutes the auth user is gone.

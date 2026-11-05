@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { PostForm } from '@/components/post/PostForm';
 import { POST_FORM_LABEL_KEYS } from '@/components/post/post-form-labels';
+import { describeRequirement } from '@/lib/errors';
 import { pick } from '@/lib/i18n';
 import { isUuid } from '@/lib/params';
 import { getLocale, getStanding, getT } from '@/server/context';
@@ -25,7 +26,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ postI
         <PostForm
           labels={pick(t, POST_FORM_LABEL_KEYS)}
           locale={locale}
-          canPostLinks={standing.capabilities.post_link === null}
+          linkRequirement={standing.capabilities.post_link ? describeRequirement(standing.capabilities.post_link, t) : null}
           zones={[]}
           cities={[]}
           categories={[]}
