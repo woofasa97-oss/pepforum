@@ -20,6 +20,7 @@ export async function SiteFooter() {
           <Link href="/legal/community-notes">{t('footer.howNotes')}</Link>
           <Link href="/transparency">{t('footer.transparency')}</Link>
           <Link href="/contact">{t('footer.contact')}</Link>
+          <Link href="/advertise">{t('footer.advertise')}</Link>
         </div>
         <div>
           <h2>{t('footer.legal')}</h2>

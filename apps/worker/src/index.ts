@@ -11,7 +11,10 @@ import type { JobName, Json } from '@pepforum/database';
 import { loadEnv } from './config.ts';
 import { maintenanceJob } from './jobs/maintenance.ts';
 import { processDeletionsJob } from './jobs/process-deletions.ts';
+import { purgeMediaJob } from './jobs/purge-media.ts';
+import { type PushSender, pushJob } from './jobs/push.ts';
 import { scoreNotesJob } from './jobs/score-notes.ts';
+import { settleAdsJob } from './jobs/settle-ads.ts';
 import { createLogger } from './logger.ts';
 import { SupabaseStore } from './stores/supabase-store.ts';
 
@@ -31,6 +34,14 @@ async function main(): Promise<number> {
   if (!dryRun) {
     jobs.push(['maintenance', () => maintenanceJob(store, log)]);
     jobs.push(['process_deletions', async () => ({ ...(await processDeletionsJob(store, log, env.DELETIONS_BATCH_SIZE)) })]);
+    jobs.push(['purge_media', async () => ({ ...(await purgeMediaJob(store, log)) })]);
+    jobs.push(['settle_ads', async () => ({ ...(await settleAdsJob(store, log)) })]);
+    if (env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY) {
+      const sender = await createWebPushSender(env.VAPID_SUBJECT, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
+      jobs.push(['push', async () => ({ ...(await pushJob(store, log, sender, { batchSize: env.PUSH_BATCH_SIZE, siteUrl: env.SITE_URL })) })]);
+    } else {
+      log.info('push skipped: VAPID keys not configured');
+    }
   }
 
   let failures = 0;
@@ -55,6 +66,17 @@ async function main(): Promise<number> {
     }
   }
   return failures === 0 ? 0 : 1;
+}
+
+/** The `web-push` library, loaded only when keys are configured. */
+async function createWebPushSender(subject: string, publicKey: string, privateKey: string): Promise<PushSender> {
+  const webPush = await import('web-push');
+  webPush.setVapidDetails(subject, publicKey, privateKey);
+  return {
+    async send(subscription, payload) {
+      await webPush.sendNotification(subscription, payload, { TTL: 60 * 60 * 24, urgency: 'normal' });
+    },
+  };
 }
 
 main().then(

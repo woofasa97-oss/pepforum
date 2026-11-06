@@ -9,7 +9,10 @@ import { TestDb, user } from '@pepforum/database/testing';
 import { parseScoringInput } from '../src/config.ts';
 import { maintenanceJob } from '../src/jobs/maintenance.ts';
 import { processDeletionsJob } from '../src/jobs/process-deletions.ts';
+import { purgeMediaJob } from '../src/jobs/purge-media.ts';
+import { type PushSender, pushJob, pushPayload } from '../src/jobs/push.ts';
 import { scoreNotesJob } from '../src/jobs/score-notes.ts';
+import { settleAdsJob } from '../src/jobs/settle-ads.ts';
 import { silentLogger } from '../src/logger.ts';
 import { PgliteStore } from '../src/stores/pglite-store.ts';
 
@@ -96,5 +99,61 @@ describe('maintenance and deletions', () => {
     expect(report).toEqual({ processed: 1, failed: 0 });
     expect(await db.sql(`select 1 from auth.users where id = $1`, [leaving])).toEqual([]);
     expect(await store.pendingAccountDeletions(10)).toEqual([]);
+  });
+});
+
+describe('push delivery (…022)', () => {
+  const KEY = 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM';
+
+  it('sends one payload per registered browser and drops dead endpoints', async () => {
+    const author = await db.createUser({ username: 'push_author', karma: 100 });
+    const replier = await db.createUser({ username: 'push_replier' });
+    await db.as(user(author), `select public.save_push_subscription('https://push.example.test/ok', $1, 'tBHItJI5svbpez7KI4CCXg', 'Firefox')`, [KEY]);
+    await db.as(user(author), `select public.save_push_subscription('https://push.example.test/gone', $1, 'tBHItJI5svbpez7KI4CCXg', 'Old phone')`, [KEY]);
+    const { id: post } = await db.asOne<{ id: string }>(user(author), `select public.create_post('on', 'basics', 'question', 'Does anyone push?', 'Testing push delivery.', null) as id`);
+    await db.as(user(replier), `select public.create_comment($1, 'Yes.')`, [post]);
+
+    const sent: Array<{ endpoint: string; payload: string }> = [];
+    const sender: PushSender = {
+      async send(subscription, payload) {
+        sent.push({ endpoint: subscription.endpoint, payload });
+        if (subscription.endpoint.endsWith('/gone')) throw Object.assign(new Error('Gone'), { statusCode: 410 });
+      },
+    };
+    const report = await pushJob(store, silentLogger, sender, { batchSize: 100, siteUrl: 'https://pepforum.test' });
+    expect(report).toMatchObject({ sent: 1, failed: 1, dropped: 1 });
+    expect(sent.map((s) => s.endpoint).sort()).toEqual(['https://push.example.test/gone', 'https://push.example.test/ok']);
+    const payload = JSON.parse(sent[0]?.payload ?? '{}') as { title: string; url: string; body: string };
+    expect(payload.title).toBe('New comment on your post');
+    expect(payload.url).toMatch(/^https:\/\/pepforum\.test\/post\//);
+    expect(payload.body).toBe('Does anyone push?');
+
+    // Nothing left to push; the dead browser is gone.
+    expect(await store.pendingPush(100)).toEqual([]);
+    expect(await db.sql(`select 1 from public.push_subscriptions where endpoint like '%/gone'`)).toEqual([]);
+  });
+
+  it('words the payload in the member’s language', () => {
+    const item = { id: 'x', kind: 'team_reply' as const, locale: 'fr' as const, post_title: null, url: '/contact/abc', subscriptions: [] };
+    expect(JSON.parse(pushPayload(item, 'https://pepforum.test'))).toMatchObject({ title: 'L’équipe Pepforum a répondu', url: 'https://pepforum.test/contact/abc' });
+  });
+});
+
+describe('media purge and ad settlement (…023, …025)', () => {
+  it('deletes removed uploads from storage, then marks them purged', async () => {
+    const owner = await db.createUser({ karma: 1000 });
+    const { r } = await db.asOne<{ r: { id: string; path: string } }>(user(owner), `select public.register_upload('post_image', 'image/png', 1000) as r`);
+    await db.as(user(owner), `select public.confirm_upload($1)`, [r.id]);
+    await db.as(user(owner), `select public.delete_my_media($1)`, [r.id]);
+    const report = await purgeMediaJob(store, silentLogger);
+    expect(report.purged).toBeGreaterThanOrEqual(1);
+    expect(store.deletedObjects).toContain(r.path);
+    expect((await db.sqlOne<{ purged: boolean }>(`select purged_at is not null as purged from public.media where id = $1`, [r.id])).purged).toBe(true);
+  });
+
+  it('settles ads idempotently', async () => {
+    const first = await settleAdsJob(store, silentLogger);
+    expect(first).toMatchObject({ days_settled: 0, completed: 0 });
+    expect(await settleAdsJob(store, silentLogger)).toMatchObject({ days_settled: 0 });
   });
 });

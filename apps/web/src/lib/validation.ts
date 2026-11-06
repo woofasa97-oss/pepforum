@@ -4,12 +4,16 @@
  * members precise field errors and keeps junk off the wire.
  */
 import {
+  AD_PACKAGES,
+  AD_REPORT_REASONS,
+  CLINICIAN_PROFESSIONS,
   LINK_DECISIONS,
   LOCALES,
   MEMBER_REPORT_OUTCOMES,
   MEMBER_REPORT_REASONS,
   NOTE_CLASSIFICATIONS,
   POST_TYPES,
+  PROVINCES,
   RATING_REASONS,
   RATING_VALUES,
   REPORT_REASONS,
@@ -81,7 +85,14 @@ export const CreatePostSchema = z
   .refine((v) => v.type !== 'resource' || Boolean(v.link), { path: ['link'], message: 'link_required' })
   .refine((v) => v.type === 'resource' || v.body.length > 0, { path: ['body'], message: 'body_required' });
 
-export const EditPostSchema = z.object({ postId: id, ...postFields });
+/** Images attached from the composer (…023): repeated hidden inputs, aligned with their alt texts. */
+const idList = z.union([id, z.array(id)]).optional().transform((v) => (v === undefined ? [] : Array.isArray(v) ? v : [v]));
+const altList = z.union([z.string().max(300), z.array(z.string().max(300))]).optional().transform((v) => (v === undefined ? [] : Array.isArray(v) ? v : [v]));
+const mediaFields = { mediaIds: idList, mediaAlts: altList };
+
+export const EditPostSchema = z.object({ postId: id, ...postFields, ...mediaFields });
+export const CreatePostWithMediaSchema = CreatePostSchema.and(z.object(mediaFields));
+export const MediaIdSchema = z.object({ mediaId: id });
 
 export const CommentSchema = z.object({
   postId: id,
@@ -202,6 +213,52 @@ export const TicketClosedSchema = z.object({ ticketId: id, closed: onOff });
 export const ResolveMemberReportsSchema = z.object({ username, outcome: z.enum(MEMBER_REPORT_OUTCOMES), reason });
 export const LinkSiteSchema = z.object({ host: trimmed(3, 253), decision: z.enum(SITE_DECISIONS), reason: reason.optional() });
 /** `raw` (JSON) is used by Revert; otherwise the value is built from typed inputs. */
+// ── Ported features (…021–…025) ──────────────────────────────────────────────
+export const RedirectSchema = z.object({
+  from: z.string().trim().min(1).max(500).regex(/^\/[A-Za-z0-9._~/-]*$/), to: z.string().trim().min(1).max(1000).regex(/^(\/\S*|https:\/\/\S+)$/),
+  permanent: onOff, reason,
+});
+export const DeleteRedirectSchema = z.object({ from: z.string().trim().min(1).max(500), reason });
+
+const onOffOptional = z.literal('on').optional();
+export const NotificationSettingsSchema = z.object({ replies: onOffOptional, notes: onOffOptional, moderation: onOffOptional, team: onOffOptional, push: onOffOptional });
+export const PushSubscriptionSchema = z.object({
+  endpoint: z.string().max(2048).regex(/^https:\/\/\S+$/), p256dh: z.string().min(16).max(512), auth: z.string().min(8).max(256),
+});
+export const PushEndpointSchema = z.object({ endpoint: z.string().max(2048).regex(/^https:\/\/\S+$/) });
+export const MarkReadSchema = z.object({ id: id.optional() });
+
+export const ClinicianSubmitSchema = z.object({
+  profession: z.enum(CLINICIAN_PROFESSIONS), regulator: trimmed(2, 120), province: z.string().regex(/^[a-z]{2,16}$/),
+  registrationNumber: trimmed(2, 60), documentId: id, statement: z.string().trim().max(1000).optional(),
+});
+export const ClinicianDecisionSchema = z.object({ id, decision: z.enum(['approve', 'reject']), reason });
+
+export const AdvertiserSchema = z.object({
+  name: trimmed(2, 80), website: z.string().trim().max(500).regex(HTTPS_URL), billingEmail: z.email().max(254),
+  billingAddress: z.string().trim().max(300), billingProvince: z.enum(PROVINCES),
+});
+export const CampaignSchema = z.object({
+  id: z.union([z.literal(''), id]).optional(),
+  name: trimmed(2, 80), package: z.enum(AD_PACKAGES),
+  zone: z.union([z.literal(''), z.string().regex(/^[a-z]{2,16}$/)]).optional(),
+  category: z.union([z.literal(''), slug]).optional(),
+  /** Whole CAD; converted to microCAD by the action. */
+  budgetCad: z.coerce.number().int().min(1).max(1_000_000),
+  headline: trimmed(3, 60), body: trimmed(10, 160), cta: trimmed(2, 24),
+  headlineFr: z.string().trim().max(60), bodyFr: z.string().trim().max(160), ctaFr: z.string().trim().max(24),
+  landingUrl: z.string().trim().max(1000).regex(HTTPS_URL),
+  imageId: z.union([z.literal(''), id]).optional(),
+});
+export const CampaignIdSchema = z.object({ id });
+export const CampaignPauseSchema = z.object({ id, paused: onOff });
+export const ReportAdSchema = z.object({ id, reason: z.enum(AD_REPORT_REASONS), details: z.string().trim().max(500).optional() });
+export const AdvertiserDecisionSchema = z.object({ id, decision: z.enum(['approve', 'suspend']), reason });
+export const CampaignDecisionSchema = z.object({ id, decision: z.enum(['approve', 'reject']), reason });
+export const AdPaymentSchema = z.object({ advertiserId: id, amountCad: z.coerce.number().positive().max(1_000_000), reference: trimmed(3, 120), reason });
+export const AdAdjustmentSchema = z.object({ advertiserId: id, amountCad: z.coerce.number().max(1_000_000).min(-1_000_000).refine((n) => n !== 0, 'nonzero'), reference: trimmed(3, 120), reason });
+export const IdReasonSchema = z.object({ id, reason });
+
 export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });
 export const AnnouncementSchema = z.object({
   en: z.string().trim().max(280), fr: z.string().trim().max(280), tone: z.enum(['info', 'warn']),

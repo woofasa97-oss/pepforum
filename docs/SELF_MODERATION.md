@@ -169,6 +169,16 @@ New settings:
 
 Numeric settings now carry `app_config.bounds` (min/max), which `admin_set_config` checks along with the shape of `tiers.thresholds` and the `rate_limit.*` objects.
 
+## Ported features: what they don't change
+
+Images, clinician badges, notifications and ads (migrations …021–…025) sit beside the economy and never touch it:
+
+- A **verified clinician** badge is identity, not authority: no karma, no note weight, no moderation power. Settings: `clinician.valid_days`.
+- **Images** are a capability (`upload_image`: tier ≥ `gates.upload.min_tier`, default Trusted; integrity ≥ `gates.posting.min_integrity`), with `uploads.max_bytes` and `uploads.max_per_post`. Removing an image is a logged admin action with no karma effect.
+- **Notifications** are private and purged after `notifications.retention_days`.
+- **Ads** are prepaid and reviewed; `ads.enabled` is the switch, `ads.cpm.{zone,category,national}` and `ads.min_booking_microcad` the price list (microCAD), `ads.flight_days` the run length. Members' standing is irrelevant to advertising, and advertising buys no standing.
+- New rate limits: `rate_limit.{push_subscribe,notification_settings,upload,clinician_submit,ad_write,ad_report}`.
+
 ## Launch playbook (cold start)
 
 1. Grant **founding rater** status, with a 90–180 day expiry, to 20–50 people you trust: verified clinicians and known community members.

@@ -3,7 +3,7 @@
 Canada's bilingual peptide-discussion forum: no vendors, no sales, just context. Moderation is done mostly by the community. **Karma** measures standing, **community notes** add context that raters across perspectives agree on, and a **progression system** rewards members who moderate accurately.
 
 - **Stack:** Supabase (Postgres, Auth · `ca-central-1`) · Render (Next.js 16 web service + Node cron worker) · TypeScript · pnpm workspaces
-- **Status:** foundation. Schema and self-moderation engine, auth, core web flows, tests, CI and deployment config are in place. See [roadmap](#roadmap).
+- **Status:** foundation plus the features ported from the prototype build (SEO, notifications and web push, images, clinician verification, advertising). See [roadmap](#roadmap).
 
 ## How self-moderation works (60 seconds)
 
@@ -39,7 +39,7 @@ Demo accounts include `maple_you` (Trusted), `peptide_analyst` (founding rater),
 
 ```
 apps/web            Next.js app: server-rendered, Server Actions, CSP nonce, EN/FR
-apps/worker         Render cron: note scoring (Wilson bootstrap + matrix factorisation), maintenance, account deletions
+apps/worker         Render cron: note scoring (Wilson bootstrap + matrix factorisation), maintenance, account deletions, web push, media purge, ad settlement
 packages/database   Supabase types, domain vocabulary, PGlite harness + schema/security tests
 supabase/           Migrations (all business rules + RLS), config, auth email templates, local seed
 docs/               Architecture, self-moderation spec, threat model, privacy, deployment, runbook, ADRs
@@ -61,10 +61,9 @@ docs/               Architecture, self-moderation spec, threat model, privacy, d
 
 ## Roadmap
 
-- Notifications (note outcomes, replies, moderator actions)
-- Image uploads (Supabase Storage, Trusted-only policy, malware scanning)
-- Clinician verification and the Ask-a-Clinician flow
-- Search (pg_trgm), digests
+- Search (pg_trgm), email digests
+- Server-side image re-encoding (strip EXIF) and malware scanning on uploads
+- A payment-provider adapter for ad credit (today an admin records payments against an invoice)
 - Reciprocal vote-ring detection
 - Playwright end-to-end tests against a Supabase branch
 - Porting the remaining prototype pages (explore map, admin analytics)

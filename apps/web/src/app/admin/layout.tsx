@@ -51,6 +51,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         { href: '/admin/reports', label: t('admin.nav.reports'), icon: 'user', badge: o?.member_reports_open ?? 0 },
         { href: '/admin/people', label: t('admin.nav.people'), icon: 'users' },
         { href: '/admin/content', label: t('admin.nav.content'), icon: 'file' },
+        { href: '/admin/clinicians', label: t('admin.nav.clinicians'), icon: 'stethoscope', badge: o?.clinicians_pending ?? 0 },
+        { href: '/admin/ads', label: t('admin.nav.ads'), icon: 'megaphone', badge: o?.ads_pending ?? 0 },
       ],
     },
     {
@@ -58,6 +60,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       items: [
         { href: '/admin/notes', label: t('admin.nav.notes'), icon: 'note' },
         { href: '/admin/shield', label: t('admin.nav.shield'), icon: 'shield', badge: o?.held ?? 0 },
+        { href: '/admin/media', label: t('admin.nav.media'), icon: 'image' },
+        { href: '/admin/seo', label: t('admin.nav.seo'), icon: 'search' },
       ],
     },
     {

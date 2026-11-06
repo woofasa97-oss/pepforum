@@ -96,6 +96,7 @@ export const CAPABILITIES = [
   'rate_notes',
   'write_notes',
   'steward',
+  'upload_image',
 ] as const;
 export type Capability = (typeof CAPABILITIES)[number];
 
@@ -119,6 +120,11 @@ export const MOD_ACTIONS = [
   'lookup_email', 'reveal_email',
   'link_hold', 'link_approved', 'link_declined', 'site_approved', 'site_unapproved',
   'member_reports_actioned', 'member_reports_dismissed',
+  'redirect_set', 'redirect_removed',
+  'media_removed',
+  'clinician_approved', 'clinician_rejected', 'clinician_revoked',
+  'advertiser_approved', 'advertiser_suspended', 'ad_approved', 'ad_rejected', 'ad_suspended',
+  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved',
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 
@@ -129,6 +135,46 @@ export type StaffNoteLabel = (typeof STAFF_NOTE_LABELS)[number];
 /** Sourcing-shield phrase actions: hold for review, or reject outright. */
 export const SHIELD_ACTIONS = ['hold', 'block'] as const;
 export type ShieldAction = (typeof SHIELD_ACTIONS)[number];
+
+/** What a member says is wrong with an ad (ad_reports.reason, …025). */
+export const AD_REPORT_REASONS = ['vendor', 'medical_claim', 'misleading', 'offensive', 'other'] as const;
+export type AdReportReason = (typeof AD_REPORT_REASONS)[number];
+
+/** Where a campaign runs (ad_campaigns.package, …025). */
+export const AD_PACKAGES = ['zone', 'category', 'national'] as const;
+export type AdPackage = (typeof AD_PACKAGES)[number];
+
+export const AD_CAMPAIGN_STATUSES = ['draft', 'review', 'approved', 'active', 'paused', 'rejected', 'completed', 'suspended'] as const;
+export type AdCampaignStatus = (typeof AD_CAMPAIGN_STATUSES)[number];
+
+export const ADVERTISER_STATUSES = ['pending', 'active', 'suspended'] as const;
+export type AdvertiserStatus = (typeof ADVERTISER_STATUSES)[number];
+
+/** Canadian provinces and territories, for advertiser billing (…025). */
+export const PROVINCES = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'] as const;
+export type Province = (typeof PROVINCES)[number];
+
+/** Health professions a member can be verified as (clinician_verifications.profession, …024). */
+export const CLINICIAN_PROFESSIONS = ['physician', 'nurse_practitioner', 'registered_nurse', 'pharmacist', 'naturopathic_doctor', 'dietitian', 'other'] as const;
+export type ClinicianProfession = (typeof CLINICIAN_PROFESSIONS)[number];
+
+export const CLINICIAN_STATUSES = ['pending', 'approved', 'rejected', 'revoked', 'withdrawn'] as const;
+export type ClinicianStatus = (typeof CLINICIAN_STATUSES)[number];
+
+/** Kinds of uploads (media.kind, …023 / …025). */
+export const MEDIA_KINDS = ['post_image', 'credential', 'ad_image'] as const;
+export type MediaKind = (typeof MEDIA_KINDS)[number];
+
+export const MEDIA_STATUSES = ['pending', 'ready', 'removed'] as const;
+export type MediaStatus = (typeof MEDIA_STATUSES)[number];
+
+/** Image types accepted for post images; PDF is accepted for credentials only. */
+export const IMAGE_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
+export type ImageContentType = (typeof IMAGE_CONTENT_TYPES)[number];
+
+/** What a notification is about (notifications.kind, …022 / …024 / …025). */
+export const NOTIFICATION_KINDS = ['reply_post', 'reply_comment', 'note_outcome', 'note_on_post', 'mod_action', 'team_reply', 'clinician_review', 'ad_review'] as const;
+export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
 /** SQLSTATE codes raised by the database (see 0001_foundation). */
 export const DB_ERROR_CODES = {

@@ -2,13 +2,15 @@
  * Development/test store backed by the PGlite harness: the real migrations,
  * the real SQL functions, executed as service_role. Never used in production.
  */
-import type { JobName, Json } from '@pepforum/database';
+import type { JobName, Json, MediaToPurge, PendingPush, PushResult, SettleAdsResult } from '@pepforum/database';
 import { type TestDb, service } from '@pepforum/database/testing';
 
 import { type ApplyScoresRequest, type ApplyScoresResult, type WorkerStore, toResultsPayload } from '../store.ts';
 
 export class PgliteStore implements WorkerStore {
   private readonly db: TestDb;
+  /** Storage stand-in: paths "deleted" by deleteStorageObjects. */
+  readonly deletedObjects: string[] = [];
 
   constructor(db: TestDb) {
     this.db = db;
@@ -48,6 +50,35 @@ export class PgliteStore implements WorkerStore {
 
   async deleteAuthUser(userId: string): Promise<void> {
     await this.db.sql(`delete from auth.users where id = $1`, [userId]);
+  }
+
+  async pendingPush(limit: number): Promise<PendingPush[]> {
+    const { r } = await this.db.asOne<{ r: PendingPush[] }>(service, `select public.pending_push($1) as r`, [limit]);
+    return r;
+  }
+
+  async recordPushResults(results: readonly PushResult[]): Promise<{ sent: number; dropped: number }> {
+    const { r } = await this.db.asOne<{ r: { sent: number; dropped: number } }>(service, `select public.record_push_results($1::jsonb) as r`, [JSON.stringify(results)]);
+    return r;
+  }
+
+  async mediaToPurge(limit: number): Promise<MediaToPurge[]> {
+    const { r } = await this.db.asOne<{ r: MediaToPurge[] }>(service, `select public.media_to_purge($1) as r`, [limit]);
+    return r;
+  }
+
+  async deleteStorageObjects(_bucket: string, paths: readonly string[]): Promise<void> {
+    this.deletedObjects.push(...paths);
+  }
+
+  async markMediaPurged(ids: readonly string[]): Promise<number> {
+    const { n } = await this.db.asOne<{ n: number }>(service, `select public.mark_media_purged($1::uuid[]) as n`, [[...ids]]);
+    return n;
+  }
+
+  async settleAds(): Promise<SettleAdsResult> {
+    const { r } = await this.db.asOne<{ r: SettleAdsResult }>(service, `select public.settle_ads() as r`);
+    return r;
   }
 
   async markAccountDeletionProcessed(userId: string): Promise<void> {

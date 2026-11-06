@@ -20,7 +20,7 @@ import type {
   Violation,
 } from './domain.ts';
 
-export type JobName = 'score_notes' | 'maintenance' | 'process_deletions';
+export type JobName = 'score_notes' | 'maintenance' | 'process_deletions' | 'push' | 'purge_media' | 'settle_ads';
 
 export type AdminOverview = {
   reports_open: number;
@@ -38,6 +38,9 @@ export type AdminOverview = {
   /** Tickets waiting for the team (…020), and when the longest-waiting one last moved. */
   tickets_open: number;
   tickets_oldest: string | null;
+  /** Clinician verification requests waiting (…024); advertisers, campaigns and ad reports waiting (…025). */
+  clinicians_pending: number;
+  ads_pending: number;
   /** The site owner's username: the one admin who adds and removes admins. */
   owner: string | null;
   is_owner: boolean;

@@ -1,7 +1,8 @@
 import { MEMBER_REPORT_REASONS } from '@pepforum/database';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 
+import { ClinicianBadge } from '@/components/clinician/ClinicianBadge';
 import { PostCard } from '@/components/post/PostCard';
 import { ReportMemberForm } from '@/components/profile/ReportMemberForm';
 import { Avatar, TierBadge } from '@/components/ui/Bits';
@@ -9,7 +10,7 @@ import { formatDate } from '@/lib/format';
 import { type MessageKey, pick } from '@/lib/i18n';
 import { USERNAME_PATTERN } from '@/lib/validation';
 import { getLocale, getStanding, getT } from '@/server/context';
-import { getFeed, getProfile, getTaxonomy } from '@/server/queries';
+import { getFeed, getProfile, getTaxonomy, resolveUsername } from '@/server/queries';
 
 const REPORT_MEMBER_LABEL_KEYS = [
   'memberReport.open', 'memberReport.intro', 'memberReport.reason', 'memberReport.details', 'memberReport.detailsHint', 'memberReport.submit', 'memberReport.ticket',
@@ -29,7 +30,12 @@ export default async function ProfilePage({ params }: Props) {
   const { username } = await params;
   if (!USERNAME_PATTERN.test(username) && !/^deleted_[0-9a-f]{10}$/.test(username)) notFound();
   const [t, locale, standing, taxonomy, profile] = await Promise.all([getT(), getLocale(), getStanding(), getTaxonomy(), getProfile(username)]);
-  if (!profile) notFound();
+  if (!profile) {
+    // A renamed member keeps their old links (…021).
+    const current = await resolveUsername(username);
+    if (current) permanentRedirect(`/u/${current}`);
+    notFound();
+  }
   const posts = profile.deleted ? [] : await getFeed({ author: profile.username, sort: 'new' });
 
   return (
@@ -44,6 +50,7 @@ export default async function ProfilePage({ params }: Props) {
                 <TierBadge tier={profile.tier} t={t} />
                 <span className="pill">{t(`tier.${profile.tier}` as MessageKey)}</span>
                 {profile.is_admin ? <span className="pill blue">{t('profile.admin')}</span> : null}
+                <ClinicianBadge profession={profile.clinician} t={t} size="md" />
               </div>
               <p className="small muted">{t('profile.joined', { date: formatDate(profile.joined_at, locale) })}</p>
               {profile.deleted ? <p className="mt8">{t('profile.deleted')}</p> : null}

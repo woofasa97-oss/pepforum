@@ -25,7 +25,7 @@ Render cron · apps/worker (*/10 min)
 | `supabase/seed.sql` | Local demo data (dev only) | Creates content through the real RPCs |
 | `supabase/config.toml`, `templates/` | Local Supabase + auth email templates | Only `public` exposed via the API |
 | `packages/database/` | `Database` types, domain vocabulary, PGlite test harness, schema tests | The database contract |
-| `apps/worker/` | Note scoring, maintenance, deletions | Pure algorithms + a storage interface |
+| `apps/worker/` | Note scoring, maintenance, deletions, web push, media purge, ad settlement | Pure algorithms + a storage interface |
 | `apps/web/` | Next.js app | Server-rendered, no browser→Supabase traffic |
 | `docs/` | Specs, threat model, privacy, ops, ADRs | |
 | `.claude/skills/` | Project skills for AI-assisted changes | |
@@ -93,4 +93,18 @@ What isn't covered here: a browser end-to-end run against a real Supabase projec
 
 - `packages/database/src/types.ts` is maintained by hand. Once a project is linked, regenerate with `pnpm db:types` and diff.
 - Scoring reads up to 180 days of ratings in one payload. Paging is needed at very large scale.
-- Not built yet: image uploads, notifications, search, clinician verification, ads, reciprocal-vote-ring detection.
+- Not built yet: search (pg_trgm), email digests, a payment-provider adapter for ad credit (credit is recorded by an admin against an external invoice), server-side image re-encoding, reciprocal-vote-ring detection.
+
+## Ported features (migrations …021–…025)
+
+Five features from the `pepforum-ca` prototype build were ported onto this model in November 2026. Each follows the invariants above: the database decides, RPCs are the only write path, the worker holds the only secret key.
+
+| Feature | Database | Web | Worker |
+|---|---|---|---|
+| SEO (…021) | `sitemap_counts/entries`, `redirects` + `resolve_redirect`, `username_history` + `resolve_username` | `/sitemap.xml`, `/sitemaps/[kind]`, `public/robots.txt`, JSON-LD (`lib/seo.ts`), catch-all `[...slug]` for redirects, `/admin/seo` | — |
+| Notifications + push (…022) | Triggers on comments, note locks, mod actions and team replies → `notifications`; `notification_settings`; `push_subscriptions`; `pending_push` / `record_push_results` (service only) | `/notifications`, `/settings/notifications`, `public/sw.js`, header bell | `push` job (`web-push`, VAPID) |
+| Images (…023) | `media` + Storage bucket `media` with policies that defer to `private.media_visible()`; capability `upload_image`; `register_upload → confirm_upload → attach_post_media` | `POST /api/upload` (route handler: Server Actions cap bodies at 256 KB), `/media/[id]` (DB decides, then downloads as the viewer), composer uploader, `/admin/media` | `purge_media` job |
+| Clinician verification (…024) | `clinician_verifications`, `private.clinician_badge()` in `get_profile/get_post/get_comments` | `/settings/clinician`, badge component, `/admin/clinicians` | — |
+| Advertising (…025) | `advertisers`, `ad_campaigns`, append-only `ad_ledger` → cached balance, `ad_daily_stats`, `ad_deliveries`, `ad_reports`; `get_ad` (anon) and `ad_click`; `settle_ads` (service only) | `/advertise`, `/advertiser`, `/advertiser/campaign`, `AdSlot` in feeds, `/ads/go/[id]`, `/admin/ads` | `settle_ads` job |
+
+Images stay on this origin (`/media/<id>`), so CSP `img-src` is still `'self'` and the browser still never talks to Supabase.

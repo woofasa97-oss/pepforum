@@ -16,9 +16,15 @@
 | Staff notes on members | `staff_notes` | Moderation context (staff only, append-only) | Kept with the moderation record |
 | Sourcing-shield holds (member + rule matched, never the text) | `shield_hits` | Abuse prevention | Kept; reviewed in the admin console |
 | Staff access to an email (lookup or reveal) | `mod_actions` (`lookup_email`, `reveal_email`) | Accountability for staff access to personal information | Kept with the moderation record |
+| Notifications and preferences | `notifications`, `notification_settings`: what happened (never who wrote a note or which moderator acted), read state, category switches | Telling members about replies, note outcomes, moderation and the team | `notifications.retention_days` (90 by default), and deleted with the account |
+| Push subscriptions | `push_subscriptions`: the browser's push endpoint and keys, a user-agent string | Web push, opt-in per browser | Until the member turns it off, the endpoint dies, or the account is deleted. Payloads carry a title and a link, never content |
+| Images on posts | `media` row (type, size, dimensions, alt text) + the file in the private Storage bucket `media` | Illustrating posts (Trusted members and above) | Removed by the member or an admin, or with the account; the worker deletes the file. The composer forbids before/after body photos and identifying images |
+| Clinician verification | `clinician_verifications`: profession, regulator, province, **registration number**, a credential document (`media`, kind `credential`), an optional statement, the decision | Verified-clinician badge | Registration number and document are visible only to admins in an MFA session and are **deleted with the account**. Only the profession is public |
+| Advertiser account | `advertisers`: organisation name, website, billing email and address, province; `ad_campaigns`; `ad_ledger` | Selling and billing reviewed sponsored cards | Financial records are kept (tax law); the account is suspended, not deleted, when its owner deletes their member account |
+| Ad delivery counts | `ad_daily_stats` (per campaign, per day), `ad_deliveries` (campaign + an opaque salted hash of network address, user agent and date, per hour) | Billing advertisers once per visitor per hour | Deliveries 2 days; daily totals kept with the campaign. The hash can't be reversed and is never joined to a member |
 | Server logs | Render | Operations | Per Render plan. Logs hold error codes and opaque ids, never content |
 
-**Not collected:** health information, real names, date of birth, location beyond province or zone, advertising or analytics profiles. The composer warns members not to include identifying details.
+**Not collected:** health information, real names, date of birth, location beyond province or zone, advertising or analytics profiles. The composer warns members not to include identifying details. Ads carry no third-party trackers: impressions and clicks are counted on this site only, against an opaque daily hash, and never tied to a member.
 
 ## Residency and transfers
 
@@ -31,7 +37,7 @@
 
 | Right | Implementation |
 |---|---|
-| Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports (including member reports you filed), your tickets to the team, ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
+| Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports (including member reports you filed), your tickets to the team, notifications and preferences, push browsers, uploads, clinician verification requests, advertiser account and ledger, ad reports you filed, ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
 | Correction | Profile fields are editable; anything else via privacy@pepforum.ca |
 | Deletion | Settings → Delete account. The member re-enters their password or, for social-only accounts, must have signed in within the last 10 minutes. `request_account_deletion()` tombstones the profile immediately and the worker deletes the auth user within about 10 minutes. Optionally erases authored content. |
 | Information about automated decisions (Loi 25 s. 12.1) | Note status, karma and tiers are automated. The rules are published (`/legal/community-notes`), every change is listed in the member's ledger, and human review is available via appeals or the privacy officer. |

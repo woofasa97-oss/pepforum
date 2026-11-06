@@ -99,6 +99,10 @@ A separate reviewer with no access to the design rationale attacked the working 
 
 ## Residual risks and follow-ups
 
+- **Ad impression inflation.** `get_ad()` is callable anonymously (it has to be: anonymous visitors see ads), so a script can register deliveries with made-up visitor tokens. Mitigations: one count per token per campaign per hour, a charge never exceeds the budget, settlement is daily and reversible by an admin refund, and the daily volume is visible per campaign. Exposure is bounded by the campaign budget — the same exposure any CPM network has to bot traffic. A per-IP limit at the edge (Render/Cloudflare) is the next step if it is abused.
+- **Uploaded images** are stored as sent (no re-encoding) and served with `Content-Type` from the registered row and `nosniff`; the browser never evaluates them. A later step is server-side re-encoding to strip metadata (EXIF location) before the file is stored.
+- **Push payloads** are encrypted to the browser's keys by `web-push`; they carry a title and a link, never content, so a leaked endpoint reveals nothing.
+
 - **Bootstrap mode** can be carried by a coordinated majority. Mitigated by founding raters and probation; removed by switching to bridging.
 - **Reciprocal vote rings** across many accounts aren't detected yet (roadmap).
 - **Cross-border transit:** Render has no Canadian region (see [DATA_PRIVACY.md](DATA_PRIVACY.md)).

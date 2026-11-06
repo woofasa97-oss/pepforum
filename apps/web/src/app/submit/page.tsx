@@ -42,6 +42,7 @@ export default async function SubmitPage({ searchParams }: { searchParams: Promi
             cities={taxonomy.cities.map((c) => ({ id: c.id, name: c.name, zoneId: c.zone_id }))}
             categories={taxonomy.categories.map((c) => ({ id: c.id, name: locale === 'fr' ? c.name_fr : c.name_en }))}
             defaults={{ zone: params.zone, category: params.category }}
+            uploadRequirement={standing.capabilities.upload_image === null ? null : describeRequirement(standing.capabilities.upload_image, t)}
           />
         )}
       </main>

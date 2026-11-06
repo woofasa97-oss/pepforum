@@ -43,6 +43,8 @@
 9. **Auth → MFA:** turn TOTP on.
 10. **Auth → CAPTCHA:** choose Cloudflare Turnstile and add the secret. The site key goes to Render as `TURNSTILE_SITE_KEY`.
 11. **API keys:** you'll need the **publishable** key (web) and the **secret** key (worker only).
+11b. **Storage (images, …023):** migration `…023_media.sql` creates the private bucket `media` and its policies when it runs on Supabase (`storage.buckets`). Check Storage → `media` exists and is **not** public. Files are served through `/media/<id>` only.
+11c. **Web push (…022), optional:** generate a VAPID key pair once — `pnpm --filter @pepforum/worker exec web-push generate-vapid-keys` — and keep both halves. The public key goes to the **web** service, the private key to the **worker**. Without them, notifications are in-app only.
 12. **Bootstrap staff:**
     - Make yourself admin and site owner (the owner is the only one who can add or remove admins):
       ```sql
@@ -60,9 +62,9 @@
    - `pepforum-web`: a web service in Ohio, with health check `/api/health`;
    - `pepforum-worker`: a cron job running every 10 minutes.
 2. **Fill in the `sync: false` variables:**
-   - **web:** `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL`, `TURNSTILE_SITE_KEY` (optional);
+   - **web:** `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL`, `TURNSTILE_SITE_KEY` (optional), `VAPID_PUBLIC_KEY` (optional, push), `AD_VISITOR_SALT` (optional; any random string, salts the ad frequency-cap hash);
      - `SITE_URL` is the full public origin, with the scheme: `https://pepforum.ca`, not `pepforum.ca`. Leave it blank to use Render's `https://<service>.onrender.com` URL (`RENDER_EXTERNAL_URL`), and set it once you add a custom domain. It must match the Site URL in Supabase Auth (step 1).
-   - **worker:** `SUPABASE_URL`, `SUPABASE_SECRET_KEY`.
+   - **worker:** `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `SITE_URL` (for links in push payloads), `VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` (optional, push), `VAPID_SUBJECT` (`mailto:` address the push services can contact).
    - **Never** put the secret key on the web service; the app refuses to start in production if it finds it.
 3. **Custom domain and TLS** are set in the Render dashboard. HSTS preload is on, so serve every subdomain over HTTPS.
 4. **Deploy gate:** `autoDeployTrigger: checksPass` deploys only after GitHub CI passes.
@@ -76,6 +78,10 @@
 5. Report a post from three accounts older than 14 days: it collapses. A moderator in an MFA session resolves it.
 6. Download the data export; delete a test account. Within 10 minutes the auth user is gone.
 7. Response headers: `curl -sI https://<domain>/api/health` should show CSP with a nonce, HSTS, `X-Frame-Options: DENY`.
+8. `curl -s https://<domain>/sitemap.xml` lists the sitemaps. Submit the index to Google Search Console (robots.txt is static and doesn't name the domain).
+9. As a Trusted account, attach an image to a post: it renders from `/media/<id>`; removing it from `/admin/media` makes that URL 404 and the next worker run logs `media purged`.
+10. In Settings → Notifications, enable push on a browser (needs the VAPID keys); reply to that account's post from another; a notification arrives within 10 minutes.
+11. Create an advertiser account, approve it from `/admin/ads`, record a payment, submit and approve a campaign, switch `ads.enabled` on: the card appears in the matching feed, `/ads/go/<id>` redirects, and the next day's worker run logs `ads settled`.
 
 ## Local development
 

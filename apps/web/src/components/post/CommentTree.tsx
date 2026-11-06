@@ -1,6 +1,7 @@
 import type { CommentRow } from '@pepforum/database';
 import Link from 'next/link';
 
+import { ClinicianBadge } from '@/components/clinician/ClinicianBadge';
 import { TierBadge } from '@/components/ui/Bits';
 import { relativeTime } from '@/lib/format';
 import { type ThreadNode, buildThread } from '@/lib/thread';
@@ -24,6 +25,7 @@ export function CommentTree({ comments, postId, t, signedIn }: Props) {
       <div className="meta">
         <Link href={`/u/${node.author_username}`} className="bold">u/{node.author_username}</Link>
         <TierBadge tier={node.author_tier} t={t} />
+        <ClinicianBadge profession={node.author_clinician} t={t} />
         {node.is_op ? <span className="badge op">{t('comment.op')}</span> : null}
         <span className="sep" />
         <time dateTime={node.created_at}>{relativeTime(node.created_at, t)}</time>

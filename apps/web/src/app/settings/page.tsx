@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
+import Link from 'next/link';
+
 import { DeleteAccountForm, MfaSetup, ProfileForm } from '@/components/settings/SettingsForms';
 import { Icon } from '@/components/ui/Icon';
 import { hasPassword } from '@/lib/auth-providers';
@@ -34,6 +36,15 @@ export default async function SettingsPage() {
             defaults={{ bio: profile?.bio ?? '', coi: profile?.coi ?? '', locale: profile?.locale ?? locale, homeZone: profile?.home_zone_id ?? '' }}
             zones={taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
           />
+        </section>
+
+        <section className="card card-p mb16" aria-labelledby="more-h">
+          <h2 id="more-h" className="mb8">{t('settings.more')}</h2>
+          <ul className="sidelist">
+            <li><Link href="/settings/notifications">{t('notifications.settings')}</Link><span className="xs muted"> — {t('settings.notificationsHint')}</span></li>
+            <li><Link href="/settings/clinician">{t('clinician.title')}</Link><span className="xs muted"> — {t('settings.clinicianHint')}</span></li>
+            <li><Link href="/advertiser">{t('ads.workspace')}</Link><span className="xs muted"> — {t('settings.advertiserHint')}</span></li>
+          </ul>
         </section>
 
         <section className="card card-p mb16" aria-labelledby="security-h">

@@ -24,6 +24,11 @@ const SPECIFIC_MESSAGES = new Set<string>([
   'owner_only', 'report_self',
   // Contact the team (…020)
   'ticket_closed',
+  // Ported features (…021–…025)
+  'invalid_path', 'reserved_path', 'redirect_loop', 'invalid_push_endpoint', 'unsupported_file_type', 'file_too_large', 'too_many_images',
+  'already_removed', 'already_pending', 'already_verified', 'invalid_profession', 'invalid_province', 'already_advertiser', 'advertiser_suspended',
+  'advertiser_not_approved', 'budget_below_minimum', 'french_required', 'insufficient_credit', 'campaign_locked', 'duplicate_reference',
+  'invalid_amount', 'reference_required', 'invalid_creative', 'invalid_decision',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

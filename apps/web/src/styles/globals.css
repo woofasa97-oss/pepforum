@@ -432,3 +432,15 @@ code.secret { font-family: ui-monospace, monospace; font-size: 12px; overflow-wr
 .vote-row .n { min-width: 22px; text-align: center; font-weight: 700; font-size: 12px; }
 .vote-row button, .vote-row .vote-link { width: 28px; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-3); }
 .vote-row button[aria-pressed="true"].up { color: var(--up); } .vote-row button[aria-pressed="true"].down { color: var(--down); }
+
+/* ── Ported features (…021–…025) ─────────────────────────────────────────── */
+.media-tray { list-style: none; padding: 0; margin: 8px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.media-item { display: flex; flex-direction: column; gap: 6px; }
+.media-item img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--surface-2); }
+.post-images { margin: 12px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+.post-images img { width: 100%; height: auto; max-height: 480px; object-fit: contain; border-radius: var(--r-sm); background: var(--surface-2); border: 1px solid var(--border); }
+.post-images a { display: block; }
+.ad-card { border-color: var(--amber-soft); }
+.ad-card .ad-image { width: 100%; aspect-ratio: 1200 / 628; object-fit: cover; border-radius: var(--r-sm); }
+.ticket-list li.unread a { border-left: 3px solid var(--accent); }
+.pill.xs { font-size: 11px; padding: 1px 7px; }

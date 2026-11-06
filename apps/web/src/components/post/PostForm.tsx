@@ -3,6 +3,7 @@
 import { POST_TYPES, type PostType } from '@pepforum/database';
 import { useActionState, useState } from 'react';
 
+import { ImageUploader, type UploadedImage } from '@/components/media/ImageUploader';
 import { FieldError, FormMessage } from '@/components/ui/Bits';
 import { SubmitButton } from '@/components/ui/SubmitButton';
 import { initialActionState } from '@/lib/action-state';
@@ -26,10 +27,13 @@ interface Props {
   readonly linkReview: boolean;
   readonly defaults?: { zone?: string | undefined; category?: string | undefined };
   /** Present when editing an existing post. */
-  readonly edit?: { postId: string; title: string; body: string; link: string | null; type: PostType };
+  readonly edit?: { postId: string; title: string; body: string; link: string | null; type: PostType; images?: UploadedImage[] };
+  /** Why images are locked ("Requires Trusted"), or null when allowed (…023). */
+  readonly uploadRequirement?: string | null;
+  readonly maxImages?: number;
 }
 
-export function PostForm({ labels, zones, cities, categories, locale, linkRequirement, linkReview, defaults, edit }: Props) {
+export function PostForm({ labels, zones, cities, categories, locale, linkRequirement, linkReview, defaults, edit, uploadRequirement = null, maxImages = 4 }: Props) {
   const canPostLinks = linkRequirement === null;
   const [state, action] = useActionState(edit ? editPostAction : createPostAction, initialActionState);
   const [zone, setZone] = useState(defaults?.zone ?? 'national');
@@ -104,6 +108,15 @@ export function PostForm({ labels, zones, cities, categories, locale, linkRequir
         {linkReview ? <span id="pf-body-hint" className="hint">{labels['submit.linkReview']}</span> : null}
         <FieldError message={errors.body} />
       </div>
+
+      {uploadRequirement === null ? (
+        <>
+          {edit ? <input type="hidden" name="mediaForm" value="1" /> : null}
+          <ImageUploader kind="post_image" idField="mediaIds" altField="mediaAlts" max={maxImages} initial={edit?.images ?? []} labels={labels} />
+        </>
+      ) : uploadRequirement ? (
+        <p className="xs faint mb12">{labels['media.images']}: {uploadRequirement}</p>
+      ) : null}
 
       {showLink && canPostLinks ? (
         <div className="field">

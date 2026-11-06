@@ -28,6 +28,10 @@ The console is where admins look after Pepforum without touching SQL. Everything
 | **Member reports** | Members reporting another member (harassment, selling, impersonation, a banned member back on a new account…). One card per member with every open report about them. See "Member reports" below. |
 | **People** | Find a member by username, or by exact email for privacy and support requests. A member's page shows everything in one place: standing, strikes, sanctions, ledger, content, notes, appeals, risk signals and private staff notes. Actions: warn, freeze, suspend, ban, lift, rename, roles, founding rater, clear a writing lock, remove a mistaken strike. |
 | **Content** | Search posts, comments and notes, removed ones included. Remove, restore, pin (two per zone), lock comments, hide or unhide notes. |
+| **Clinicians** | Members asking for a "verified" badge (physician, pharmacist, nurse practitioner…). Check the regulator's public register, approve for the configured validity, reject or revoke with a reason. See "Clinicians" below. |
+| **Ads** | Approve advertiser accounts, review every campaign before it runs, stop campaigns, record payments and refunds, resolve member reports about an ad. See "Ads" below. |
+| **Media** | Images members attached to posts, newest first. Remove one with a reason: it disappears at once and the worker deletes the file. |
+| **SEO** | The sitemaps search engines read, and redirects for moved or mistyped paths (301/302). A redirect never shadows a real page. |
 | **Community notes** | Watch the notes pipeline, scoring runs and agreement, and readiness to switch to bridging scoring (with the switch). See raters, writer pauses, and signs of manipulation: notes rated mostly by new accounts, and rater pairs who almost always agree. |
 | **Sourcing shield** | Block vendor sites, and watch phrases ("dm me", "telegram") that either hold a post for review or block it. Test any text against the rules. |
 | **Rules & settings** | Change any rule of the karma and notes economy in plain words, with its allowed range, history and Revert. Edit categories, zones and city sub-zones. Publish a site-wide announcement. |
@@ -124,6 +128,26 @@ Members write to the team from **Contact the team** (`/contact`, linked in the f
 - **Your own tickets.** If an admin writes in, another admin has to answer or close it.
 - **Limits.** Members need the basic *report* permission (signed up, email confirmed, not suspended or banned). Each can open 5 tickets a day (`rate_limit.open_ticket`) and reply 30 times an hour (`rate_limit.ticket_reply`).
 - **Privacy.** Tickets are in the member's data export (without which admin replied). Deleting the account deletes their tickets.
+
+## Clinicians
+
+A licensed health professional can carry a **verified <profession>** badge on their profile, posts and comments. It is identity, not authority: the badge grants no karma, no note weight, no moderation power, and the member is held to the same rules as everyone (ADR-0006 applies to admins; this applies to clinicians).
+
+- The member submits their profession, province, regulator (CPSO, OCP, OIIQ…), registration number and a credential document (PDF or photo). The number and document are visible only to admins in an MFA session, never published, and deleted with the account.
+- **Check the regulator's own public register**, not a link the member sent. Confirm the name on the document, the registration status, and that the profession matches. Approve with what you checked as the reason; reject with why. Both are logged (`clinician_approved` / `clinician_rejected`) and notify the member.
+- Approval lasts `clinician.valid_days` (730 by default). The **Expiring** tab lists approvals within 60 days of lapsing; members can renew in that window. Revoke at any time (licence suspended, misrepresentation): the badge goes immediately.
+- You can't review your own request.
+
+## Ads
+
+Pepforum sells one reviewed sponsored card per feed. The money and policy rules are in [ADR-0007](adr/0007-advertising.md); the short version:
+
+- **No vendors, no sales.** An advertiser whose website, or a campaign whose landing page or copy, matches a blocked sourcing-shield domain or phrase is refused by the database before you see it. Everything else you check by hand: open the landing page, read both languages, look for prices, before/after imagery, health claims.
+- **Accounts first.** An organisation starts *pending*; approve it after checking the business and website. Suspending it stops every campaign.
+- **Credit is prepaid and recorded by you.** The team invoices the advertiser; when the money arrives, *Record payment* with the invoice or transaction id (a reference can be recorded once, so a double click can't double-credit). *Refund / adjust* takes a signed amount: negative refunds available (never reserved) credit.
+- **Submitting a campaign reserves its whole budget**; approving starts it today for `ads.flight_days`; rejecting releases the reservation. Each finished day the worker charges counted impressions × CPM ÷ 1000, never more than the budget; what's left returns when the flight ends. A member counts once per campaign per hour.
+- **Reports.** Any member can report an ad. *Resolve* closes the report; *Stop campaign* closes every report on it, stops serving and releases the unspent reservation. Days already charged stay charged; refund from the advertiser card if warranted.
+- **The switch.** `ads.enabled` (Rules & settings → Images, clinicians, notifications & ads) hides every slot without touching campaigns; days off still count towards a flight. Pricing (`ads.cpm.*`, `ads.min_booking_microcad`) applies to campaigns submitted after the change.
 
 ## Where the code lives
 

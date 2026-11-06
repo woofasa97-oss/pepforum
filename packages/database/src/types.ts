@@ -38,8 +38,38 @@ import type {
   TransparencyStats,
 } from './admin-types.ts';
 import type {
+  AdRateCard,
+  AdminAds,
+  AdminClinicians,
+  AdminMedia,
+  AdminRedirect,
+  ClinicianFilter,
+  MediaAccess,
+  MediaToPurge,
+  MyAdvertiser,
+  MyClinicianVerification,
+  NotificationItem,
+  NotificationSettings,
+  PendingImage,
+  PendingPush,
+  PostImage,
+  PushResult,
+  RedirectTarget,
+  RegisteredUpload,
+  ServedAd,
+  SettleAdsResult,
+  SitemapCounts,
+  SitemapEntry,
+} from './feature-types.ts';
+import type {
+  AdPackage,
+  AdReportReason,
+  ClinicianProfession,
   ContentStatus,
   Locale,
+  MediaKind,
+  MediaStatus,
+  Province,
   MemberReportOutcome,
   MemberReportReason,
   NoteClassification,
@@ -263,6 +293,8 @@ export type PostDetailRow = {
   can_moderate: boolean;
   pinned: boolean;
   comments_locked: boolean;
+  /** Profession of a currently verified clinician author (…024), else null. */
+  author_clinician: ClinicianProfession | null;
 };
 
 export type CommentRow = {
@@ -279,6 +311,7 @@ export type CommentRow = {
   created_at: string;
   edited_at: string | null;
   my_vote: -1 | 1 | null;
+  author_clinician: ClinicianProfession | null;
 };
 
 export type NoteView = {
@@ -327,6 +360,8 @@ export type StandingView = {
   is_admin: boolean;
   /** Tickets with a team reply the member hasn't opened (…020). */
   support_unread: number;
+  /** Unread notifications (…022). */
+  notifications_unread: number;
   /** null = allowed, otherwise a reason key such as "tier:2". */
   capabilities: Record<string, string | null>;
   tier_thresholds: number[];
@@ -378,6 +413,8 @@ export type ProfileView = {
   is_me: boolean;
   /** Admins are named publicly, as zone moderators are (…019). */
   is_admin: boolean;
+  /** Verified clinician badge (…024). */
+  clinician: ClinicianProfession | null;
   moderates: string[];
   post_count: number;
   comment_count: number;
@@ -619,6 +656,87 @@ export type Database = {
       record_job_run: { Args: { p_job: JobName; p_started_at: string; p_ok: boolean; p_summary?: Json }; Returns: undefined };
       /** Public monthly aggregates (no member data). */
       transparency_stats: { Args: { p_month: string | null }; Returns: TransparencyStats };
+
+      // ── SEO (…021) ────────────────────────────────────────────────────────
+      resolve_redirect: { Args: { p_path: string }; Returns: RedirectTarget | null };
+      resolve_username: { Args: { p_old: string }; Returns: string | null };
+      sitemap_counts: { Args: Record<string, never>; Returns: SitemapCounts };
+      sitemap_entries: { Args: { p_kind: 'posts' | 'notes' | 'profiles'; p_page?: number }; Returns: SitemapEntry[] };
+      admin_redirects: { Args: Record<string, never>; Returns: AdminRedirect[] };
+      admin_set_redirect: { Args: { p_from: string; p_to: string; p_permanent: boolean; p_reason: string }; Returns: undefined };
+      admin_delete_redirect: { Args: { p_from: string; p_reason: string }; Returns: undefined };
+
+      // ── Notifications (…022) ──────────────────────────────────────────────
+      my_notifications: { Args: { p_limit?: number }; Returns: NotificationItem[] };
+      mark_notifications_read: { Args: { p_ids?: string[] | null }; Returns: number };
+      my_notification_settings: { Args: Record<string, never>; Returns: NotificationSettings };
+      set_notification_settings: {
+        Args: { p_replies: boolean; p_notes: boolean; p_moderation: boolean; p_team: boolean; p_push: boolean };
+        Returns: undefined;
+      };
+      save_push_subscription: { Args: { p_endpoint: string; p_p256dh: string; p_auth: string; p_user_agent?: string }; Returns: string };
+      delete_push_subscription: { Args: { p_endpoint: string }; Returns: undefined };
+      /** service_role only. */
+      pending_push: { Args: { p_limit?: number }; Returns: PendingPush[] };
+      /** service_role only. */
+      record_push_results: { Args: { p_results: PushResult[] }; Returns: { sent: number; dropped: number } };
+
+      // ── Media (…023) ──────────────────────────────────────────────────────
+      register_upload: { Args: { p_kind: MediaKind; p_content_type: string; p_bytes: number }; Returns: RegisteredUpload };
+      confirm_upload: { Args: { p_id: string; p_width?: number | null; p_height?: number | null }; Returns: undefined };
+      attach_post_media: { Args: { p_post_id: string; p_media_ids: string[]; p_alts?: string[] | null }; Returns: undefined };
+      delete_my_media: { Args: { p_id: string }; Returns: undefined };
+      get_post_media: { Args: { p_post_id: string }; Returns: PostImage[] };
+      my_pending_media: { Args: Record<string, never>; Returns: PendingImage[] };
+      get_media_access: { Args: { p_id: string }; Returns: MediaAccess | null };
+      admin_media: { Args: { p_status?: MediaStatus; p_page?: number }; Returns: AdminMedia };
+      admin_remove_media: { Args: { p_id: string; p_reason: string }; Returns: undefined };
+      /** service_role only. */
+      media_to_purge: { Args: { p_limit?: number }; Returns: MediaToPurge[] };
+      /** service_role only. */
+      mark_media_purged: { Args: { p_ids: string[] }; Returns: number };
+
+      // ── Clinician verification (…024) ─────────────────────────────────────
+      submit_clinician_verification: {
+        Args: { p_profession: ClinicianProfession; p_regulator: string; p_province: string; p_registration_number: string; p_document_id: string; p_statement?: string };
+        Returns: string;
+      };
+      withdraw_clinician_verification: { Args: Record<string, never>; Returns: undefined };
+      my_clinician_verification: { Args: Record<string, never>; Returns: MyClinicianVerification };
+      admin_clinician_verifications: { Args: { p_filter?: ClinicianFilter }; Returns: AdminClinicians };
+      admin_review_clinician: { Args: { p_id: string; p_decision: 'approve' | 'reject'; p_reason: string }; Returns: undefined };
+      admin_revoke_clinician: { Args: { p_user: string; p_reason: string }; Returns: undefined };
+
+      // ── Advertising (…025) ────────────────────────────────────────────────
+      ad_rate_card: { Args: Record<string, never>; Returns: AdRateCard };
+      create_advertiser: {
+        Args: { p_name: string; p_website: string; p_billing_email: string; p_billing_address: string; p_billing_province: Province };
+        Returns: string;
+      };
+      my_advertiser: { Args: Record<string, never>; Returns: MyAdvertiser | null };
+      upsert_campaign: {
+        Args: {
+          p_id: string | null; p_name: string; p_package: AdPackage; p_zone: string | null; p_category: string | null; p_budget_microcad: number;
+          p_headline: string; p_body: string; p_cta: string; p_headline_fr: string; p_body_fr: string; p_cta_fr: string;
+          p_landing_url: string; p_image_id: string | null;
+        };
+        Returns: string;
+      };
+      submit_campaign: { Args: { p_id: string }; Returns: undefined };
+      set_campaign_paused: { Args: { p_id: string; p_paused: boolean }; Returns: undefined };
+      withdraw_campaign: { Args: { p_id: string }; Returns: undefined };
+      get_ad: { Args: { p_package: AdPackage; p_target: string | null; p_visitor: string; p_locale?: Locale }; Returns: ServedAd | null };
+      ad_click: { Args: { p_id: string }; Returns: string | null };
+      report_ad: { Args: { p_id: string; p_reason: AdReportReason; p_details?: string }; Returns: undefined };
+      admin_ads: { Args: Record<string, never>; Returns: AdminAds };
+      admin_review_advertiser: { Args: { p_id: string; p_decision: 'approve' | 'suspend'; p_reason: string }; Returns: undefined };
+      admin_review_campaign: { Args: { p_id: string; p_decision: 'approve' | 'reject'; p_reason: string }; Returns: undefined };
+      admin_suspend_campaign: { Args: { p_id: string; p_reason: string }; Returns: undefined };
+      admin_record_ad_payment: { Args: { p_advertiser: string; p_amount_microcad: number; p_reference: string; p_reason: string }; Returns: number };
+      admin_ad_adjustment: { Args: { p_advertiser: string; p_amount_microcad: number; p_reference: string; p_reason: string }; Returns: number };
+      admin_resolve_ad_report: { Args: { p_id: string; p_reason: string }; Returns: undefined };
+      /** service_role only. */
+      settle_ads: { Args: { p_until?: string }; Returns: SettleAdsResult };
     };
   };
 };

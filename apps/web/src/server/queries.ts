@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type {
+  AdRateCard,
   AppealRow,
   AppealView,
   CategoryRow,
@@ -9,9 +10,20 @@ import type {
   FeedRow,
   LedgerEventRow,
   ModActionRow,
+  MediaAccess,
   ModQueueItem,
+  MyAdvertiser,
+  MyClinicianVerification,
   MyTicketSummary,
   MyTicketView,
+  NotificationItem,
+  NotificationSettings,
+  PendingImage,
+  PostImage,
+  RedirectTarget,
+  ServedAd,
+  SitemapCounts,
+  SitemapEntry,
   NoteDetailView,
   NoteView,
   PostDetailRow,
@@ -20,6 +32,8 @@ import type {
   TransparencyStats,
   ZoneRow,
 } from '@pepforum/database';
+import { createHash } from 'node:crypto';
+import { headers } from 'next/headers';
 import { cache } from 'react';
 
 import { OAUTH_PROVIDERS, type OAuthProvider } from '@/lib/auth-providers';
@@ -247,4 +261,135 @@ export async function getMyTicket(ticketId: string): Promise<MyTicketView | null
   const result = await supabase.rpc('my_ticket', { p_ticket: ticketId });
   if (result.error && isMissingFunction(result.error)) return null;
   return unwrap('my_ticket', result);
+}
+
+// ── SEO (…021) ──────────────────────────────────────────────────────────────
+/** A managed redirect for a path, if an admin set one. Fails soft (no redirect). */
+export async function resolveRedirect(path: string): Promise<RedirectTarget | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('resolve_redirect', { p_path: path });
+  return error ? null : data;
+}
+
+/** The current username behind a former one (admin renames keep old links working). */
+export async function resolveUsername(old: string): Promise<string | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('resolve_username', { p_old: old });
+  return error ? null : data;
+}
+
+export async function getSitemapCounts(): Promise<SitemapCounts | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('sitemap_counts');
+  if (error) {
+    logUnexpected('sitemap_counts', error);
+    return null;
+  }
+  return data;
+}
+
+export async function getSitemapEntries(kind: 'posts' | 'notes' | 'profiles', page: number): Promise<SitemapEntry[]> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('sitemap_entries', { p_kind: kind, p_page: page });
+  if (error) {
+    logUnexpected('sitemap_entries', error);
+    return [];
+  }
+  return data;
+}
+
+// ── Notifications (…022) ────────────────────────────────────────────────────
+export async function getMyNotifications(limit = 50): Promise<NotificationItem[]> {
+  if (!(await getViewer())) return [];
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_notifications', { p_limit: limit });
+  if (result.error && isMissingFunction(result.error)) return [];
+  return unwrap('my_notifications', result);
+}
+
+export async function getNotificationSettings(): Promise<NotificationSettings | null> {
+  if (!(await getViewer())) return null;
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_notification_settings');
+  if (result.error && isMissingFunction(result.error)) return null;
+  return unwrap('my_notification_settings', result);
+}
+
+// ── Media (…023) ────────────────────────────────────────────────────────────
+export async function getPostMedia(postId: string): Promise<PostImage[]> {
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('get_post_media', { p_post_id: postId });
+  if (result.error && isMissingFunction(result.error)) return [];
+  return unwrap('get_post_media', result);
+}
+
+export async function getMyPendingMedia(): Promise<PendingImage[]> {
+  if (!(await getViewer())) return [];
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_pending_media');
+  if (result.error && isMissingFunction(result.error)) return [];
+  return unwrap('my_pending_media', result);
+}
+
+/** Where an upload's bytes are, if the viewer may see them (used by /media/<id>). */
+export async function getMediaAccess(id: string): Promise<MediaAccess | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_media_access', { p_id: id });
+  if (error) {
+    logUnexpected('get_media_access', error);
+    return null;
+  }
+  return data;
+}
+
+// ── Clinician verification (…024) ───────────────────────────────────────────
+export async function getMyClinicianVerification(): Promise<MyClinicianVerification | null> {
+  if (!(await getViewer())) return null;
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_clinician_verification');
+  if (result.error && isMissingFunction(result.error)) return null;
+  return unwrap('my_clinician_verification', result);
+}
+
+// ── Advertising (…025) ──────────────────────────────────────────────────────
+export const getAdRateCard = cache(async (): Promise<AdRateCard | null> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('ad_rate_card');
+  if (error) {
+    if (!isMissingFunction(error)) logUnexpected('ad_rate_card', error);
+    return null;
+  }
+  return data;
+});
+
+export async function getMyAdvertiser(): Promise<MyAdvertiser | null> {
+  if (!(await getViewer())) return null;
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_advertiser');
+  if (result.error && isMissingFunction(result.error)) return null;
+  return unwrap('my_advertiser', result);
+}
+
+/**
+ * An opaque per-visitor token for ad frequency capping: a salted hash of the
+ * request's network address and user agent that changes daily. Never stored
+ * next to anything identifying, never reversible.
+ */
+async function visitorToken(): Promise<string> {
+  const h = await headers();
+  const ip = (h.get('x-forwarded-for') ?? '').split(',')[0]?.trim() ?? '';
+  const ua = h.get('user-agent') ?? '';
+  const salt = env().AD_VISITOR_SALT ?? env().SUPABASE_PUBLISHABLE_KEY;
+  return createHash('sha256').update(`${salt}:${ip}:${ua}:${new Date().toISOString().slice(0, 10)}`).digest('base64url').slice(0, 32);
+}
+
+/** One running campaign for a slot, or null (ads off, nothing booked, or an error). */
+export async function getAd(pkg: 'national' | 'zone' | 'category', target: string | null, locale: 'en' | 'fr'): Promise<ServedAd | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_ad', { p_package: pkg, p_target: target, p_visitor: await visitorToken(), p_locale: locale });
+  if (error) {
+    if (!isMissingFunction(error)) logUnexpected('get_ad', error);
+    return null;
+  }
+  return data;
 }

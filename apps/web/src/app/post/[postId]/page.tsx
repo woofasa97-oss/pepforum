@@ -2,37 +2,49 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { PostImages } from '@/components/media/PostImages';
 import { NoteCard } from '@/components/notes/NoteCard';
 import { CommentForm } from '@/components/post/CommentForm';
 import { CommentTree } from '@/components/post/CommentTree';
 import { PostCard } from '@/components/post/PostCard';
+import { JsonLd } from '@/components/site/JsonLd';
 import { Icon } from '@/components/ui/Icon';
 import { describeRequirement } from '@/lib/errors';
 import { isUuid } from '@/lib/params';
+import { discussionJsonLd } from '@/lib/seo';
 import { deletePostAction } from '@/server/actions/content';
 import { getLocale, getStanding, getT } from '@/server/context';
-import { getComments, getPost, getPostNotes, getTaxonomy } from '@/server/queries';
+import { getComments, getPost, getPostMedia, getPostNotes, getTaxonomy } from '@/server/queries';
 
 interface Props {
   params: Promise<{ postId: string }>;
+  searchParams: Promise<{ images?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { postId } = await params;
   if (!isUuid(postId)) return {};
   const post = await getPost(postId);
-  return post ? { title: post.title, description: post.body.slice(0, 160) } : {};
+  if (!post) return {};
+  const indexable = post.status === 'visible' || post.status === 'collapsed';
+  return {
+    title: post.title,
+    description: post.body.slice(0, 160),
+    alternates: { canonical: `/post/${post.id}` },
+    robots: { index: indexable, follow: indexable },
+    openGraph: { type: 'article', title: post.title, description: post.body.slice(0, 160), url: `/post/${post.id}`, publishedTime: post.created_at },
+  };
 }
 
 const MEDICAL_CATEGORIES = new Set(['weight', 'clinician', 'recovery']);
 
-export default async function PostPage({ params }: Props) {
-  const { postId } = await params;
+export default async function PostPage({ params, searchParams }: Props) {
+  const [{ postId }, { images: imagesNotice }] = await Promise.all([params, searchParams]);
   if (!isUuid(postId)) notFound();
 
   const [t, locale, standing, taxonomy, post] = await Promise.all([getT(), getLocale(), getStanding(), getTaxonomy(), getPost(postId)]);
   if (!post) notFound();
-  const [notes, comments] = await Promise.all([getPostNotes(post.id), getComments(post.id)]);
+  const [notes, comments, images] = await Promise.all([getPostNotes(post.id), getComments(post.id), getPostMedia(post.id)]);
   const signedIn = Boolean(standing);
   const canWriteNotes = standing?.capabilities.write_notes === null && !post.is_mine;
 
@@ -40,7 +52,12 @@ export default async function PostPage({ params }: Props) {
     <div className="page">
       <div className="grid2">
         <main id="main" className="feed">
-          <PostCard post={post} t={t} locale={locale} taxonomy={taxonomy} signedIn={signedIn} canWriteNotes={canWriteNotes} full />
+          {post.status === 'visible' || post.status === 'collapsed' ? <JsonLd data={discussionJsonLd(post)} /> : null}
+          {imagesNotice && post.is_mine ? (
+            <div className="banner warn"><Icon name="alert" /><div>{t(imagesNotice === 'too_many' ? 'media.tooMany' : 'media.attachFailed')} <Link className="link" href={`/post/${post.id}/edit`}>{t('post.edit')}</Link></div></div>
+          ) : null}
+          <PostCard post={post} t={t} locale={locale} taxonomy={taxonomy} signedIn={signedIn} canWriteNotes={canWriteNotes} full
+            images={<PostImages images={images} caption={t('media.gallery', { n: images.length })} />} />
 
           {notes.map((note) => <NoteCard key={note.id} note={note} t={t} />)}
 

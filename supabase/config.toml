@@ -35,8 +35,10 @@ enabled = true
 port = 54324
 
 [storage]
-# Image uploads are a later phase (Trusted-only bucket policy + scanning).
-enabled = false
+# Images and credential documents (…023): the private bucket `media` is created
+# by the migration; files are served through the app at /media/<id>.
+enabled = true
+file_size_limit = "25MiB"
 
 [auth]
 enabled = true

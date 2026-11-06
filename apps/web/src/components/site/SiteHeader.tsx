@@ -42,6 +42,12 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
                   <Avatar name={standing.username} />
                   <span className="hide-sm xs">{standing.karma.toLocaleString()} ★</span>
                 </Link>
+                <Link href="/notifications" className="icon-btn"
+                  aria-label={standing.notifications_unread > 0 ? t('nav.notificationsUnread', { n: standing.notifications_unread }) : t('nav.notifications')}
+                  title={t('nav.notifications')}>
+                  <Icon name="bell" />
+                  {standing.notifications_unread > 0 ? <span className="unread-dot" /> : null}
+                </Link>
                 <Link href="/contact" className="icon-btn hide-sm"
                   aria-label={standing.support_unread > 0 ? t('nav.contactUnread', { n: standing.support_unread }) : t('nav.contact')}
                   title={t('nav.contact')}>

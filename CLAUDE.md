@@ -22,7 +22,7 @@ pnpm worker:dry-run        # score the demo seed locally
    - Use `private.reconcile(event_key, user, track, reason, source_kind, source_id, desired)`. It is idempotent and auditable.
    - Ledger, mod log, note history and config history are append-only.
 3. **Capabilities come from tables**, never from JWT claims or `raw_user_meta_data`, which members can edit.
-4. **The secret key belongs to `apps/worker` only.** The web app uses the publishable key, server-side; the browser never calls Supabase.
+4. **The secret key belongs to `apps/worker` only.** The web app uses the publishable key, server-side; the browser never calls Supabase. Uploads go through `POST /api/upload` as the member and are served from `/media/<id>` after `get_media_access()` says yes, so `img-src` stays `'self'`.
 5. **No raw HTML from users** (`react/no-danger` is an error). Links: https only, `rel="nofollow ugc noopener noreferrer"`. Redirects: `safeRedirectPath`.
 6. **Tunable numbers live in `app_config`**, not in code. Document new keys in docs/SELF_MODERATION.md.
 7. **Every UI string goes in `apps/web/src/lib/i18n/en.ts` and `fr.ts`.** The French file is typed against the English one, so a missing key fails typecheck.
@@ -41,6 +41,7 @@ pnpm worker:dry-run        # score the demo seed locally
 | Error → message mapping | `apps/web/src/lib/errors.ts` (SQLSTATE `PFxxx` codes from `…001_foundation.sql`) |
 | Admin console | `admin_*` RPCs in `…015`/`…016`/`…018`/`…019`/`…020`, `apps/web/src/app/admin/**`, `server/admin.ts`, `server/actions/admin.ts`; see docs/ADMIN.md. Admins never edit karma or note status (ADR-0006); only the site owner adds or removes admins. |
 | A new `app_config` key | Migration insert (+ `bounds` if numeric), `packages/database/src/config-fields.ts`, `admin.cfg.*`/`admin.cfgHelp.*` strings; the DB test fails until all three exist |
+| SEO, notifications, images, clinicians, ads (…021–…025) | Migrations `…021`–`…025`, types in `packages/database/src/feature-types.ts`, reads in `server/queries.ts`, member actions in `server/actions/features.ts`, admin actions in `server/actions/admin.ts`, routes under `app/{notifications,settings/*,advertise,advertiser,admin/{seo,media,clinicians,ads}}`, `app/api/upload`, `app/media/[id]`, `app/ads/go/[id]`; worker jobs `push`, `purge-media`, `settle-ads`. See docs/ARCHITECTURE.md "Ported features" |
 
 ## Project skills
 

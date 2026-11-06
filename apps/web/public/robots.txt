@@ -2,5 +2,11 @@ User-agent: *
 Allow: /
 Disallow: /settings
 Disallow: /mod
+Disallow: /admin
 Disallow: /auth/
 Disallow: /api/
+Disallow: /notifications
+Disallow: /advertiser
+Disallow: /contact
+Disallow: /media/
+Disallow: /ads/

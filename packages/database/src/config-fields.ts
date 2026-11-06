@@ -6,7 +6,7 @@
  *
  * A database test asserts this list covers exactly the keys in app_config.
  */
-export const CONFIG_GROUPS = ['access', 'votes', 'notes', 'scoring', 'reports', 'penalties', 'rate_limits', 'security'] as const;
+export const CONFIG_GROUPS = ['access', 'votes', 'notes', 'scoring', 'reports', 'penalties', 'features', 'rate_limits', 'security'] as const;
 export type ConfigGroup = (typeof CONFIG_GROUPS)[number];
 
 export type ConfigInput =
@@ -20,7 +20,7 @@ export type ConfigInput =
   | 'classifications'
   | 'announcement';  // edited on the Announcement tab
 
-export type ConfigUnit = 'days' | 'hours' | 'karma' | 'xp' | 'points' | 'integrity' | 'ratings' | 'votes' | 'raters' | 'ratio';
+export type ConfigUnit = 'days' | 'hours' | 'karma' | 'xp' | 'points' | 'integrity' | 'ratings' | 'votes' | 'raters' | 'ratio' | 'microcad' | 'bytes' | 'images';
 
 export type ConfigField = {
   readonly key: string;
@@ -115,9 +115,23 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('moderation.removal_freeze_days', 'penalties', 'integer', 'days'),
   f('moderation.appeal_window_days', 'penalties', 'integer', 'days'),
 
+  // Features ported from the prototype: uploads (…023), clinicians (…024), notifications (…022), ads (…025)
+  f('gates.upload.min_tier', 'features', 'tier'),
+  f('uploads.max_bytes', 'features', 'integer', 'bytes'),
+  f('uploads.max_per_post', 'features', 'integer', 'images'),
+  f('clinician.valid_days', 'features', 'integer', 'days'),
+  f('notifications.retention_days', 'features', 'integer', 'days'),
+  f('ads.enabled', 'features', 'boolean'),
+  f('ads.cpm.zone', 'features', 'integer', 'microcad'),
+  f('ads.cpm.category', 'features', 'integer', 'microcad'),
+  f('ads.cpm.national', 'features', 'integer', 'microcad'),
+  f('ads.min_booking_microcad', 'features', 'integer', 'microcad'),
+  f('ads.flight_days', 'features', 'integer', 'days'),
+
   // Rate limits
   ...['vote', 'comment', 'post', 'post_newcomer', 'post_low_integrity', 'edit', 'note', 'rating', 'queue', 'report', 'report_member', 'appeal', 'export',
-      'onboarding', 'open_ticket', 'ticket_reply', 'admin_action'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
+      'onboarding', 'open_ticket', 'ticket_reply', 'admin_action',
+      'push_subscribe', 'notification_settings', 'upload', 'clinician_submit', 'ad_write', 'ad_report'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
 
   // Security
   f('security.require_mfa_for_staff', 'security', 'boolean', undefined, true),

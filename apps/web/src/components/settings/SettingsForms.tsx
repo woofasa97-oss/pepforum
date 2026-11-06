@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState, useState, useTransition } from 'react';
 
 import { FieldError, FormMessage } from '@/components/ui/Bits';
@@ -113,7 +114,7 @@ export function DeleteAccountForm({ labels, hasPassword }: { labels: Labels; has
       ) : (
         <>
           <p className="small muted mb12">
-            {labels['settings.deleteSocial']} <a className="link" href="/auth/sign-in?next=/settings">{labels['settings.deleteReauthLink']}</a>
+            {labels['settings.deleteSocial']} <Link className="link" href="/auth/sign-in?next=/settings">{labels['settings.deleteReauthLink']}</Link>
           </p>
           <label className="check mb12">
             <input type="checkbox" name="confirm" required />

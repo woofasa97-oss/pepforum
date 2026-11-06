@@ -13,18 +13,26 @@ import { redirect } from 'next/navigation';
 import type { ActionState } from '@/lib/action-state';
 import { type DbErrorLike, logUnexpected, messageForDbError } from '@/lib/errors';
 import {
+  AdAdjustmentSchema,
+  AdPaymentSchema,
   AdminRemoveSchema,
+  AdvertiserDecisionSchema,
   AnnouncementSchema,
   ArchiveCategorySchema,
+  CampaignDecisionSchema,
   CategorySchema,
+  ClinicianDecisionSchema,
   CitySchema,
   ConfigChangeSchema,
   ContentReasonSchema,
+  DeleteRedirectSchema,
   FindByEmailSchema,
   FoundingSchema,
+  IdReasonSchema,
   LinkDecisionSchema,
   LinkSiteSchema,
   MemberReasonSchema,
+  RedirectSchema,
   RenameMemberSchema,
   ResolveMemberReportsSchema,
   RevealEmailSchema,
@@ -407,4 +415,89 @@ export async function updateZoneAction(_prev: ActionState, form: FormData): Prom
   });
   if (result.ok) revalidatePath('/', 'layout');
   return result;
+}
+
+// ── SEO: managed redirects (…021) ─────────────────────────────────────────
+export async function setRedirectAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = RedirectSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const r = parsed.data;
+  return run('admin_set_redirect', { p_from: r.from, p_to: r.to, p_permanent: r.permanent === 'true', p_reason: r.reason });
+}
+
+export async function deleteRedirectAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = DeleteRedirectSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  return run('admin_delete_redirect', { p_from: parsed.data.from, p_reason: parsed.data.reason });
+}
+
+// ── Media (…023) ──────────────────────────────────────────────────────────
+export async function removeMediaAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = IdReasonSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const result = await run('admin_remove_media', { p_id: parsed.data.id, p_reason: parsed.data.reason });
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+// ── Clinician verification (…024) ─────────────────────────────────────────
+export async function reviewClinicianAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = ClinicianDecisionSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const result = await run('admin_review_clinician', { p_id: parsed.data.id, p_decision: parsed.data.decision, p_reason: parsed.data.reason });
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+export async function revokeClinicianAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = MemberReasonSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const result = await run('admin_revoke_clinician', { p_user: parsed.data.userId, p_reason: parsed.data.reason });
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+// ── Advertising (…025) ────────────────────────────────────────────────────
+const MICRO = 1_000_000;
+
+export async function reviewAdvertiserAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = AdvertiserDecisionSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  return run('admin_review_advertiser', { p_id: parsed.data.id, p_decision: parsed.data.decision, p_reason: parsed.data.reason });
+}
+
+export async function reviewCampaignAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = CampaignDecisionSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const result = await run('admin_review_campaign', { p_id: parsed.data.id, p_decision: parsed.data.decision, p_reason: parsed.data.reason });
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+export async function suspendCampaignAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = IdReasonSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const result = await run('admin_suspend_campaign', { p_id: parsed.data.id, p_reason: parsed.data.reason });
+  if (result.ok) revalidatePath('/', 'layout');
+  return result;
+}
+
+export async function recordAdPaymentAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = AdPaymentSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const p = parsed.data;
+  return run('admin_record_ad_payment', { p_advertiser: p.advertiserId, p_amount_microcad: Math.round(p.amountCad * MICRO), p_reference: p.reference, p_reason: p.reason });
+}
+
+export async function adAdjustmentAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = AdAdjustmentSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const p = parsed.data;
+  return run('admin_ad_adjustment', { p_advertiser: p.advertiserId, p_amount_microcad: Math.round(p.amountCad * MICRO), p_reference: p.reference, p_reason: p.reason });
+}
+
+export async function resolveAdReportAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = IdReasonSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  return run('admin_resolve_ad_report', { p_id: parsed.data.id, p_reason: parsed.data.reason });
 }

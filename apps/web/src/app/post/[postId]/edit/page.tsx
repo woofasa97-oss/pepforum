@@ -7,7 +7,7 @@ import { describeRequirement } from '@/lib/errors';
 import { pick } from '@/lib/i18n';
 import { isUuid } from '@/lib/params';
 import { getLocale, getStanding, getT } from '@/server/context';
-import { getLinkReview, getPost } from '@/server/queries';
+import { getLinkReview, getPost, getPostMedia } from '@/server/queries';
 
 export const metadata: Metadata = { robots: { index: false } };
 
@@ -18,6 +18,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ postI
   if (!standing) redirect(`/auth/sign-in?next=/post/${postId}/edit`);
   // The database re-checks ownership; this only avoids showing a useless form.
   if (!post || !post.is_mine || (post.status !== 'visible' && post.status !== 'collapsed')) notFound();
+  const images = await getPostMedia(post.id);
 
   return (
     <div className="page">
@@ -31,7 +32,8 @@ export default async function EditPostPage({ params }: { params: Promise<{ postI
           zones={[]}
           cities={[]}
           categories={[]}
-          edit={{ postId: post.id, title: post.title, body: post.body, link: post.link_url, type: post.post_type }}
+          edit={{ postId: post.id, title: post.title, body: post.body, link: post.link_url, type: post.post_type, images: images.map((i) => ({ id: i.id, alt: i.alt })) }}
+          uploadRequirement={standing.capabilities.upload_image === null ? null : images.length > 0 ? null : describeRequirement(standing.capabilities.upload_image, t)}
         />
       </main>
     </div>

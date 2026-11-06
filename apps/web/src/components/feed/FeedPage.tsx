@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { AdSlot } from '@/components/ads/AdSlot';
 import { NoteCard } from '@/components/notes/NoteCard';
 import { PostCard } from '@/components/post/PostCard';
 import { StandingCard } from '@/components/standing/StandingCard';
@@ -83,6 +84,7 @@ export async function FeedPage({ title, subtitle, basePath, query, hero }: Props
         </main>
 
         <aside className="rail right" aria-label={t('standing.title')}>
+          <AdSlot pkg={query.category ? 'category' : query.zone ? 'zone' : 'national'} target={query.category ?? query.zone ?? null} />
           {standing ? <StandingCard standing={standing} t={t} /> : (
             <div className="card card-p">
               <p className="bold">{t('app.tagline')}</p>

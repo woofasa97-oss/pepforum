@@ -1,7 +1,9 @@
 import type { FeedRow, PostDetailRow } from '@pepforum/database';
 import { REPORT_REASONS } from '@pepforum/database';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
+import { ClinicianBadge } from '@/components/clinician/ClinicianBadge';
 import { TierBadge } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
 import { relativeTime, removalReasonLabel } from '@/lib/format';
@@ -23,6 +25,8 @@ interface Props {
   readonly viewerUsername?: string | undefined;
   readonly canWriteNotes?: boolean;
   readonly full?: boolean;
+  /** Attached images (…023), rendered by the post page under the body. */
+  readonly images?: ReactNode;
 }
 
 export const REPORT_LABEL_KEYS = [
@@ -30,7 +34,7 @@ export const REPORT_LABEL_KEYS = [
   ...REPORT_REASONS.map((r) => `report.reason.${r}` as const),
 ] satisfies MessageKey[];
 
-export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, canWriteNotes = false, full = false }: Props) {
+export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, canWriteNotes = false, full = false, images }: Props) {
   const category = taxonomy.categories.find((c) => c.id === post.category_id);
   const zone = taxonomy.zones.find((z) => z.id === post.zone_id);
   const city = post.city_id ? taxonomy.cities.find((c) => c.id === post.city_id) : undefined;
@@ -69,6 +73,7 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
             {t('post.by', { user: post.author_username })}
           </Link>
           <TierBadge tier={post.author_tier} t={t} />
+          {'author_clinician' in post ? <ClinicianBadge profession={post.author_clinician} t={t} /> : null}
           <span className="sep" />
           <time dateTime={post.created_at}>{relativeTime(post.created_at, t)}</time>
           {post.edited_at ? <span className="xs">· {t('post.edited')}</span> : null}
@@ -92,6 +97,7 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
         ) : null}
 
         {body ? <p className={`post-x ${full ? '' : 'clamp'}`}>{body}</p> : null}
+        {images}
 
         {post.link_url ? (
           <a className="linkcard" href={post.link_url} target="_blank" rel="nofollow ugc noopener noreferrer">

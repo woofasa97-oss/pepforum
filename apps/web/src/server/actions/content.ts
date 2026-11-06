@@ -10,13 +10,13 @@ import { redirect } from 'next/navigation';
 
 import type { ActionState } from '@/lib/action-state';
 import { logUnexpected, messageForDbError } from '@/lib/errors';
-import { CommentSchema, CreatePostSchema, EditPostSchema, ReportMemberSchema, ReportSchema, VoteSchema, fieldErrors, formToObject } from '@/lib/validation';
+import { CommentSchema, CreatePostWithMediaSchema, EditPostSchema, ReportMemberSchema, ReportSchema, VoteSchema, fieldErrors, formToObject } from '@/lib/validation';
 import { getSupabase, getT, getViewer } from '@/server/context';
 
 export async function createPostAction(_prev: ActionState, form: FormData): Promise<ActionState> {
   const t = await getT();
   if (!(await getViewer())) return { ok: false, message: t('errors.signInRequired') };
-  const parsed = CreatePostSchema.safeParse(formToObject(form));
+  const parsed = CreatePostWithMediaSchema.safeParse(formToObject(form));
   if (!parsed.success) return { ok: false, message: t('errors.invalid'), fieldErrors: fieldErrors(parsed.error) };
   const p = parsed.data;
 
@@ -35,8 +35,23 @@ export async function createPostAction(_prev: ActionState, form: FormData): Prom
     logUnexpected('create_post', error);
     return { ok: false, message: messageForDbError(error, t) };
   }
+  const attach = await attachImages(String(postId), p.mediaIds, p.mediaAlts);
   revalidatePath('/');
-  redirect(`/post/${postId}`);
+  redirect(attach ? `/post/${postId}?images=${attach}` : `/post/${postId}`);
+}
+
+/**
+ * Images uploaded through /api/upload are attached after the post exists
+ * (…023). A failure here never loses the post: the page shows a notice and
+ * the member can retry from the edit form. Returns an error key or null.
+ */
+async function attachImages(postId: string, mediaIds: string[], alts: string[]): Promise<string | null> {
+  if (mediaIds.length === 0) return null;
+  const supabase = await getSupabase();
+  const { error } = await supabase.rpc('attach_post_media', { p_post_id: postId, p_media_ids: mediaIds, p_alts: mediaIds.map((_, i) => alts[i] ?? '') });
+  if (!error) return null;
+  logUnexpected('attach_post_media', error);
+  return error.message === 'too_many_images' ? 'too_many' : 'failed';
 }
 
 export async function editPostAction(_prev: ActionState, form: FormData): Promise<ActionState> {
@@ -54,6 +69,12 @@ export async function editPostAction(_prev: ActionState, form: FormData): Promis
     logUnexpected('edit_post', error);
     return { ok: false, message: messageForDbError(error, t) };
   }
+  // The edit form always states the full image list (possibly empty) for members who can upload.
+  if (form.has('mediaForm')) {
+    const attach = await attachImages(parsed.data.postId, parsed.data.mediaIds, parsed.data.mediaAlts);
+    if (attach) return { ok: false, message: t(attach === 'too_many' ? 'media.tooMany' : 'media.attachFailed') };
+  }
+  revalidatePath(`/post/${parsed.data.postId}`);
   redirect(`/post/${parsed.data.postId}`);
 }
 

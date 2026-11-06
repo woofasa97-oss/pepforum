@@ -2,7 +2,7 @@
  * The worker's only view of the outside world. Jobs depend on this interface,
  * not on Supabase, so they run unchanged against PGlite in tests and dry runs.
  */
-import type { JobName, Json } from '@pepforum/database';
+import type { JobName, Json, MediaToPurge, PendingPush, PushResult, SettleAdsResult } from '@pepforum/database';
 
 import type { NoteScore } from './scoring/types.ts';
 
@@ -33,6 +33,18 @@ export interface WorkerStore {
   markAccountDeletionProcessed(userId: string): Promise<void>;
   /** Heartbeat for /admin/system: one row per job run, with a small summary (no member data). */
   recordJobRun(job: JobName, startedAt: string, ok: boolean, summary: Json): Promise<void>;
+
+  // Ported features (…022, …023, …025)
+  /** Unpushed notifications with the browsers to send to; marks push-less ones delivered. */
+  pendingPush(limit: number): Promise<PendingPush[]>;
+  recordPushResults(results: readonly PushResult[]): Promise<{ sent: number; dropped: number }>;
+  /** Removed and abandoned uploads whose bytes should go. */
+  mediaToPurge(limit: number): Promise<MediaToPurge[]>;
+  /** Deletes objects from Storage. Missing objects count as deleted. */
+  deleteStorageObjects(bucket: string, paths: readonly string[]): Promise<void>;
+  markMediaPurged(ids: readonly string[]): Promise<number>;
+  /** Charges finished days, completes ended flights, releases reservations. */
+  settleAds(): Promise<SettleAdsResult>;
 }
 
 export function toResultsPayload(results: readonly NoteScore[]): Json {

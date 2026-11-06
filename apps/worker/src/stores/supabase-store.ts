@@ -2,7 +2,7 @@
  * Production store: Supabase via the secret key (bypasses RLS). The key never
  * leaves this process; nothing here is reachable from the web.
  */
-import type { Database, JobName, Json } from '@pepforum/database';
+import type { Database, JobName, Json, MediaToPurge, PendingPush, PushResult, SettleAdsResult } from '@pepforum/database';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 import type { WorkerEnv } from '../config.ts';
@@ -62,6 +62,42 @@ export class SupabaseStore implements WorkerStore {
     const { error } = await this.client.auth.admin.deleteUser(userId);
     // Already gone (e.g. deleted from the dashboard) counts as done.
     if (error && error.status !== 404) throw new Error(`auth user deletion failed: ${error.message}`);
+  }
+
+  async pendingPush(limit: number): Promise<PendingPush[]> {
+    const { data, error } = await this.client.rpc('pending_push', { p_limit: limit });
+    if (error) throw new Error(`pending_push failed: ${error.message}`);
+    return data;
+  }
+
+  async recordPushResults(results: readonly PushResult[]): Promise<{ sent: number; dropped: number }> {
+    const { data, error } = await this.client.rpc('record_push_results', { p_results: [...results] });
+    if (error) throw new Error(`record_push_results failed: ${error.message}`);
+    return data;
+  }
+
+  async mediaToPurge(limit: number): Promise<MediaToPurge[]> {
+    const { data, error } = await this.client.rpc('media_to_purge', { p_limit: limit });
+    if (error) throw new Error(`media_to_purge failed: ${error.message}`);
+    return data;
+  }
+
+  async deleteStorageObjects(bucket: string, paths: readonly string[]): Promise<void> {
+    if (paths.length === 0) return;
+    const { error } = await this.client.storage.from(bucket).remove([...paths]);
+    if (error) throw new Error(`storage remove failed: ${error.message}`);
+  }
+
+  async markMediaPurged(ids: readonly string[]): Promise<number> {
+    const { data, error } = await this.client.rpc('mark_media_purged', { p_ids: [...ids] });
+    if (error) throw new Error(`mark_media_purged failed: ${error.message}`);
+    return data;
+  }
+
+  async settleAds(): Promise<SettleAdsResult> {
+    const { data, error } = await this.client.rpc('settle_ads', {});
+    if (error) throw new Error(`settle_ads failed: ${error.message}`);
+    return data;
   }
 
   async markAccountDeletionProcessed(userId: string): Promise<void> {

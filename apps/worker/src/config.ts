@@ -14,6 +14,14 @@ const EnvSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().min(20),
   SCORING_WINDOW_DAYS: z.coerce.number().int().min(1).max(3650).default(180),
   DELETIONS_BATCH_SIZE: z.coerce.number().int().min(1).max(500).default(50),
+  // Web push (…022). Both optional: without them the push job is skipped and
+  // notifications stay in-app only.
+  VAPID_PUBLIC_KEY: z.string().min(20).optional(),
+  VAPID_PRIVATE_KEY: z.string().min(20).optional(),
+  VAPID_SUBJECT: z.string().regex(/^(mailto:|https:\/\/)/).default('mailto:privacy@pepforum.ca'),
+  PUSH_BATCH_SIZE: z.coerce.number().int().min(1).max(1000).default(200),
+  // Public origin of the site, for links in push payloads.
+  SITE_URL: z.url({ protocol: /^https?$/ }).default('https://pepforum.ca'),
 });
 export type WorkerEnv = z.infer<typeof EnvSchema>;
 

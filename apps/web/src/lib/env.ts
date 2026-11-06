@@ -14,6 +14,10 @@ const EnvSchema = z.object({
   // Normalised to the bare origin, so "https://example.com/" doesn't produce "//auth/confirm".
   SITE_URL: z.url({ protocol: /^https?$/, error: 'expected a full URL such as https://example.com' }).transform((url) => new URL(url).origin),
   TURNSTILE_SITE_KEY: z.string().min(1).optional(),
+  // Web push (…022): the public half of the VAPID pair; the private half is the worker's.
+  VAPID_PUBLIC_KEY: z.string().min(20).optional(),
+  // Ad frequency capping (…025): salts the per-visitor token. Any random string.
+  AD_VISITOR_SALT: z.string().min(8).optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
