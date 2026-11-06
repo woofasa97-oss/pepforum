@@ -1,8 +1,8 @@
 import { IMAGE_CONTENT_TYPES, type MediaKind } from '@pepforum/database';
 import { NextResponse } from 'next/server';
 
-import { env } from '@/lib/env';
 import { logUnexpected } from '@/lib/errors';
+import { isSameOrigin } from '@/lib/same-origin';
 import { getSupabase, getViewer } from '@/server/context';
 
 export const dynamic = 'force-dynamic';
@@ -22,18 +22,6 @@ export const dynamic = 'force-dynamic';
  */
 const KINDS: readonly MediaKind[] = ['post_image', 'credential', 'ad_image'];
 const MAX_BYTES = 25_000_000;
-
-function sameOrigin(request: Request): boolean {
-  const site = request.headers.get('sec-fetch-site');
-  if (site && site !== 'same-origin') return false;
-  const origin = request.headers.get('origin');
-  if (!origin) return site === 'same-origin';
-  try {
-    return new URL(origin).host === new URL(env().SITE_URL).host || new URL(origin).host === request.headers.get('host');
-  } catch {
-    return false;
-  }
-}
 
 /** Width and height from PNG/JPEG/WebP headers, if cheaply readable (no decoding). */
 function imageSize(bytes: Uint8Array, type: string): { width: number; height: number } | null {
@@ -64,7 +52,7 @@ function imageSize(bytes: Uint8Array, type: string): { width: number; height: nu
 }
 
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
+  if (!isSameOrigin(request)) return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   if (!(await getViewer())) return NextResponse.json({ error: 'not_authenticated' }, { status: 401 });
 
   let form: FormData;

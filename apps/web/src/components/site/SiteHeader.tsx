@@ -49,7 +49,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
                 </Link>
                 <UserMenu
                   username={standing.username}
-                  avatar={<Avatar name={standing.username} />}
+                  avatar={<Avatar name={standing.username} src={standing.avatar ?? null} />}
                   unread={standing.support_unread ?? 0}
                   isModerator={standing.is_moderator}
                   isAdmin={standing.is_admin}

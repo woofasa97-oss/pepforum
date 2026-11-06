@@ -151,6 +151,9 @@ export const OpenTicketSchema = z.object({
   aboutUrl: z.union([z.literal(''), z.string().trim().max(500).regex(/^https:\/\/\S+$/)]).optional(),
 }).refine((v) => v.kind !== 'report_member' || Boolean(v.aboutUsername), { path: ['aboutUsername'] });
 
+/** Follow or unfollow (…027). */
+export const FollowSchema = z.object({ username: z.string().regex(USERNAME_PATTERN), follow: z.enum(['true', 'false']) });
+
 export const TicketReplySchema = z.object({ ticketId: z.uuid(), body: trimmed(1, 4000), close: z.literal('on').optional() });
 export const TicketIdSchema = z.object({ ticketId: z.uuid() });
 

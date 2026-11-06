@@ -5,6 +5,7 @@ import type {
   AppealRow,
   AppealView,
   CategoryRow,
+  FollowRow,
   CityRow,
   CommentRow,
   FeedRow,
@@ -396,4 +397,12 @@ export async function getAd(pkg: 'national' | 'zone' | 'category', target: strin
     return null;
   }
   return data;
+}
+
+/** Followers of a member, or the people they follow (…027). Null for an unknown member; empty before the migration. */
+export async function getFollows(username: string, kind: 'followers' | 'following'): Promise<FollowRow[] | null> {
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('get_follows', { p_username: username, p_kind: kind });
+  if (result.error && isMissingFunction(result.error)) return [];
+  return unwrap('get_follows', result);
 }

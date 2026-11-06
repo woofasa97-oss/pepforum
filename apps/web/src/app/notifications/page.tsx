@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: 'Notifications', robots: { index: fal
 
 const ICONS: Record<string, IconName> = {
   reply_post: 'comment', reply_comment: 'comment', note_outcome: 'note', note_on_post: 'note', mod_action: 'shield', team_reply: 'inbox',
-  clinician_review: 'check', ad_review: 'star',
+  clinician_review: 'check', ad_review: 'star', new_follower: 'user',
 };
 
 export default async function NotificationsPage() {
@@ -25,6 +25,7 @@ export default async function NotificationsPage() {
 
   const href = (n: (typeof items)[number]) =>
     n.ticket ? `/contact/${n.ticket.id}` : n.kind === 'note_outcome' || n.kind === 'note_on_post' ? (n.post ? `/post/${n.post.id}` : '/notes')
+      : n.kind === 'new_follower' && n.actor ? `/u/${encodeURIComponent(n.actor)}`
       : n.kind === 'clinician_review' ? '/settings/clinician' : n.kind === 'ad_review' ? '/advertiser'
       : n.post ? `/post/${n.post.id}${n.comment_excerpt ? '#comments' : ''}` : '/karma';
 
@@ -38,6 +39,7 @@ export default async function NotificationsPage() {
       case 'team_reply': return t('notifications.teamReply', { subject: n.ticket?.subject ?? '' });
       case 'clinician_review': return t(`notifications.clinician.${n.action ?? 'rejected'}` as MessageKey, { reason: n.reason ?? '' });
       case 'ad_review': return t(`notifications.ad.${n.action ?? 'ad_rejected'}` as MessageKey, { reason: n.reason ?? '' });
+      case 'new_follower': return t('notifications.newFollower', { user: n.actor ?? '?' });
       default: return '';
     }
   };

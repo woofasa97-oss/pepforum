@@ -343,6 +343,15 @@ textarea.input { min-height: 120px; resize: vertical; }
 .ticket-list a { display: grid; gap: 4px; padding: 12px 14px; color: var(--text); }
 .ticket-list a:hover { background: var(--surface-2); }
 .only-sm { display: none; }
+.follow-counts { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.follow-counts a { color: var(--text-2); }
+.follow-counts a:hover { color: var(--text); text-decoration: underline; }
+.follow-counts b { color: var(--text); }
+.follow-form { display: grid; gap: 6px; justify-items: end; }
+.btn.following .when-hover { display: none; }
+.btn.following:hover .when-idle, .btn.following:focus-visible .when-idle { display: none; }
+.btn.following:hover .when-hover, .btn.following:focus-visible .when-hover { display: inline; }
+img.avatar { object-fit: cover; background: var(--surface-2); }
 .user-menu { position: relative; }
 .user-menu > summary { list-style: none; display: flex; align-items: center; gap: 6px; padding: 3px 8px 3px 3px; border-radius: var(--r-pill); cursor: pointer; color: rgba(255,255,255,.85); position: relative; }
 .user-menu > summary::-webkit-details-marker { display: none; }

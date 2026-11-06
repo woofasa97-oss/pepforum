@@ -12,7 +12,13 @@ export function TierBadge({ tier, t }: { tier: number; t: Translate }) {
 }
 
 /** Deterministic pastel avatar from the username (no uploaded photos by design). */
-export function Avatar({ name, size = '' }: { name: string; size?: '' | 'sm' | 'lg' }) {
+/** A member's picture (served from /media/<id>) or, without one, their initials on a colour from their name. */
+export function Avatar({ name, size = '', src = null }: { name: string; size?: '' | 'sm' | 'lg'; src?: string | null }) {
+  if (src) {
+    const px = size === 'lg' ? 56 : size === 'sm' ? 24 : 32;
+    // eslint-disable-next-line @next/next/no-img-element -- already 256px WebP; next/image would re-process it
+    return <img className={`avatar ${size}`} src={`/media/${src}`} alt="" width={px} height={px} />;
+  }
   let hue = 0;
   for (const ch of name) hue = (hue * 31 + ch.charCodeAt(0)) % 360;
   return (

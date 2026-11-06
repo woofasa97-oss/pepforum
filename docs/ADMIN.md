@@ -30,7 +30,7 @@ The console is where admins look after Pepforum without touching SQL. Everything
 | **Content** | Search posts, comments and notes, removed ones included. Remove, restore, pin (two per zone), lock comments, hide or unhide notes. |
 | **Clinicians** | Members asking for a "verified" badge (physician, pharmacist, nurse practitioner…). Check the regulator's public register, approve for the configured validity, reject or revoke with a reason. See "Clinicians" below. |
 | **Ads** | Approve advertiser accounts, review every campaign before it runs, stop campaigns, record payments and refunds, resolve member reports about an ad. See "Ads" below. |
-| **Media** | Images members attached to posts, newest first. Remove one with a reason: it disappears at once and the worker deletes the file. |
+| **Media** | Images members uploaded (post images and profile pictures), newest first. Remove one with a reason: it disappears at once and the worker deletes the file. A removed profile picture falls back to the member's initials. |
 | **SEO** | The sitemaps search engines read, and redirects for moved or mistyped paths (301/302). A redirect never shadows a real page. |
 | **Community notes** | Watch the notes pipeline, scoring runs and agreement, and readiness to switch to bridging scoring (with the switch). See raters, writer pauses, and signs of manipulation: notes rated mostly by new accounts, and rater pairs who almost always agree. |
 | **Sourcing shield** | Block vendor sites, and watch phrases ("dm me", "telegram") that either hold a post for review or block it. Test any text against the rules. |

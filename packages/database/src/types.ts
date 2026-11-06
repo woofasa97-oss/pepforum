@@ -362,6 +362,8 @@ export type StandingView = {
   support_unread: number;
   /** Unread notifications (…022). */
   notifications_unread: number;
+  /** Media id of the member's profile picture (served at /media/<id>), or null (…027). */
+  avatar: string | null;
   /** null = allowed, otherwise a reason key such as "tier:2". */
   capabilities: Record<string, string | null>;
   tier_thresholds: number[];
@@ -396,6 +398,9 @@ export type MyTicketView = {
   messages: Array<{ id: string; body: string; from_staff: boolean; created_at: string }>;
 };
 
+/** One person in a followers/following list (…027). `friend` = they follow each other. */
+export type FollowRow = { username: string; tier: number; avatar: string | null; friend: boolean; is_me: boolean };
+
 export type ProfileView = {
   username: string;
   bio: string;
@@ -415,6 +420,12 @@ export type ProfileView = {
   is_admin: boolean;
   /** Verified clinician badge (…024). */
   clinician: ClinicianProfession | null;
+  /** Profile picture media id (…027), and follows. The two flags are false for anonymous visitors. */
+  avatar: string | null;
+  followers: number;
+  following: number;
+  is_following: boolean;
+  follows_you: boolean;
   moderates: string[];
   post_count: number;
   comment_count: number;
@@ -689,6 +700,9 @@ export type Database = {
       get_post_media: { Args: { p_post_id: string }; Returns: PostImage[] };
       my_pending_media: { Args: Record<string, never>; Returns: PendingImage[] };
       get_media_access: { Args: { p_id: string }; Returns: MediaAccess | null };
+      set_avatar: { Args: { p_media: string | null }; Returns: undefined };
+      set_follow: { Args: { p_username: string; p_follow: boolean }; Returns: { following: boolean; followers: number; friends: boolean } };
+      get_follows: { Args: { p_username: string; p_kind: 'followers' | 'following'; p_page?: number }; Returns: FollowRow[] | null };
       admin_media: { Args: { p_status?: MediaStatus; p_page?: number }; Returns: AdminMedia };
       admin_remove_media: { Args: { p_id: string; p_reason: string }; Returns: undefined };
       /** service_role only. */

@@ -41,7 +41,6 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('gates.post_text.min_tier', 'access', 'tier'),
   f('gates.post_link.min_tier', 'access', 'tier'),
   f('links.require_approval', 'access', 'boolean'),
-  f('features.regions', 'access', 'boolean'),
   f('gates.posting.min_integrity', 'access', 'integer', 'integrity'),
   f('gates.posting.cooldown_integrity', 'access', 'integer', 'integrity'),
   f('gates.rate_notes.min_tier', 'access', 'tier'),
@@ -128,10 +127,11 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('ads.cpm.national', 'features', 'integer', 'microcad'),
   f('ads.min_booking_microcad', 'features', 'integer', 'microcad'),
   f('ads.flight_days', 'features', 'integer', 'days'),
+  f('features.regions', 'features', 'boolean'),
 
   // Rate limits
   ...['vote', 'comment', 'post', 'post_newcomer', 'post_low_integrity', 'edit', 'note', 'rating', 'queue', 'report', 'report_member', 'appeal', 'export',
-      'onboarding', 'open_ticket', 'ticket_reply', 'admin_action',
+      'onboarding', 'open_ticket', 'ticket_reply', 'follow', 'avatar', 'admin_action',
       'push_subscribe', 'notification_settings', 'upload', 'clinician_submit', 'ad_write', 'ad_report'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
 
   // Security

@@ -164,6 +164,8 @@ New settings:
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |
+| `rate_limit.follow` | 60 / hour | Follows and unfollows per member (…027) |
+| `rate_limit.avatar` | 10 / day | Profile picture changes per member (…027) |
 | `rate_limit.open_ticket` | 5 / day | Tickets one member can open to the team (…020) |
 | `rate_limit.ticket_reply` | 30 / hour | Replies one member can add to their own tickets (…020) |
 | `site.announcement` | empty | Site-wide banner `{en, fr, tone: info\|warn, until}` |

@@ -27,11 +27,13 @@ const TITLES: Record<'en' | 'fr', Record<NotificationKind, string>> = {
     reply_post: 'New comment on your post', reply_comment: 'New reply to your comment', note_outcome: 'Your community note settled',
     note_on_post: 'A helpful note was added to your post', mod_action: 'A moderation decision concerns you', team_reply: 'The Pepforum team replied',
     clinician_review: 'Your clinician verification was reviewed', ad_review: 'Your advertising request was reviewed',
+    new_follower: 'You have a new follower',
   },
   fr: {
     reply_post: 'Nouveau commentaire sur votre publication', reply_comment: 'Nouvelle réponse à votre commentaire', note_outcome: 'Votre note communautaire est réglée',
     note_on_post: 'Une note utile a été ajoutée à votre publication', mod_action: 'Une décision de modération vous concerne', team_reply: 'L’équipe Pepforum a répondu',
     clinician_review: 'Votre vérification de clinicien a été révisée', ad_review: 'Votre demande publicitaire a été révisée',
+    new_follower: 'Vous avez un nouvel abonné',
   },
 };
 

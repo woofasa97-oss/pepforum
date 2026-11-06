@@ -4,17 +4,21 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 import { DeleteAccountForm, MfaSetup, ProfileForm } from '@/components/settings/SettingsForms';
+import { Avatar } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
 import { hasPassword } from '@/lib/auth-providers';
-import { pick } from '@/lib/i18n';
-import { getLocale, getSupabase, getT, getViewer } from '@/server/context';
+import { type MessageKey, pick } from '@/lib/i18n';
+import { getLocale, getStanding, getSupabase, getT, getViewer } from '@/server/context';
 import { getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Settings', robots: { index: false } };
 
-export default async function SettingsPage() {
-  const [t, locale, viewer, taxonomy] = await Promise.all([getT(), getLocale(), getViewer(), getTaxonomy()]);
+const PICTURE_RESULTS = ['saved', 'removed', 'invalid', 'too_large', 'unsupported', 'rate_limited', 'not_allowed', 'failed'] as const;
+
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ avatar?: string }> }) {
+  const [t, locale, viewer, taxonomy, standing, query] = await Promise.all([getT(), getLocale(), getViewer(), getTaxonomy(), getStanding(), searchParams]);
   if (!viewer) redirect('/auth/sign-in?next=/settings');
+  const pictureResult = PICTURE_RESULTS.find((r) => r === query.avatar);
 
   const supabase = await getSupabase();
   const [{ data: profile }, { data: factors }, { data: account }] = await Promise.all([
@@ -28,6 +32,31 @@ export default async function SettingsPage() {
     <div className="page">
       <main id="main" className="narrow">
         <h1 className="mb16" tabIndex={-1}>{t('settings.title')}</h1>
+
+        <section className="card card-p mb16" aria-labelledby="picture-h" id="picture">
+          <h2 id="picture-h" className="mb12">{t('settings.picture')}</h2>
+          {pictureResult ? (
+            <div className={`banner ${pictureResult === 'saved' || pictureResult === 'removed' ? 'ok' : 'danger'} mb12`} role="status">
+              {t(`settings.picture.${pictureResult}` as MessageKey)}
+            </div>
+          ) : null}
+          <div className="row wrap" style={{ gap: 16, alignItems: 'center' }}>
+            <Avatar name={standing?.username ?? '?'} size="lg" src={standing?.avatar ?? null} />
+            {/* A plain form post: works without JavaScript; the server re-encodes the picture and strips its metadata. */}
+            <form action="/api/avatar" method="post" encType="multipart/form-data" className="row wrap" style={{ gap: 8 }}>
+              <label htmlFor="avatar-file" className="vh">{t('settings.pictureChoose')}</label>
+              <input id="avatar-file" name="file" type="file" accept="image/jpeg,image/png,image/webp" required className="input" style={{ maxWidth: 300 }} />
+              <button type="submit" className="btn dark sm">{t('settings.pictureUpload')}</button>
+            </form>
+            {standing?.avatar ? (
+              <form action="/api/avatar" method="post">
+                <input type="hidden" name="action" value="remove" />
+                <button type="submit" className="btn sm">{t('settings.pictureRemove')}</button>
+              </form>
+            ) : null}
+          </div>
+          <p className="xs faint mt8">{t('settings.pictureHint')}</p>
+        </section>
 
         <section className="card card-p mb16" aria-labelledby="profile-h">
           <h2 id="profile-h" className="mb12">{t('settings.profile')}</h2>

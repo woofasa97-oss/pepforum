@@ -162,7 +162,7 @@ export const CLINICIAN_STATUSES = ['pending', 'approved', 'rejected', 'revoked',
 export type ClinicianStatus = (typeof CLINICIAN_STATUSES)[number];
 
 /** Kinds of uploads (media.kind, …023 / …025). */
-export const MEDIA_KINDS = ['post_image', 'credential', 'ad_image'] as const;
+export const MEDIA_KINDS = ['post_image', 'credential', 'ad_image', 'avatar'] as const;
 export type MediaKind = (typeof MEDIA_KINDS)[number];
 
 export const MEDIA_STATUSES = ['pending', 'ready', 'removed'] as const;
@@ -173,7 +173,7 @@ export const IMAGE_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as 
 export type ImageContentType = (typeof IMAGE_CONTENT_TYPES)[number];
 
 /** What a notification is about (notifications.kind, …022 / …024 / …025). */
-export const NOTIFICATION_KINDS = ['reply_post', 'reply_comment', 'note_outcome', 'note_on_post', 'mod_action', 'team_reply', 'clinician_review', 'ad_review'] as const;
+export const NOTIFICATION_KINDS = ['reply_post', 'reply_comment', 'note_outcome', 'note_on_post', 'mod_action', 'team_reply', 'clinician_review', 'ad_review', 'new_follower'] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
 /** SQLSTATE codes raised by the database (see 0001_foundation). */
