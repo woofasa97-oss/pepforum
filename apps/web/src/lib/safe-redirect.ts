@@ -21,3 +21,14 @@ export function safeRedirectPath(candidate: unknown, fallback = '/'): string {
     return fallback;
   }
 }
+
+/**
+ * A redirect from a route handler to a path on this site. The Location is
+ * relative on purpose: behind Render's proxy the request URL is the internal
+ * `https://localhost:10000`, so a URL built from `request.nextUrl.origin`
+ * sends people to localhost. A relative one keeps the browser on whatever
+ * address it used, which is also where any session cookie was just set.
+ */
+export function redirectWithinSite(path: string): Response {
+  return new Response(null, { status: 307, headers: { Location: safeRedirectPath(path) } });
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildCsp, createNonce } from '@/lib/csp';
-import { safeRedirectPath } from '@/lib/safe-redirect';
+import { redirectWithinSite, safeRedirectPath } from '@/lib/safe-redirect';
 
 describe('safeRedirectPath (open-redirect guard)', () => {
   it.each([
@@ -29,6 +29,18 @@ describe('safeRedirectPath (open-redirect guard)', () => {
     42,
   ])('rejects %s', (input) => {
     expect(safeRedirectPath(input)).toBe('/');
+  });
+});
+
+describe('redirectWithinSite', () => {
+  it('sends a relative Location, so a proxy’s internal address never leaks into it', () => {
+    const response = redirectWithinSite('/auth/mfa?next=%2Fsettings');
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('/auth/mfa?next=%2Fsettings');
+  });
+
+  it('still refuses to leave the site', () => {
+    expect(redirectWithinSite('//evil.example/x').headers.get('location')).toBe('/');
   });
 });
 

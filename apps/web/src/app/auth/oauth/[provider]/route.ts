@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import { isOAuthProvider } from '@/lib/auth-providers';
 import { env } from '@/lib/env';
-import { safeRedirectPath } from '@/lib/safe-redirect';
+import { redirectWithinSite, safeRedirectPath } from '@/lib/safe-redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
@@ -15,8 +15,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ provider: string }> }) {
   const { provider } = await params;
-  const origin = request.nextUrl.origin;
-  if (!isOAuthProvider(provider)) return NextResponse.redirect(new URL('/auth/sign-in?error=provider', origin));
+  if (!isOAuthProvider(provider)) return redirectWithinSite('/auth/sign-in?error=provider');
 
   const next = safeRedirectPath(request.nextUrl.searchParams.get('next'));
   const supabase = await createSupabaseServerClient();
@@ -26,7 +25,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   });
   // The URL comes from supabase-js and must point at our own Supabase project.
   if (error || !data.url || new URL(data.url).origin !== new URL(env().SUPABASE_URL).origin) {
-    return NextResponse.redirect(new URL('/auth/sign-in?error=provider', origin));
+    return redirectWithinSite('/auth/sign-in?error=provider');
   }
   return NextResponse.redirect(data.url);
 }
