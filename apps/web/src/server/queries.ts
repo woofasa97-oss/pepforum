@@ -59,19 +59,23 @@ export interface Taxonomy {
   readonly zones: ZoneRow[];
   readonly categories: CategoryRow[];
   readonly cities: CityRow[];
+  /** features.regions: show provinces and cities to members (…026). Off if the setting can't be read. */
+  readonly regions: boolean;
 }
 
 export const getTaxonomy = cache(async (): Promise<Taxonomy> => {
   const supabase = await getSupabase();
-  const [zones, categories, cities] = await Promise.all([
+  const [zones, categories, cities, regions] = await Promise.all([
     supabase.from('zones').select('*').order('sort_order'),
     supabase.from('categories').select('*').is('archived_at', null).order('sort_order'),
     supabase.from('cities').select('*').order('sort_order'),
+    supabase.from('app_config').select('value').eq('key', 'features.regions').maybeSingle(),
   ]);
   return {
     zones: unwrap('zones', zones),
     categories: unwrap('categories', categories),
     cities: unwrap('cities', cities),
+    regions: !regions.error && regions.data?.value === true,
   };
 });
 

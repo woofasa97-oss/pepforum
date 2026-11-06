@@ -38,8 +38,8 @@ export default async function SubmitPage({ searchParams }: { searchParams: Promi
             locale={locale}
             linkReview={linkReview && !standing.is_moderator}
             linkRequirement={standing.capabilities.post_link ? describeRequirement(standing.capabilities.post_link, t) : null}
-            zones={taxonomy.zones.map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
-            cities={taxonomy.cities.map((c) => ({ id: c.id, name: c.name, zoneId: c.zone_id }))}
+            zones={taxonomy.zones.filter((z) => taxonomy.regions || z.id === 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
+            cities={taxonomy.regions ? taxonomy.cities.map((c) => ({ id: c.id, name: c.name, zoneId: c.zone_id })) : []}
             categories={taxonomy.categories.map((c) => ({ id: c.id, name: locale === 'fr' ? c.name_fr : c.name_en }))}
             defaults={{ zone: params.zone, category: params.category }}
             uploadRequirement={standing.capabilities.upload_image === null ? null : describeRequirement(standing.capabilities.upload_image, t)}

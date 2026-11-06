@@ -160,6 +160,7 @@ New settings:
 | Key | Default | Meaning |
 |---|---|---|
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
+| `features.regions` | false | Show provinces and cities to members: zone bar, region pickers, region pages (…026). Off: everything posts to the national feed |
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |

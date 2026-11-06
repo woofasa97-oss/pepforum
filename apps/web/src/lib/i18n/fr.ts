@@ -29,7 +29,9 @@ export const fr: Record<MessageKey, string> = {
 
   'nav.home': 'Accueil',
   'nav.notes': 'Notes',
-  'nav.karma': 'Réputation',
+  'nav.karma': 'Ma progression',
+  'nav.karmaShort': '{n} karma',
+  'nav.menu': 'Menu du compte de u/{user}',
   'nav.submit': 'Publier',
   'nav.signIn': 'Se connecter',
   'nav.signUp': 'S’inscrire',
@@ -221,7 +223,7 @@ export const fr: Record<MessageKey, string> = {
   'memberReport.submit': 'Envoyer aux administrateurs',
   'memberReport.sent': 'Merci. Les administrateurs vont examiner la situation.',
 
-  'standing.title': 'Votre réputation',
+  'standing.title': 'Ma progression',
   'standing.sub': 'Trois mesures distinctes : le karma débloque davantage à mesure que vous participez, le volet modération débloque la rédaction de notes et le rôle de gardien, et l’intégrité peut suspendre des privilèges.',
   'standing.adminNote': 'Toutes les fonctions vous sont ouvertes. Votre karma vient toujours de la communauté.',
   'standing.karma': 'Karma',
@@ -1175,6 +1177,8 @@ export const fr: Record<MessageKey, string> = {
   'admin.cfgHelp.gates.post_text.min_tier': 'En dessous, les membres peuvent commenter et voter mais pas publier. « Nouveau » permet à tous de publier dès l’inscription.',
   'admin.cfg.gates.post_link.min_tier': 'Niveau pour publier des liens',
   'admin.cfgHelp.gates.post_link.min_tier': 'Les liens sont une voie fréquente de pourriel; ils exigent plus de confiance.',
+  'admin.cfg.features.regions': 'Afficher les régions (provinces et villes)',
+  'admin.cfgHelp.features.regions': 'Désactivé : les membres ne voient ni la barre des zones, ni les choix de région, ni les pages de région, et tout est publié dans le fil national. Les zones et leurs modérateurs sont conservés pour le jour où vous le réactivez.',
   'admin.cfg.links.require_approval': 'Les admins approuvent chaque lien',
   'admin.cfgHelp.links.require_approval': 'Les publications et commentaires avec un lien attendent sur la page Liens qu’un admin les approuve. Modérateurs et admins exemptés.',
   'admin.cfg.gates.posting.min_integrity': 'Intégrité pour publier',

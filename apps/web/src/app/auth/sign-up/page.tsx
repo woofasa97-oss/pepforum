@@ -16,7 +16,7 @@ export default async function SignUpPage() {
           'auth.email', 'auth.password', 'auth.passwordHint', 'auth.username', 'auth.usernameHint', 'auth.homeZone', 'auth.locale',
           'auth.ageAck', 'auth.terms', 'auth.submitSignUp', 'auth.haveAccount',
         ])}
-        zones={taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
+        zones={taxonomy.zones.filter((z) => taxonomy.regions && z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
         locale={locale}
         captcha={{ siteKey: env().TURNSTILE_SITE_KEY, nonce }}
       />

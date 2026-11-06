@@ -10,6 +10,7 @@ import { getAnnouncement, getTaxonomy } from '@/server/queries';
 import { Logo } from './Logo';
 import { NavLink } from './NavLink';
 import { ReplyNotice } from './ReplyNotice';
+import { UserMenu } from './UserMenu';
 
 /** Global header + zone bar. Server-rendered; forms work without JavaScript. */
 export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefined }) {
@@ -24,12 +25,14 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           <nav className="nav" aria-label="Primary">
             <NavLink href="/" className="hide-sm">{t('nav.home')}</NavLink>
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
-            {viewer ? <NavLink href="/karma" className="hide-sm">{t('nav.karma')}</NavLink> : null}
             {standing?.is_moderator ? <NavLink href="/mod" className="hide-sm">{t('nav.mod')}</NavLink> : null}
             {standing?.is_admin ? <NavLink href="/admin" className="hide-sm">{t('nav.admin')}</NavLink> : null}
             <form action={setLocaleAction}>
               <input type="hidden" name="locale" value={locale === 'fr' ? 'en' : 'fr'} />
-              <button type="submit" className="navbtn" lang={locale === 'fr' ? 'en' : 'fr'}>{t('nav.language')}</button>
+              <button type="submit" className="navbtn" lang={locale === 'fr' ? 'en' : 'fr'} aria-label={t('nav.language')}>
+                <span className="hide-sm">{t('nav.language')}</span>
+                <span className="only-sm" aria-hidden="true">{locale === 'fr' ? 'EN' : 'FR'}</span>
+              </button>
             </form>
             <form action={setThemeAction}>
               <input type="hidden" name="theme" value={theme === 'dark' ? 'light' : 'dark'} />
@@ -37,27 +40,34 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
             </form>
             {viewer && standing ? (
               <>
-                <Link href="/submit" className="btn red sm"><Icon name="plus" />{t('nav.submit')}</Link>
-                <Link href={`/u/${standing.username}`} className="row" aria-label={`${t('nav.profile')}: u/${standing.username}`}>
-                  <Avatar name={standing.username} />
-                  <span className="hide-sm xs">{standing.karma.toLocaleString()} ★</span>
-                </Link>
+                <Link href="/submit" className="btn red sm" aria-label={t('nav.submit')}><Icon name="plus" /><span className="hide-sm">{t('nav.submit')}</span></Link>
                 <Link href="/notifications" className="icon-btn"
                   aria-label={standing.notifications_unread > 0 ? t('nav.notificationsUnread', { n: standing.notifications_unread }) : t('nav.notifications')}
                   title={t('nav.notifications')}>
                   <Icon name="bell" />
                   {standing.notifications_unread > 0 ? <span className="unread-dot" /> : null}
                 </Link>
-                <Link href="/contact" className="icon-btn hide-sm"
-                  aria-label={standing.support_unread > 0 ? t('nav.contactUnread', { n: standing.support_unread }) : t('nav.contact')}
-                  title={t('nav.contact')}>
-                  <Icon name="inbox" />
-                  {standing.support_unread > 0 ? <span className="unread-dot" /> : null}
-                </Link>
-                <Link href="/settings" className="icon-btn hide-sm" aria-label={t('nav.settings')}><Icon name="user" /></Link>
-                <form action={signOutAction}>
-                  <button type="submit" className="navbtn hide-sm">{t('nav.signOut')}</button>
-                </form>
+                <UserMenu
+                  username={standing.username}
+                  avatar={<Avatar name={standing.username} />}
+                  unread={standing.support_unread ?? 0}
+                  isModerator={standing.is_moderator}
+                  isAdmin={standing.is_admin}
+                  signOut={signOutAction}
+                  labels={{
+                    open: standing.support_unread > 0
+                      ? `${t('nav.menu', { user: standing.username })} · ${t('nav.contactUnread', { n: standing.support_unread })}`
+                      : t('nav.menu', { user: standing.username }),
+                    karma: t('nav.karmaShort', { n: standing.karma.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-CA') }),
+                    profile: t('nav.profile'),
+                    progress: t('nav.karma'),
+                    contact: t('nav.contact'),
+                    settings: t('nav.settings'),
+                    mod: t('nav.mod'),
+                    admin: t('nav.admin'),
+                    signOut: t('nav.signOut'),
+                  }}
+                />
               </>
             ) : (
               <>
@@ -83,20 +93,22 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           <Link className="btn red sm" href="/auth/welcome">{t('auth.finishSetup')}</Link>
         </div>
       ) : null}
-      <div className="zonebar">
-        <nav className="zonebar-in" id="zones" aria-label={t('nav.zones')}>
-          <span className="lbl">{t('nav.zones')}</span>
-          {taxonomy.zones.map((z) => {
-            const href = z.id === 'national' ? '/' : `/zone/${z.id}`;
-            return (
-              <NavLink key={z.id} className="chip" href={href}>
-                {z.id === 'national' ? <Icon name="globe" /> : null}
-                {locale === 'fr' ? z.name_fr : z.name_en}
-              </NavLink>
-            );
-          })}
-        </nav>
-      </div>
+      {taxonomy.regions ? (
+        <div className="zonebar">
+          <nav className="zonebar-in" id="zones" aria-label={t('nav.zones')}>
+            <span className="lbl">{t('nav.zones')}</span>
+            {taxonomy.zones.map((z) => {
+              const href = z.id === 'national' ? '/' : `/zone/${z.id}`;
+              return (
+                <NavLink key={z.id} className="chip" href={href}>
+                  {z.id === 'national' ? <Icon name="globe" /> : null}
+                  {locale === 'fr' ? z.name_fr : z.name_en}
+                </NavLink>
+              );
+            })}
+          </nav>
+        </div>
+      ) : null}
     </>
   );
 }

@@ -19,7 +19,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
     const taxonomy = await getTaxonomy();
     entries = [
       ...STATIC_PATHS.map((path) => ({ path })),
-      ...taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ path: `/zone/${z.id}` })),
+      ...taxonomy.zones.filter((z) => taxonomy.regions && z.id !== 'national').map((z) => ({ path: `/zone/${z.id}` })),
       ...taxonomy.categories.map((c) => ({ path: `/category/${c.id}` })),
     ];
   } else {

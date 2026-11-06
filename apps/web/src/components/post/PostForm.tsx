@@ -50,12 +50,17 @@ export function PostForm({ labels, zones, cities, categories, locale, linkRequir
       {!edit ? (
         <>
           <div className="row wrap" style={{ gap: 12, alignItems: 'flex-start' }}>
-            <div className="field grow">
-              <label htmlFor="pf-zone">{labels['submit.zone']}</label>
-              <select id="pf-zone" name="zone" className="input" value={zone} onChange={(e) => setZone(e.target.value)}>
-                {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-              </select>
-            </div>
+            {zones.length > 1 ? (
+              <div className="field grow">
+                <label htmlFor="pf-zone">{labels['submit.zone']}</label>
+                <select id="pf-zone" name="zone" className="input" value={zone} onChange={(e) => setZone(e.target.value)}>
+                  {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+                </select>
+              </div>
+            ) : (
+              // Regions are hidden: everything posts to the national feed.
+              <input type="hidden" name="zone" value={zones[0]?.id ?? 'national'} />
+            )}
             {zoneCities.length > 0 ? (
               <div className="field grow">
                 <label htmlFor="pf-city">{labels['submit.city']}</label>

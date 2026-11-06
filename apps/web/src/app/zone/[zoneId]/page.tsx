@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import { FeedPage } from '@/components/feed/FeedPage';
 import { parseFeedParams } from '@/lib/params';
@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ZonePage({ params, searchParams }: Props) {
   const [{ zoneId }, query, taxonomy, locale] = await Promise.all([params, searchParams, getTaxonomy(), getLocale()]);
   const zone = taxonomy.zones.find((z) => z.id === zoneId);
+  if (!taxonomy.regions) redirect('/');
   if (!zone || zone.id === 'national') notFound();
   const { sort, page, city } = parseFeedParams(query);
   const cities = taxonomy.cities.filter((c) => c.zone_id === zone.id);

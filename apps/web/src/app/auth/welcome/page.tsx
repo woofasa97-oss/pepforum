@@ -19,7 +19,7 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
       <p className="small muted mb16">{t('auth.welcomeBody')}</p>
       <OnboardingForm
         labels={pick(t, ['auth.username', 'auth.usernameHint', 'auth.homeZone', 'auth.ageAck', 'auth.terms', 'auth.finishSetup'])}
-        zones={taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
+        zones={taxonomy.zones.filter((z) => taxonomy.regions && z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
         next={next}
       />
     </div>

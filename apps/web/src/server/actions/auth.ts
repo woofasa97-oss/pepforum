@@ -188,7 +188,8 @@ export async function startMfaEnrollmentAction(): Promise<MfaEnrollment | { erro
 
 export async function signOutAction(): Promise<void> {
   const supabase = await getSupabase();
-  await supabase.auth.signOut();
+  // This device only: signing out on a laptop shouldn't sign the phone out too.
+  await supabase.auth.signOut({ scope: 'local' });
   revalidatePath('/', 'layout');
   redirect('/');
 }

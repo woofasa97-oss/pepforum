@@ -34,7 +34,7 @@ export default async function SettingsPage() {
           <ProfileForm
             labels={pick(t, ['settings.bio', 'settings.coi', 'settings.coiHint', 'settings.save', 'auth.homeZone', 'auth.locale'])}
             defaults={{ bio: profile?.bio ?? '', coi: profile?.coi ?? '', locale: profile?.locale ?? locale, homeZone: profile?.home_zone_id ?? '' }}
-            zones={taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
+            zones={taxonomy.zones.filter((z) => taxonomy.regions && z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
           />
         </section>
 

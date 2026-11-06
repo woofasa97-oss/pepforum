@@ -28,7 +28,9 @@ export const en = {
 
   'nav.home': 'Home',
   'nav.notes': 'Notes',
-  'nav.karma': 'Standing',
+  'nav.karma': 'My progress',
+  'nav.karmaShort': '{n} karma',
+  'nav.menu': 'Account menu for u/{user}',
   'nav.submit': 'Create post',
   'nav.signIn': 'Sign in',
   'nav.signUp': 'Sign up',
@@ -220,7 +222,7 @@ export const en = {
   'memberReport.submit': 'Send to the admins',
   'memberReport.sent': 'Thanks. The admins will look into it.',
 
-  'standing.title': 'Your standing',
+  'standing.title': 'My progress',
   'standing.sub': 'Three separate measures: karma unlocks more as you take part, the moderation track unlocks note writing and stewardship, and integrity can switch privileges off.',
   'standing.adminNote': 'Every feature is unlocked for you. Your karma still comes from the community.',
   'standing.karma': 'Karma',
@@ -1174,6 +1176,8 @@ export const en = {
   'admin.cfgHelp.gates.post_text.min_tier': 'Below it, members can comment and vote but not start posts. Newcomer lets everyone post from sign-up.',
   'admin.cfg.gates.post_link.min_tier': 'Tier to post links',
   'admin.cfgHelp.gates.post_link.min_tier': 'Links are a common spam route, so they need more trust.',
+  'admin.cfg.features.regions': 'Show regions (provinces and cities)',
+  'admin.cfgHelp.features.regions': 'Off: members don’t see the zone bar, region pickers or region pages, and everything posts to the national feed. Zones and moderators are kept for when you turn it back on.',
   'admin.cfg.links.require_approval': 'Admins approve every link',
   'admin.cfgHelp.links.require_approval': 'Posts and comments with a link wait on the Links page until an admin approves them. Moderators and admins are exempt.',
   'admin.cfg.gates.posting.min_integrity': 'Integrity to post at all',

@@ -31,13 +31,18 @@ export function ProfileForm({ labels, defaults, zones }: {
         <span id="s-coi-hint" className="hint">{labels['settings.coiHint']}</span>
       </div>
       <div className="row wrap" style={{ gap: 12 }}>
-        <div className="field grow">
-          <label htmlFor="s-zone">{labels['auth.homeZone']}</label>
-          <select id="s-zone" name="homeZone" className="input" defaultValue={defaults.homeZone}>
-            <option value="">—</option>
-            {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-          </select>
-        </div>
+        {zones.length > 0 ? (
+          <div className="field grow">
+            <label htmlFor="s-zone">{labels['auth.homeZone']}</label>
+            <select id="s-zone" name="homeZone" className="input" defaultValue={defaults.homeZone}>
+              <option value="">—</option>
+              {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+            </select>
+          </div>
+        ) : (
+          // Regions are hidden: keep whatever home region the member already has.
+          <input type="hidden" name="homeZone" value={defaults.homeZone} />
+        )}
         <div className="field grow">
           <label htmlFor="s-locale">{labels['auth.locale']}</label>
           <select id="s-locale" name="locale" className="input" defaultValue={defaults.locale}>

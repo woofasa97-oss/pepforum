@@ -73,13 +73,15 @@ export function SignUpForm({ labels, zones, locale, captcha }: { labels: Labels;
         <FieldError message={errors.username} />
       </div>
       <div className="row wrap" style={{ gap: 12 }}>
-        <div className="field grow">
-          <label htmlFor="su-zone">{labels['auth.homeZone']}</label>
-          <select id="su-zone" name="homeZone" className="input" defaultValue="">
-            <option value="">—</option>
-            {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-          </select>
-        </div>
+        {zones.length > 0 ? (
+          <div className="field grow">
+            <label htmlFor="su-zone">{labels['auth.homeZone']}</label>
+            <select id="su-zone" name="homeZone" className="input" defaultValue="">
+              <option value="">—</option>
+              {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+            </select>
+          </div>
+        ) : null}
         <div className="field grow">
           <label htmlFor="su-locale">{labels['auth.locale']}</label>
           <select id="su-locale" name="locale" className="input" defaultValue={locale}>
@@ -131,13 +133,15 @@ export function OnboardingForm({ labels, zones, next }: { labels: Labels; zones:
         <span id="ob-user-hint" className="hint">{labels['auth.usernameHint']}</span>
         <FieldError message={errors.username} />
       </div>
-      <div className="field">
-        <label htmlFor="ob-zone">{labels['auth.homeZone']}</label>
-        <select id="ob-zone" name="homeZone" className="input" defaultValue="">
-          <option value="">—</option>
-          {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-        </select>
-      </div>
+      {zones.length > 0 ? (
+        <div className="field">
+          <label htmlFor="ob-zone">{labels['auth.homeZone']}</label>
+          <select id="ob-zone" name="homeZone" className="input" defaultValue="">
+            <option value="">—</option>
+            {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+          </select>
+        </div>
+      ) : null}
       <label className="check mb12"><input type="checkbox" name="ageAck" required /><span>{labels['auth.ageAck']}</span></label>
       <label className="check mb16">
         <input type="checkbox" name="terms" required />

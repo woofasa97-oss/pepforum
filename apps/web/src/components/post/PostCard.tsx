@@ -62,7 +62,7 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
               {locale === 'fr' ? category.name_fr : category.name_en}
             </Link>
           ) : null}
-          {zone ? (
+          {zone && taxonomy.regions ? (
             <Link className="pill zone" href={zone.id === 'national' ? '/' : `/zone/${zone.id}`}>
               {locale === 'fr' ? zone.name_fr : zone.name_en}
               {city ? ` · ${city.name}` : ''}
