@@ -45,38 +45,45 @@ export default async function ProfilePage({ params }: Props) {
     <div className="page">
       <main id="main" className="narrow">
         <div className="card card-p mb16">
-          <div className="row" style={{ alignItems: 'flex-start', gap: 16 }}>
+          {/* Picture, name and buttons on top; on phones the buttons get their own row and the details run full width. */}
+          <div className="prof-head">
             <Avatar name={profile.username} size="lg" src={profile.avatar ?? null} />
-            <div className="grow">
-              <div className="row wrap">
-                <h1 tabIndex={-1}>u/{profile.username}</h1>
+            <div className="prof-id">
+              <div className="row wrap" style={{ gap: 8 }}>
+                <h1 className="prof-name" tabIndex={-1}>u/{profile.username}</h1>
                 <TierBadge tier={profile.tier} t={t} />
+              </div>
+              <div className="row wrap mt4" style={{ gap: 6 }}>
                 <span className="pill">{t(`tier.${profile.tier}` as MessageKey)}</span>
                 {profile.is_admin ? <span className="pill blue">{t('profile.admin')}</span> : null}
                 <ClinicianBadge profession={profile.clinician} t={t} size="md" />
                 {profile.is_following && profile.follows_you ? <span className="pill green">{t('profile.friends')}</span>
                   : profile.follows_you ? <span className="pill">{t('profile.followsYou')}</span> : null}
               </div>
-              <p className="small muted">{t('profile.joined', { date: formatDate(profile.joined_at, locale) })}</p>
-              {profile.deleted ? null : (
-                <p className="small mt8 follow-counts">
-                  <Link href={`/u/${encodeURIComponent(profile.username)}/followers`}><b>{(profile.followers ?? 0).toLocaleString()}</b> {t('profile.followers')}</Link>
-                  <Link href={`/u/${encodeURIComponent(profile.username)}/following`}><b>{(profile.following ?? 0).toLocaleString()}</b> {t('profile.following')}</Link>
-                </p>
-              )}
+            </div>
+            {standing && !profile.is_me && !profile.deleted ? (
+              <div className="prof-actions">
+                <FollowButton username={profile.username} following={profile.is_following ?? false}
+                  labels={{ follow: t('profile.follow'), following: t('profile.followingButton'), unfollow: t('profile.unfollow') }} />
+                <ReportMemberForm username={profile.username} labels={pick(t, REPORT_MEMBER_LABEL_KEYS)} />
+              </div>
+            ) : null}
+            <div className="prof-body">
+              <p className="small muted prof-facts">
+                <span>{t('profile.joined', { date: formatDate(profile.joined_at, locale) })}</span>
+                {profile.deleted ? null : (
+                  <>
+                    <Link href={`/u/${encodeURIComponent(profile.username)}/followers`}><b>{(profile.followers ?? 0).toLocaleString()}</b> {t('profile.followers')}</Link>
+                    <Link href={`/u/${encodeURIComponent(profile.username)}/following`}><b>{(profile.following ?? 0).toLocaleString()}</b> {t('profile.following')}</Link>
+                  </>
+                )}
+              </p>
               {profile.deleted ? <p className="mt8">{t('profile.deleted')}</p> : null}
               <SocialBadges username={profile.username} socials={profile.socials ?? []} t={t} locale={locale} isAdmin={Boolean(standing?.is_admin)} />
               {profile.bio ? <p className="mt8">{profile.bio}</p> : null}
               {profile.coi ? <p className="small mt8"><b>{t('profile.coi')}:</b> {profile.coi}</p> : null}
               {profile.moderates.length ? <p className="small mt8 pill blue">{t('profile.moderates', { zones: profile.moderates.join(', ') })}</p> : null}
             </div>
-            {standing && !profile.is_me && !profile.deleted ? (
-              <div className="actions" style={{ flex: 'none', marginTop: 0, alignItems: 'flex-start' }}>
-                <FollowButton username={profile.username} following={profile.is_following ?? false}
-                  labels={{ follow: t('profile.follow'), following: t('profile.followingButton'), unfollow: t('profile.unfollow') }} />
-                <ReportMemberForm username={profile.username} labels={pick(t, REPORT_MEMBER_LABEL_KEYS)} />
-              </div>
-            ) : null}
           </div>
           <div className="stats mt16">
             <div className="stat"><div className="v">{profile.karma.toLocaleString()}</div><div className="l">{t('standing.karma')}</div></div>

@@ -25,7 +25,7 @@ export function NotificationSettingsForm({ settings, labels }: { settings: Notif
         </label>
       ))}
       <input type="hidden" name="push" value={settings.push ? 'on' : ''} />
-      <SubmitButton>{labels['settings.save']}</SubmitButton>
+      <SubmitButton>{labels['notifications.save']}</SubmitButton>
     </form>
   );
 }

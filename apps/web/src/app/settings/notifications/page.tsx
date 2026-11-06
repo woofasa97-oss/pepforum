@@ -26,7 +26,7 @@ export default async function NotificationSettingsPage() {
           <h2 id="cats-h" className="mb8">{t('notifications.what')}</h2>
           <p className="small muted mb12">{t('notifications.whatBody')}</p>
           <NotificationSettingsForm settings={settings}
-            labels={pick(t, ['settings.save', 'notifications.cat.replies', 'notifications.cat.notes', 'notifications.cat.moderation', 'notifications.cat.team',
+            labels={pick(t, ['notifications.save', 'notifications.cat.replies', 'notifications.cat.notes', 'notifications.cat.moderation', 'notifications.cat.team',
               'notifications.catHint.replies', 'notifications.catHint.notes', 'notifications.catHint.moderation', 'notifications.catHint.team'])} />
         </section>
 

@@ -487,3 +487,55 @@ code.secret { font-family: ui-monospace, monospace; font-size: 12px; overflow-wr
 .ad-card .ad-image { width: 100%; aspect-ratio: 1200 / 628; object-fit: cover; border-radius: var(--r-sm); }
 .ticket-list li.unread a { border-left: 3px solid var(--accent); }
 .pill.xs { font-size: 11px; padding: 1px 7px; }
+
+/* ── Phone layout pass: shared pieces most pages rely on ── */
+.mt4 { margin-top: 4px; }
+/* Profile header: picture | name and badges | buttons, with the details under the name. */
+.prof-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "av id act" ". body body"; column-gap: 16px; row-gap: 10px; align-items: start; }
+.prof-head > .avatar { grid-area: av; }
+.prof-id { grid-area: id; min-width: 0; }
+.prof-name { overflow-wrap: anywhere; }
+.prof-actions { grid-area: act; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.prof-body { grid-area: body; min-width: 0; }
+.prof-facts { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.prof-facts a { color: var(--text-2); }
+.prof-facts a:hover { color: var(--text); text-decoration: underline; }
+.prof-facts b { color: var(--text); }
+/* Post byline: author, level and time move as one. */
+.meta .byline { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+/* Link box: a long address ends in "…" instead of squeezing to one letter per line. */
+.linkcard { overflow-wrap: normal; }
+.linkcard > .i { flex: none; }
+.lc-body { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; }
+.lc-url { flex: 1 1 220px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Labelled fields side by side drop onto their own rows when there isn't room. */
+.row.wrap > .field.grow { flex: 1 1 180px; }
+/* Dropdowns look the same on every device; the arrow is drawn with gradients (no image, so img-src stays 'self'). */
+select.input { appearance: none; -webkit-appearance: none; padding-right: 32px; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+.more-links a { display: grid; gap: 2px; }
+.media-row > .grow { flex: 1 1 200px; }
+.tbl .cell-path { min-width: 150px; overflow-wrap: anywhere; }
+/* "Report member" sits beside Follow as a quiet text button, like the post actions. */
+.prof-actions summary { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: var(--r-sm); font-size: 13px; font-weight: 600; color: var(--text-2); cursor: pointer; list-style: none; }
+.prof-actions summary::-webkit-details-marker { display: none; }
+.prof-actions summary:hover { background: var(--surface-2); color: var(--text); }
+.pill { max-width: 100%; }
+.pill.social { display: inline-block; white-space: normal; border-radius: 14px; line-height: 1.5; }
+.pill.social .i { vertical-align: -2px; margin-right: 2px; }
+.grid2.even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.grid2.side300 { grid-template-columns: minmax(0, 1fr) 300px; }
+@media (max-width: 760px) {
+  .grid2.even, .grid2.side300 { grid-template-columns: minmax(0, 1fr); }
+  .prof-head { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "av id" "act act" "body body"; column-gap: 12px; align-items: center; }
+  .prof-name { font-size: 21px; }
+  .meta > .sep.lead { display: none; }
+  .meta .byline { flex-basis: 100%; flex-wrap: nowrap; }
+  .meta .byline > * { flex: none; }
+  .meta .byline > .author { flex: 0 1 auto; min-width: 0; }
+  .meta .author .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pill { white-space: normal; }
+  .card .btn { white-space: normal; max-width: 100%; }
+  /* Small panels (report, suggest a note) open as a sheet along the bottom; tapping outside closes them. */
+  .popover[open] > summary::before { content: ""; position: fixed; inset: 0; z-index: 29; background: rgba(8, 18, 36, .45); cursor: default; }
+  .popover[open] > .popover-body, .popover.end[open] > .popover-body { position: fixed; left: 12px; right: 12px; top: auto; bottom: 12px; width: auto; max-height: calc(100dvh - 96px); overflow-y: auto; }
+}

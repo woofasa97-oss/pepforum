@@ -45,7 +45,7 @@ export default async function AdminMediaPage({ searchParams }: { searchParams: P
         <ul className="link-queue">
           {rows.map((m) => (
             <li key={m.id} className="card card-p">
-              <div className="row" style={{ gap: 16, alignItems: 'flex-start' }}>
+              <div className="row wrap media-row" style={{ gap: 16, alignItems: 'flex-start' }}>
                 {m.status === 'ready' ? (
                   // eslint-disable-next-line @next/next/no-img-element -- admin thumbnail from this origin
                   <a href={`/media/${m.id}`} target="_blank" rel="noopener noreferrer"><img src={`/media/${m.id}`} alt={m.alt} style={{ width: 120, height: 90, objectFit: 'cover', borderRadius: 8 }} /></a>

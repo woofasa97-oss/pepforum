@@ -55,7 +55,7 @@ export default async function AdminSystemPage() {
         </div>
       </section>
 
-      <div className="grid2 mb16" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+      <div className="grid2 even mb16">
         <section className="card card-p" aria-labelledby="audit-h">
           <h2 id="audit-h" style={{ fontSize: 16 }} className="mb8">{t('admin.system.audit')}</h2>
           <p className="small muted mb12">{t('admin.system.auditHelp')}</p>
@@ -83,7 +83,7 @@ export default async function AdminSystemPage() {
         </section>
       </div>
 
-      <div className="grid2 mb16" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+      <div className="grid2 even mb16">
         <section className="card card-p" aria-labelledby="signin-h">
           <h2 id="signin-h" style={{ fontSize: 16 }} className="mb8">{t('admin.system.signIn')}</h2>
           <p className="small muted mb8">{t('admin.system.providers')}</p>
@@ -104,18 +104,20 @@ export default async function AdminSystemPage() {
           <h2 id="busy-h" style={{ fontSize: 16 }} className="mb8">{t('admin.system.busiest')}</h2>
           <p className="small muted mb12">{t('admin.system.busiestHelp')}</p>
           {s.busiest_24h.length === 0 ? <EmptyState title={t('admin.system.quiet')} /> : (
-            <table className="tbl">
-              <thead><tr><th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.log.action')}</th><th scope="col" className="num">{t('admin.system.count')}</th></tr></thead>
-              <tbody>
-                {s.busiest_24h.map((b) => (
-                  <tr key={`${b.username}-${b.action}`}>
-                    <td><Link className="link" href={`/admin/people/${encodeURIComponent(b.username)}`}>u/{b.username}</Link></td>
-                    <td>{b.action}</td>
-                    <td className="num">{b.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead><tr><th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.log.action')}</th><th scope="col" className="num">{t('admin.system.count')}</th></tr></thead>
+                <tbody>
+                  {s.busiest_24h.map((b) => (
+                    <tr key={`${b.username}-${b.action}`}>
+                      <td><Link className="link" href={`/admin/people/${encodeURIComponent(b.username)}`}>u/{b.username}</Link></td>
+                      <td>{b.action}</td>
+                      <td className="num">{b.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       </div>

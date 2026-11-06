@@ -45,7 +45,7 @@ export default async function StandingPage() {
           <div className="banner warn mb16"><Icon name="lock" /><div>{t('standing.writingLocked', { date: formatDate(standing.writing_locked_until, locale) })}</div></div>
         ) : null}
 
-        <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="grid2 even">
           <section className="card card-p" aria-labelledby="ladder-h">
             <h2 id="ladder-h" style={{ fontSize: 15 }}>{t('standing.ladder')}</h2>
             <ol className="ladder mt12">
@@ -117,18 +117,20 @@ export default async function StandingPage() {
         <section className="card mt16" aria-labelledby="ledger-h">
           <div className="card-p"><h2 id="ledger-h" style={{ fontSize: 15 }}>{t('standing.ledger')}</h2></div>
           {ledger.length === 0 ? <p className="small muted card-p">{t('standing.ledgerEmpty')}</p> : (
-            <table className="tbl">
-              <tbody>
-                {ledger.map((e) => (
-                  <tr key={e.id}>
-                    <td>{t(`ledger.reason.${KNOWN_REASONS.has(e.reason) ? e.reason : 'other'}` as MessageKey)}</td>
-                    <td className="faint xs">{e.track === 'karma' ? t('standing.karma') : t('standing.modXp')}</td>
-                    <td className={`num ${Number(e.delta) > 0 ? 'pos' : 'neg'}`}>{Number(e.delta) > 0 ? '+' : ''}{Number(e.delta)}</td>
-                    <td className="faint xs">{formatDate(e.created_at, locale)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <tbody>
+                  {ledger.map((e) => (
+                    <tr key={e.id}>
+                      <td>{t(`ledger.reason.${KNOWN_REASONS.has(e.reason) ? e.reason : 'other'}` as MessageKey)}</td>
+                      <td className="faint xs">{e.track === 'karma' ? t('standing.karma') : t('standing.modXp')}</td>
+                      <td className={`num ${Number(e.delta) > 0 ? 'pos' : 'neg'}`}>{Number(e.delta) > 0 ? '+' : ''}{Number(e.delta)}</td>
+                      <td className="faint xs">{formatDate(e.created_at, locale)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
 

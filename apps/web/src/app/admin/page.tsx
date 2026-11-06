@@ -170,7 +170,7 @@ export default async function AdminHomePage({ searchParams }: { searchParams: Pr
                 />
               ))}
             </div>
-            <div className="grid2 mt16" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+            <div className="grid2 even mt16">
               <div className="card card-p">
                 <h3 className="mb8">{t('admin.home.quality')}</h3>
                 <Quality m={metrics.data} t={t} />

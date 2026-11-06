@@ -23,14 +23,17 @@ export function CommentTree({ comments, postId, t, signedIn }: Props) {
   const renderNode = (node: ThreadNode) => (
     <li key={node.id} className="cmt" id={`c-${node.id}`}>
       <div className="meta">
-        <Link href={`/u/${node.author_username}`} className="bold author">
-          <Avatar name={node.author_username} size="sm" src={node.author_avatar ?? null} />u/{node.author_username}
-        </Link>
-        <TierBadge tier={node.author_tier} t={t} />
+        {/* Who and when stay on one line; a clinician badge follows and wraps if it must. */}
+        <span className="byline">
+          <Link href={`/u/${node.author_username}`} className="bold author">
+            <Avatar name={node.author_username} size="sm" src={node.author_avatar ?? null} /><span className="who">u/{node.author_username}</span>
+          </Link>
+          <TierBadge tier={node.author_tier} t={t} />
+          {node.is_op ? <span className="badge op">{t('comment.op')}</span> : null}
+          <span className="sep" />
+          <time dateTime={node.created_at}>{relativeTime(node.created_at, t)}</time>
+        </span>
         <ClinicianBadge profession={node.author_clinician} t={t} />
-        {node.is_op ? <span className="badge op">{t('comment.op')}</span> : null}
-        <span className="sep" />
-        <time dateTime={node.created_at}>{relativeTime(node.created_at, t)}</time>
       </div>
       {node.status === 'held' ? <p className="xs" style={{ color: 'var(--amber)' }}>{t('comment.held')}</p> : null}
       <p className="cmt-x">{node.status === 'deleted' ? t('comment.deleted') : node.body}</p>

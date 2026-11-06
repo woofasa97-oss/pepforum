@@ -66,7 +66,7 @@ export default async function AdminNotesPage() {
             <p className="xs faint mb12">{t('admin.notes.agreementHelp')}</p>
           </>
         ) : null}
-        <div className="grid2" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+        <div className="grid2 even">
           <div>
             <h3 className="mb8" style={{ fontSize: 14 }}>{t('admin.notes.readiness')}</h3>
             <ul className="caps">
@@ -89,7 +89,7 @@ export default async function AdminNotesPage() {
         </div>
       </section>
 
-      <div className="grid2 mb16" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+      <div className="grid2 even mb16">
         <section className="card card-p" aria-labelledby="waiting-h">
           <h2 id="waiting-h" style={{ fontSize: 16 }} className="mb8">{t('admin.notes.oldestWaiting')}</h2>
           {h.waiting.length === 0 ? <EmptyState title={t('admin.notes.noneWaiting')} /> : (

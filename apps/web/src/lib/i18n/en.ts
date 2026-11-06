@@ -349,6 +349,7 @@ export const en = {
   'settings.coi': 'Conflicts of interest',
   'settings.coiHint': 'Employer, clinic, lab, sponsor. Required before writing notes in areas you have ties to.',
   'settings.save': 'Save profile',
+  'notifications.save': 'Save preferences',
   'settings.saved': 'Saved.',
   'settings.security': 'Security',
   'settings.mfa': 'Two-factor authentication (required for moderators)',
@@ -1477,9 +1478,9 @@ export const en = {
   'nav.notificationsUnread': 'Notifications: {n} unread',
   'footer.advertise': 'Advertise',
   'settings.more': 'More settings',
-  'settings.notificationsHint': 'what you hear about, and web push',
-  'settings.clinicianHint': 'a verified badge for licensed health professionals',
-  'settings.advertiserHint': 'book a sponsored card (reviewed, no vendors)',
+  'settings.notificationsHint': 'What you hear about, and web push.',
+  'settings.clinicianHint': 'A verified badge for licensed health professionals.',
+  'settings.advertiserHint': 'Book a sponsored card (reviewed, no vendors).',
   'cap.upload_image': 'Attach images',
 
   // Notifications

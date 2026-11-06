@@ -68,16 +68,19 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
               {city ? ` · ${city.name}` : ''}
             </Link>
           ) : null}
-          <span className="sep" />
-          <Link href={`/u/${post.author_username}`} className="bold author">
-            <Avatar name={post.author_username} size="sm" src={post.author_avatar ?? null} />
-            {t('post.by', { user: post.author_username })}
-          </Link>
-          <TierBadge tier={post.author_tier} t={t} />
-          {'author_clinician' in post ? <ClinicianBadge profession={post.author_clinician} t={t} /> : null}
-          <span className="sep" />
-          <time dateTime={post.created_at}>{relativeTime(post.created_at, t)}</time>
+          <span className="sep lead" />
+          {/* Who and when stay together; on phones they take their own line under the tags. */}
+          <span className="byline">
+            <Link href={`/u/${post.author_username}`} className="bold author">
+              <Avatar name={post.author_username} size="sm" src={post.author_avatar ?? null} />
+              <span className="who">{t('post.by', { user: post.author_username })}</span>
+            </Link>
+            <TierBadge tier={post.author_tier} t={t} />
+            <span className="sep" />
+            <time dateTime={post.created_at}>{relativeTime(post.created_at, t)}</time>
+          </span>
           {post.edited_at ? <span className="xs">· {t('post.edited')}</span> : null}
+          {'author_clinician' in post ? <ClinicianBadge profession={post.author_clinician} t={t} /> : null}
           {post.pinned ? <span className="pill blue"><Icon name="pin" />{t('post.pinned')}</span> : null}
           {'has_helpful_note' in post && post.has_helpful_note ? <span className="pill green"><Icon name="note" />{t('post.hasHelpfulNote')}</span> : null}
           {'has_open_note' in post && post.has_open_note && !post.has_helpful_note ? <span className="pill amber">{t('post.hasOpenNote')}</span> : null}
@@ -103,8 +106,10 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
         {post.link_url ? (
           <a className="linkcard" href={post.link_url} target="_blank" rel="nofollow ugc noopener noreferrer">
             <Icon name="link" />
-            <span className="grow">{post.link_url}</span>
-            <span className="xs faint">{t('post.linkWarning')}</span>
+            <span className="lc-body">
+              <span className="lc-url">{post.link_url}</span>
+              <span className="xs faint">{t('post.linkWarning')}</span>
+            </span>
             <Icon name="external" />
           </a>
         ) : null}

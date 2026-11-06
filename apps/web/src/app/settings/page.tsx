@@ -123,10 +123,11 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
         <section className="card card-p mb16" aria-labelledby="more-h">
           <h2 id="more-h" className="mb8">{t('settings.more')}</h2>
-          <ul className="sidelist">
-            <li><Link href="/settings/notifications">{t('notifications.settings')}</Link><span className="xs muted"> — {t('settings.notificationsHint')}</span></li>
-            <li><Link href="/settings/clinician">{t('clinician.title')}</Link><span className="xs muted"> — {t('settings.clinicianHint')}</span></li>
-            <li><Link href="/advertiser">{t('ads.workspace')}</Link><span className="xs muted"> — {t('settings.advertiserHint')}</span></li>
+          {/* Title with its hint underneath, so it reads cleanly on a phone. */}
+          <ul className="sidelist more-links">
+            <li><Link href="/settings/notifications"><span>{t('notifications.settings')}</span><span className="xs muted">{t('settings.notificationsHint')}</span></Link></li>
+            <li><Link href="/settings/clinician"><span>{t('clinician.title')}</span><span className="xs muted">{t('settings.clinicianHint')}</span></Link></li>
+            <li><Link href="/advertiser"><span>{t('ads.workspace')}</span><span className="xs muted">{t('settings.advertiserHint')}</span></Link></li>
           </ul>
         </section>
 

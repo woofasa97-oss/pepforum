@@ -302,7 +302,7 @@ export default async function AdminMemberPage({ params, searchParams }: { params
         ))}
       </div>
 
-      <div className="grid2" style={{ gridTemplateColumns: 'minmax(0, 1fr) 300px' }}>
+      <div className="grid2 side300">
         <div className="card card-p">
           <nav className="tabs" aria-label={t('admin.member.sections')}>
             {TABS.map((x) => <Link key={x} href={`${base}?tab=${x}`} aria-current={x === tab ? 'page' : undefined}>{t(`admin.member.tab.${x}` as MessageKey)}</Link>)}

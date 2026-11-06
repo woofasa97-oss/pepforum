@@ -66,8 +66,8 @@ export default async function AdminSeoPage() {
               <tbody>
                 {result.data.map((r) => (
                   <tr key={r.from}>
-                    <td><code>{r.from}</code></td>
-                    <td style={{ overflowWrap: 'anywhere' }}>{r.to}</td>
+                    <td className="cell-path"><code>{r.from}</code></td>
+                    <td className="cell-path">{r.to}</td>
                     <td>{r.permanent ? '301' : '302'}</td>
                     <td className="xs muted">{r.by ? `u/${r.by}` : '—'} · {formatDate(r.updated_at, locale)}<br />{r.reason}</td>
                     <td>

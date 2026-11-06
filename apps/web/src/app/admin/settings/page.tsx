@@ -151,24 +151,26 @@ async function History({ entryKey, field, t, locale }: { entryKey: string; field
         <Link className="btn sm ghost" href="/admin/settings"><Icon name="x" />{t('admin.close')}</Link>
       </div>
       {result.data.length === 0 ? <p className="small muted">{t('admin.cfgNoHistory')}</p> : (
-        <table className="tbl">
-          <thead><tr><th scope="col">{t('admin.date')}</th><th scope="col">{t('admin.member.by')}</th><th scope="col">{t('admin.cfgChange')}</th><th scope="col">{t('admin.reason')}</th><th scope="col" /></tr></thead>
-          <tbody>
-            {result.data.map((c) => (
-              <tr key={c.id}>
-                <td>{formatDate(c.at, locale)}</td>
-                <td>{c.by ? `u/${c.by}` : '—'}</td>
-                <td>{field ? `${formatValue(field, c.old, t)} → ${formatValue(field, c.new, t)}` : `${JSON.stringify(c.old)} → ${JSON.stringify(c.new)}`}</td>
-                <td>{c.reason}</td>
-                <td>
-                  <ActionForm action={setConfigAction} label={t('admin.cfgRevert')} submit={t('admin.cfgRevert')}
-                    consequence={t('admin.cfgRevertHelp', { value: field ? formatValue(field, c.old, t) : JSON.stringify(c.old) })}
-                    hidden={{ key: entryKey, raw: JSON.stringify(c.old) }} labels={labels} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr><th scope="col">{t('admin.date')}</th><th scope="col">{t('admin.member.by')}</th><th scope="col">{t('admin.cfgChange')}</th><th scope="col">{t('admin.reason')}</th><th scope="col" /></tr></thead>
+            <tbody>
+              {result.data.map((c) => (
+                <tr key={c.id}>
+                  <td>{formatDate(c.at, locale)}</td>
+                  <td>{c.by ? `u/${c.by}` : '—'}</td>
+                  <td>{field ? `${formatValue(field, c.old, t)} → ${formatValue(field, c.new, t)}` : `${JSON.stringify(c.old)} → ${JSON.stringify(c.new)}`}</td>
+                  <td>{c.reason}</td>
+                  <td>
+                    <ActionForm action={setConfigAction} label={t('admin.cfgRevert')} submit={t('admin.cfgRevert')}
+                      consequence={t('admin.cfgRevertHelp', { value: field ? formatValue(field, c.old, t) : JSON.stringify(c.old) })}
+                      hidden={{ key: entryKey, raw: JSON.stringify(c.old) }} labels={labels} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );
@@ -264,29 +266,31 @@ async function TaxonomyTab({ t, locale }: { t: Translate; locale: string }) {
             {categoryFields()}
           </ActionForm>
         </div>
-        <table className="tbl">
-          <thead><tr><th scope="col">{t('admin.tax.name')}</th><th scope="col" className="num">{t('admin.tax.minRatings')}</th><th scope="col" className="num">{t('admin.tax.order')}</th><th scope="col" /></tr></thead>
-          <tbody>
-            {categories.map((c) => (
-              <tr key={c.id}>
-                <td>
-                  <b>{locale === 'fr' ? c.name_fr : c.name_en}</b> <code className="xs">{c.id}</code>
-                  {c.archived_at ? <span className="pill">{t('admin.tax.archived')}</span> : null}
-                </td>
-                <td className="num">{c.min_note_ratings ?? '—'}</td>
-                <td className="num">{c.sort_order}</td>
-                <td>
-                  <div className="row" style={{ gap: 6, justifyContent: 'flex-end', alignItems: 'flex-start' }}>
-                    <ActionForm action={upsertCategoryAction} label={t('admin.cfgEdit')} submit={t('admin.save')} labels={labels}>{categoryFields(c)}</ActionForm>
-                    <ActionForm action={archiveCategoryAction} label={t(c.archived_at ? 'admin.tax.unarchive' : 'admin.tax.archive')}
-                      submit={t(c.archived_at ? 'admin.tax.unarchive' : 'admin.tax.archive')} tone={c.archived_at ? 'normal' : 'danger'}
-                      consequence={c.archived_at ? undefined : t('admin.tax.archiveHelp')} hidden={{ id: c.id, archived: c.archived_at ? 'false' : 'true' }} labels={labels} />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr><th scope="col">{t('admin.tax.name')}</th><th scope="col" className="num">{t('admin.tax.minRatings')}</th><th scope="col" className="num">{t('admin.tax.order')}</th><th scope="col" /></tr></thead>
+            <tbody>
+              {categories.map((c) => (
+                <tr key={c.id}>
+                  <td>
+                    <b>{locale === 'fr' ? c.name_fr : c.name_en}</b> <code className="xs">{c.id}</code>
+                    {c.archived_at ? <span className="pill">{t('admin.tax.archived')}</span> : null}
+                  </td>
+                  <td className="num">{c.min_note_ratings ?? '—'}</td>
+                  <td className="num">{c.sort_order}</td>
+                  <td>
+                    <div className="row" style={{ gap: 6, justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+                      <ActionForm action={upsertCategoryAction} label={t('admin.cfgEdit')} submit={t('admin.save')} labels={labels}>{categoryFields(c)}</ActionForm>
+                      <ActionForm action={archiveCategoryAction} label={t(c.archived_at ? 'admin.tax.unarchive' : 'admin.tax.archive')}
+                        submit={t(c.archived_at ? 'admin.tax.unarchive' : 'admin.tax.archive')} tone={c.archived_at ? 'normal' : 'danger'}
+                        consequence={c.archived_at ? undefined : t('admin.tax.archiveHelp')} hidden={{ id: c.id, archived: c.archived_at ? 'false' : 'true' }} labels={labels} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className="admin-section card card-p" aria-labelledby="zones-h">

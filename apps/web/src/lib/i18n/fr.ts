@@ -350,6 +350,7 @@ export const fr: Record<MessageKey, string> = {
   'settings.coi': 'Conflits d’intérêts',
   'settings.coiHint': 'Employeur, clinique, laboratoire, commanditaire. Requis avant de rédiger des notes dans un domaine où vous avez des liens.',
   'settings.save': 'Enregistrer le profil',
+  'notifications.save': 'Enregistrer les préférences',
   'settings.saved': 'Enregistré.',
   'settings.security': 'Sécurité',
   'settings.mfa': 'Authentification à deux facteurs (obligatoire pour les modérateurs)',
@@ -1477,9 +1478,9 @@ export const fr: Record<MessageKey, string> = {
   'nav.notificationsUnread': 'Notifications : {n} non lue(s)',
   'footer.advertise': 'Annoncer',
   'settings.more': 'Autres réglages',
-  'settings.notificationsHint': 'ce dont vous êtes averti, et les notifications push',
-  'settings.clinicianHint': 'un badge vérifié pour les professionnels de la santé autorisés',
-  'settings.advertiserHint': 'réserver une carte commanditée (révisée, sans vendeurs)',
+  'settings.notificationsHint': 'Ce dont vous êtes averti, et les notifications push.',
+  'settings.clinicianHint': 'Un badge vérifié pour les professionnels de la santé autorisés.',
+  'settings.advertiserHint': 'Réserver une carte commanditée (révisée, sans vendeurs).',
   'cap.upload_image': 'Joindre des images',
 
   // Notifications

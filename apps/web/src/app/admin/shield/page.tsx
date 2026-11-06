@@ -31,7 +31,7 @@ export default async function AdminShieldPage() {
         </div>
       ) : null}
 
-      <div className="grid2 mb16" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+      <div className="grid2 even mb16">
         <section className="card card-p" aria-labelledby="phrases-h">
           <div className="row between wrap mb8">
             <h2 id="phrases-h" style={{ fontSize: 16 }}>{t('admin.shield.phrases')}</h2>
@@ -52,22 +52,24 @@ export default async function AdminShieldPage() {
           </div>
           <p className="small muted mb12">{t('admin.shield.phrasesHelp')}</p>
           {s.phrases.length === 0 ? <EmptyState title={t('admin.shield.noPhrases')} /> : (
-            <table className="tbl">
-              <thead><tr><th scope="col">{t('admin.shield.phrase')}</th><th scope="col">{t('admin.shield.action')}</th><th scope="col" className="num">{t('admin.shield.holds30')}</th><th scope="col" /></tr></thead>
-              <tbody>
-                {s.phrases.map((p) => (
-                  <tr key={p.phrase}>
-                    <td><code>{p.phrase}</code></td>
-                    <td><span className={`pill ${p.action === 'block' ? 'red' : 'amber'}`}>{t(p.action === 'block' ? 'admin.shield.block' : 'admin.shield.hold')}</span></td>
-                    <td className="num">{p.action === 'hold' ? p.holds_30d : '—'}</td>
-                    <td>
-                      <ActionForm action={shieldRemoveAction} label={t('admin.member.remove')} submit={t('admin.member.remove')} tone="danger"
-                        hidden={{ kind: 'phrase', value: p.phrase }} labels={labels} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead><tr><th scope="col">{t('admin.shield.phrase')}</th><th scope="col">{t('admin.shield.action')}</th><th scope="col" className="num">{t('admin.shield.holds30')}</th><th scope="col" /></tr></thead>
+                <tbody>
+                  {s.phrases.map((p) => (
+                    <tr key={p.phrase}>
+                      <td><code>{p.phrase}</code></td>
+                      <td><span className={`pill ${p.action === 'block' ? 'red' : 'amber'}`}>{t(p.action === 'block' ? 'admin.shield.block' : 'admin.shield.hold')}</span></td>
+                      <td className="num">{p.action === 'hold' ? p.holds_30d : '—'}</td>
+                      <td>
+                        <ActionForm action={shieldRemoveAction} label={t('admin.member.remove')} submit={t('admin.member.remove')} tone="danger"
+                          hidden={{ kind: 'phrase', value: p.phrase }} labels={labels} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
 
@@ -85,26 +87,28 @@ export default async function AdminShieldPage() {
           </div>
           <p className="small muted mb12">{t('admin.shield.domainsHelp')}</p>
           {s.domains.length === 0 ? <EmptyState title={t('admin.shield.noDomains')} /> : (
-            <table className="tbl">
-              <thead><tr><th scope="col">{t('admin.shield.domain')}</th><th scope="col">{t('admin.reason')}</th><th scope="col" /></tr></thead>
-              <tbody>
-                {s.domains.map((d) => (
-                  <tr key={d.domain}>
-                    <td><code>{d.domain}</code><span className="xs muted">{d.created_by ? `u/${d.created_by} · ` : ''}{formatDate(d.created_at, locale)}</span></td>
-                    <td>{d.reason}</td>
-                    <td>
-                      <ActionForm action={shieldRemoveAction} label={t('admin.member.remove')} submit={t('admin.member.remove')} tone="danger"
-                        hidden={{ kind: 'domain', value: d.domain }} labels={labels} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead><tr><th scope="col">{t('admin.shield.domain')}</th><th scope="col">{t('admin.reason')}</th><th scope="col" /></tr></thead>
+                <tbody>
+                  {s.domains.map((d) => (
+                    <tr key={d.domain}>
+                      <td><code>{d.domain}</code><span className="xs muted">{d.created_by ? `u/${d.created_by} · ` : ''}{formatDate(d.created_at, locale)}</span></td>
+                      <td>{d.reason}</td>
+                      <td>
+                        <ActionForm action={shieldRemoveAction} label={t('admin.member.remove')} submit={t('admin.member.remove')} tone="danger"
+                          hidden={{ kind: 'domain', value: d.domain }} labels={labels} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       </div>
 
-      <div className="grid2" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+      <div className="grid2 even">
         <section className="card card-p" aria-labelledby="test-h">
           <h2 id="test-h" style={{ fontSize: 16 }} className="mb8">{t('admin.shield.test')}</h2>
           <p className="small muted mb12">{t('admin.shield.testHelp')}</p>
