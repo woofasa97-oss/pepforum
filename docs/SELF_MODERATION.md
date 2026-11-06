@@ -34,6 +34,8 @@ Plus two counters used for note privileges: **rater impact** (settled ratings th
 
 **Taking part is never gated.** A new member can post the moment they confirm their email (or finish onboarding after a social sign-up). Karma unlocks what carries more risk: links, then moderating other people. A Newcomer's posts face the same checks as everyone else's: the sourcing shield, collapse on reports, and the integrity gates. On top of the normal limit, a Newcomer can start `rate_limit.post_newcomer` posts a day (default 3); reaching Member lifts it.
 
+**Admins** pass every karma gate in this table (posting, links, rating and writing notes, Steward) and get the top tier's protection from report collapses, but their karma isn't changed: it still comes only from the community (…019, [ADR-0006](adr/0006-admin-limits.md)).
+
 **Hysteresis:** you're promoted the moment you reach a threshold, but demoted only when karma falls below 90% of your current tier's threshold (`tiers.demotion_ratio`), so privileges don't flicker.
 
 ### Capability gates
@@ -124,6 +126,7 @@ The strike costs 15 integrity for 90 days and −10 karma, capped at −30 note-
 ## Reports and moderators
 
 - **Reports:** weight is 0.5–1.5 depending on the reporter's integrity. Each member can file 10 per day, once per item.
+- **Member reports** (…019): a report about a person rather than one post goes to admins only, from the **Report member** button on their profile. It never collapses anything or changes anyone's karma; admins close it as *action taken* or *dismissed* after acting (or not) from the member's page. Each member can report 5 people a day (`rate_limit.report_member`), with one open report per person. See [ADMIN.md](ADMIN.md#member-reports).
 - **Auto-collapse:** content collapses (it is never deleted) when the open reports reach total weight ≥ 3 from at least 3 distinct reporters whose accounts are at least 14 days old.
   - Content by a Trusted+ author collapses only if a Steward is among the reporters.
   - If no moderator reviews it within 48 hours, the collapse reverts.
@@ -158,6 +161,7 @@ New settings:
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
+| `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |
 | `site.announcement` | empty | Site-wide banner `{en, fr, tone: info\|warn, until}` |
 
 Numeric settings now carry `app_config.bounds` (min/max), which `admin_set_config` checks along with the shape of `tiers.thresholds` and the `rate_limit.*` objects.

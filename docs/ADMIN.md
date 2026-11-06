@@ -1,10 +1,10 @@
 # Admin console guide (`/admin`)
 
-The console is where admins look after Pepforum without touching SQL. Everything here is enforced by the database (migrations `…015_admin_console`, `…016_sourcing_shield` and `…018_link_review`): the web pages only display what the admin RPCs return and send changes back to them.
+The console is where admins look after Pepforum without touching SQL. Everything here is enforced by the database (migrations `…015_admin_console`, `…016_sourcing_shield`, `…018_link_review` and `…019_member_reports_and_owner`): the web pages only display what the admin RPCs return and send changes back to them.
 
 ## Getting in
 
-1. You need the **admin** role. The first admin is created with SQL (see [DEPLOYMENT.md](DEPLOYMENT.md), "Bootstrap staff"); after that, admins add each other from **Team & access**.
+1. You need the **admin** role. The site owner gives it from **Team & access** (see "The site owner" below). The very first admin, who becomes the owner, is created with SQL (see [DEPLOYMENT.md](DEPLOYMENT.md), "Bootstrap staff").
 2. You need **two-factor sign-in** (an authenticator app, set up in Settings → Security). Without an MFA session the database refuses every admin read and write.
 3. Open **Admin** in the header, or go to `/admin`.
 
@@ -13,7 +13,7 @@ The console is where admins look after Pepforum without touching SQL. Everything
 - **Every change needs a reason**, and is written to the append-only moderation log with your name.
 - **Nobody edits karma or XP.** To undo a penalty, undo its cause: restore the content, uphold the appeal or remove the strike. The ledger records the reversal.
 - **Nobody overrides a community note's rating.** An admin may only *hide* a note that breaks the rules itself (personal information, vendor links, abuse). Hiding an open note closes it as "Needs ratings", which rewards and penalises nobody. See [ADR-0006](adr/0006-admin-limits.md).
-- **Nobody changes their own role**, and the last admin can't be removed.
+- **Only the site owner adds or removes admins.** Nobody changes their own role, and the last admin can't be removed.
 - **Emails stay private.** Profiles show a masked address. A real one appears only through an exact-email lookup or the **Reveal** button, and both are logged.
 - Admin changes are rate-limited (`rate_limit.admin_action`, 300 an hour), which limits the damage from a stolen session.
 
@@ -24,12 +24,13 @@ The console is where admins look after Pepforum without touching SQL. Everything
 | **Home** | See what needs you today, and community health (active members, posts, notes, reports) over 7, 30 or 90 days, with how well moderation is working. Download the numbers as CSV. |
 | **Moderation** | Work the report queue across every zone, including posts held by the shield. Decide appeals, including sanction appeals that only admins can decide. Read the log of who did what (with Undo where possible). See each moderator's speed and how often appeals overturn them. |
 | **Links** | Approve or decline every link members post. Approve a whole site once (e.g. `pubmed.ncbi.nlm.nih.gov`) and its future links go straight through; block a vendor site and everything waiting on it is declined. See "Link review" below. |
+| **Member reports** | Members reporting another member (harassment, selling, impersonation, a banned member back on a new account…). One card per member with every open report about them. See "Member reports" below. |
 | **People** | Find a member by username, or by exact email for privacy and support requests. A member's page shows everything in one place: standing, strikes, sanctions, ledger, content, notes, appeals, risk signals and private staff notes. Actions: warn, freeze, suspend, ban, lift, rename, roles, founding rater, clear a writing lock, remove a mistaken strike. |
 | **Content** | Search posts, comments and notes, removed ones included. Remove, restore, pin (two per zone), lock comments, hide or unhide notes. |
 | **Community notes** | Watch the notes pipeline, scoring runs and agreement, and readiness to switch to bridging scoring (with the switch). See raters, writer pauses, and signs of manipulation: notes rated mostly by new accounts, and rater pairs who almost always agree. |
 | **Sourcing shield** | Block vendor sites, and watch phrases ("dm me", "telegram") that either hold a post for review or block it. Test any text against the rules. |
 | **Rules & settings** | Change any rule of the karma and notes economy in plain words, with its allowed range, history and Revert. Edit categories, zones and city sub-zones. Publish a site-wide announcement. |
-| **Team & access** | Admins, zone moderators, founding raters, who qualifies as a Steward, and which staff lack two-factor sign-in. |
+| **Team & access** | Admins (the owner adds and removes them), zone moderators, founding raters, who qualifies as a Steward, and which staff lack two-factor sign-in. |
 | **System** | Background jobs (scoring, maintenance, deletions), the security self-audit, the privacy deletion queue, sign-in providers, and the busiest accounts. |
 
 The public **[/transparency](../apps/web/src/app/transparency/page.tsx)** page publishes monthly totals (removals by reason, sanctions, appeals, notes, shield holds). It contains no member data.
@@ -38,10 +39,11 @@ The public **[/transparency](../apps/web/src/app/transparency/page.tsx)** page p
 
 1. **Home:** clear the "Needs you" list from top to bottom. Red first.
 2. **Links:** approve or decline what's waiting. When several items link to the same site, use **Approve site** in "Sites waiting".
-3. **Moderation → Queue:** keep or remove each item. Held posts never reopen on their own, so they wait for you.
-4. **Moderation → Appeals:** decide the ones you didn't act on yourself.
-5. **System:** jobs should all say *Running*, and the self-audit *0 problems*.
-6. Weekly: skim **Community notes → Signs of manipulation**, and **Moderation → Moderator performance**.
+3. **Member reports:** look into each member, act from their page if needed, then close the reports.
+4. **Moderation → Queue:** keep or remove each item. Held posts never reopen on their own, so they wait for you.
+5. **Moderation → Appeals:** decide the ones you didn't act on yourself.
+6. **System:** jobs should all say *Running*, and the self-audit *0 problems*.
+7. Weekly: skim **Community notes → Signs of manipulation**, and **Moderation → Moderator performance**.
 
 ## Sourcing shield: how rules behave
 
@@ -66,6 +68,44 @@ Every post or comment that contains a link (anything starting with `http://`, `h
 
 If text is also held by the shield ("dm me"…), approving the link leaves it in the moderator queue, and keeping it in the queue leaves it waiting for the link. It's published only when both are cleared. Turn the whole review off with **Rules & settings → Admins approve every link** (`links.require_approval`).
 
+## The site owner
+
+One admin is the **owner**: the main account, and the only one who can make someone an admin or remove an admin. Other admins can do everything else; on **Team & access** they see who the owner is instead of the Add and Remove buttons.
+
+**Making someone an admin** (owner only):
+
+1. They create an account and confirm their email.
+2. **Team & access → Add an admin**: type their username and a short reason, and confirm. Or open their page in **People** and use **Make admin**.
+3. They turn on two-factor sign-in under **Settings**. The console stays closed to them until they do.
+
+**Removing an admin:** **Remove admin** on their row in **Team & access**, or on their page in **People**. They lose access straight away.
+
+The owner can't remove their own role, so the site always has an owner. When migration …019 ran, the one existing admin became the owner. To set or move ownership by hand (for example if the owner's account is lost), run this in the Supabase SQL editor; the new owner must already be an admin:
+
+```sql
+delete from public.user_roles where role = 'owner';
+insert into public.user_roles (user_id, role)
+select id, 'owner' from public.profiles where lower(username) = '<username>';
+```
+
+## Admins' own standing
+
+Admins pass every karma gate: they can post text and links, rate and write notes, and count as Stewards, from day one. Their posts get the same protection from report collapses as the top tier, and their profiles say "Admin". Their karma number is untouched: it still comes only from the community, because karma is public and members read it as earned. Admins can't edit anyone's karma, their own included ([ADR-0006](adr/0006-admin-limits.md)).
+
+## Member reports
+
+Every profile has a **Report member** button for problems with the person rather than one post: harassment, selling or sourcing, spam, impersonation, a banned member back on a new account, sharing personal information, someone under 18. These reports go to admins only. They never collapse anything, the reported member never sees them or who sent them, and each member can report 5 people a day (`rate_limit.report_member`). Reports about a single post or comment still go to zone moderators through the post's own Report button.
+
+On **Member reports**, each card is one member, with their karma, integrity, active strikes, any current sanction, how many earlier tickets ended with action, and every open report (reason, details, reporter and the reporter's integrity).
+
+| Button | What happens |
+|---|---|
+| **Open their page to act** | Their page in **People**, where you warn, freeze, suspend or ban them, rename them or add a staff note. |
+| **Action taken** (reason required) | Closes every open report about them as handled. It doesn't sanction anyone: do that from their page first. |
+| **Dismiss** (reason required) | Closes every open report about them with no action. Nobody is told. |
+
+Both are logged, and "Closed in the last 30 days" shows who decided what. If reports are about you, another admin has to decide them. Once closed, members can report the same person again.
+
 ## Where the code lives
 
 | Concern | Location |
@@ -73,7 +113,8 @@ If text is also held by the shield ("dm me"…), approving the link leaves it in
 | Admin RPCs, guardrails, metrics, transparency | `supabase/migrations/…015_admin_console.sql` |
 | Shield, held status, all-zones queue | `supabase/migrations/…016_sourcing_shield.sql` |
 | Link review, approved sites | `supabase/migrations/…018_link_review.sql` |
-| Tests | `packages/database/tests/{admin,shield,links}.test.ts`, `apps/web/tests/admin.test.ts` |
+| Member reports, site owner, admins' gates | `supabase/migrations/…019_member_reports_and_owner.sql` |
+| Tests | `packages/database/tests/{admin,shield,links,member-reports,owner-and-admins}.test.ts`, `apps/web/tests/admin.test.ts` |
 | Pages | `apps/web/src/app/admin/**` |
 | Reads / writes | `apps/web/src/server/admin.ts`, `apps/web/src/server/actions/admin.ts` |
 | Settings registry (groups, inputs, units) | `packages/database/src/config-fields.ts` |

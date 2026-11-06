@@ -1,13 +1,20 @@
+import { MEMBER_REPORT_REASONS } from '@pepforum/database';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { PostCard } from '@/components/post/PostCard';
+import { ReportMemberForm } from '@/components/profile/ReportMemberForm';
 import { Avatar, TierBadge } from '@/components/ui/Bits';
 import { formatDate } from '@/lib/format';
-import type { MessageKey } from '@/lib/i18n';
+import { type MessageKey, pick } from '@/lib/i18n';
 import { USERNAME_PATTERN } from '@/lib/validation';
 import { getLocale, getStanding, getT } from '@/server/context';
 import { getFeed, getProfile, getTaxonomy } from '@/server/queries';
+
+const REPORT_MEMBER_LABEL_KEYS = [
+  'memberReport.open', 'memberReport.intro', 'memberReport.reason', 'memberReport.details', 'memberReport.detailsHint', 'memberReport.submit',
+  ...MEMBER_REPORT_REASONS.map((r) => `memberReport.reason.${r}` as const),
+] satisfies MessageKey[];
 
 interface Props {
   params: Promise<{ username: string }>;
@@ -36,6 +43,7 @@ export default async function ProfilePage({ params }: Props) {
                 <h1 tabIndex={-1}>u/{profile.username}</h1>
                 <TierBadge tier={profile.tier} t={t} />
                 <span className="pill">{t(`tier.${profile.tier}` as MessageKey)}</span>
+                {profile.is_admin ? <span className="pill blue">{t('profile.admin')}</span> : null}
               </div>
               <p className="small muted">{t('profile.joined', { date: formatDate(profile.joined_at, locale) })}</p>
               {profile.deleted ? <p className="mt8">{t('profile.deleted')}</p> : null}
@@ -43,6 +51,11 @@ export default async function ProfilePage({ params }: Props) {
               {profile.coi ? <p className="small mt8"><b>{t('profile.coi')}:</b> {profile.coi}</p> : null}
               {profile.moderates.length ? <p className="small mt8 pill blue">{t('profile.moderates', { zones: profile.moderates.join(', ') })}</p> : null}
             </div>
+            {standing && !profile.is_me && !profile.deleted ? (
+              <div className="actions" style={{ flex: 'none', marginTop: 0 }}>
+                <ReportMemberForm username={profile.username} labels={pick(t, REPORT_MEMBER_LABEL_KEYS)} />
+              </div>
+            ) : null}
           </div>
           <div className="stats mt16">
             <div className="stat"><div className="v">{profile.karma.toLocaleString()}</div><div className="l">{t('standing.karma')}</div></div>

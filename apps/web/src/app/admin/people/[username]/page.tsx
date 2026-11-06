@@ -22,7 +22,7 @@ import {
   setRoleAction,
   staffNoteAction,
 } from '@/server/actions/admin';
-import { adminMember } from '@/server/admin';
+import { adminMember, adminOverview } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
 import { getTaxonomy } from '@/server/queries';
 
@@ -225,7 +225,7 @@ function StaffTab({ m, t }: { m: AdminMember; t: Translate }) {
 export default async function AdminMemberPage({ params, searchParams }: { params: Promise<{ username: string }>; searchParams: Promise<{ tab?: string }> }) {
   const [t, locale, { username }, query, taxonomy] = await Promise.all([getT(), getLocale(), params, searchParams, getTaxonomy()]);
   const tab: Tab = TABS.includes(query.tab as Tab) ? (query.tab as Tab) : 'activity';
-  const result = await adminMember(decodeURIComponent(username));
+  const [result, overview] = await Promise.all([adminMember(decodeURIComponent(username)), adminOverview()]);
   if (!result.ok) return <DataUnavailable result={result} t={t} />;
   const m = result.data;
   const base = `/admin/people/${encodeURIComponent(m.username)}`;
@@ -240,6 +240,8 @@ export default async function AdminMemberPage({ params, searchParams }: { params
     return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
   };
   const in90 = isoDateInDays(90);
+  const owner = overview.ok ? overview.data.owner : null;
+  const isOwner = overview.ok && overview.data.is_owner;
 
   return (
     <>
@@ -250,7 +252,7 @@ export default async function AdminMemberPage({ params, searchParams }: { params
           <div className="grow" style={{ minWidth: 220 }}>
             <h1 tabIndex={-1} className="row wrap" style={{ gap: 8 }}>u/{m.username} <TierBadge tier={m.tier} t={t} /></h1>
             <div className="row wrap mt8" style={{ gap: 4 }}>
-              {m.is_admin ? <span className="pill blue">{t('admin.role.admin')}</span> : null}
+              {m.is_admin ? <span className="pill blue">{t(m.username === owner ? 'admin.role.owner' : 'admin.role.admin')}</span> : null}
               {m.moderates.map((z) => <span key={z} className="pill blue">{t('admin.role.modOf', { zone: zoneName(z) })}</span>)}
               {founding ? <span className="pill green">{t('admin.role.foundingUntil', { date: formatDate(m.founding_until as string, locale) })}</span> : null}
               {active ? <span className="pill red">{t(`admin.sanction.${active.kind}` as MessageKey)}</span> : null}
@@ -340,7 +342,10 @@ export default async function AdminMemberPage({ params, searchParams }: { params
 
           <div className="grp">
             <span className="sec-lbl">{t('admin.member.roles')}</span>
-            {!m.is_self && !m.deleted_at ? (
+            {!isOwner && !m.is_self ? (
+              <p className="xs muted">{owner ? t('admin.member.ownerOnly', { owner }) : t('admin.team.noOwner')}</p>
+            ) : null}
+            {isOwner && !m.is_self && !m.deleted_at ? (
               <ActionForm action={setRoleAction} label={t(m.is_admin ? 'admin.member.removeAdmin' : 'admin.member.makeAdmin')}
                 submit={t(m.is_admin ? 'admin.member.removeAdmin' : 'admin.member.makeAdmin')} tone={m.is_admin ? 'danger' : 'normal'}
                 consequence={t(m.is_admin ? 'admin.member.removeAdminHelp' : 'admin.member.makeAdminHelp')}

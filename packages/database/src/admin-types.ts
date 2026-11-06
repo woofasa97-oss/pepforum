@@ -5,6 +5,8 @@
 import type {
   AppealStatus,
   ContentStatus,
+  MemberReportOutcome,
+  MemberReportReason,
   ModAction,
   NoteClassification,
   NoteStatus,
@@ -28,6 +30,12 @@ export type AdminOverview = {
   held: number;
   links_pending: number;
   links_oldest: string | null;
+  /** Members with open member reports (…019), and the oldest of those reports. */
+  member_reports_open: number;
+  member_reports_oldest: string | null;
+  /** The site owner's username: the one admin who adds and removes admins. */
+  owner: string | null;
+  is_owner: boolean;
   jobs: Partial<Record<JobName, { at: string; ok: boolean }>>;
   last_scoring_run: string | null;
   security_problems: number;
@@ -286,6 +294,38 @@ export const LINK_DECISIONS = ['approve', 'decline'] as const;
 export type LinkDecision = (typeof LINK_DECISIONS)[number];
 export const SITE_DECISIONS = ['approve', 'block', 'unapprove'] as const;
 export type SiteDecision = (typeof SITE_DECISIONS)[number];
+
+/** Open reports about one member, grouped (…019). */
+export type MemberReportTicket = {
+  username: string;
+  tier: number;
+  karma: number;
+  integrity: number;
+  joined: string;
+  is_admin: boolean;
+  is_self: boolean;
+  sanction: 'ban' | 'suspension' | 'freeze' | null;
+  strikes: number;
+  /** Earlier tickets about them that ended with action taken. */
+  actioned_before: number;
+  oldest: string;
+  reports: Array<{
+    id: string;
+    reason: MemberReportReason;
+    details: string;
+    created_at: string;
+    reporter: string;
+    reporter_integrity: number;
+    reporter_joined: string;
+  }>;
+};
+
+export type AdminMemberReports = {
+  open: MemberReportTicket[];
+  recent: Array<{ username: string; outcome: MemberReportOutcome; reason: string; reports: number; by: string | null; at: string }>;
+  actioned_30d: number;
+  dismissed_30d: number;
+};
 
 export type ShieldMatch = { rule_kind: 'domain' | 'phrase'; rule: string; action: ShieldAction };
 

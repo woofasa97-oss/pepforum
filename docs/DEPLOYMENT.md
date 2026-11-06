@@ -44,12 +44,14 @@
 10. **Auth → CAPTCHA:** choose Cloudflare Turnstile and add the secret. The site key goes to Render as `TURNSTILE_SITE_KEY`.
 11. **API keys:** you'll need the **publishable** key (web) and the **secret** key (worker only).
 12. **Bootstrap staff:**
-    - Make yourself admin:
+    - Make yourself admin and site owner (the owner is the only one who can add or remove admins):
       ```sql
       insert into public.user_roles (user_id, role)
-      select id, 'admin' from public.profiles where username = '<you>';
+      select id, r from public.profiles, unnest(array['admin', 'owner']) r
+      where lower(username) = '<you>'
+      on conflict do nothing;
       ```
-      Then, from an MFA session, use `set_zone_moderator` and `grant_founding_rater`.
+      Then turn on two-factor sign-in in Settings, sign in again, and run everything else from `/admin` (Team & access adds admins and moderators). See docs/ADMIN.md, "The site owner".
     - `security.require_mfa_for_staff` must stay `true` in production.
 
 ## 2. Render (web and worker)

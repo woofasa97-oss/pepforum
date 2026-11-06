@@ -8,14 +8,14 @@ import { Icon } from '@/components/ui/Icon';
 import { isWithinDays, isoDateInDays } from '@/lib/admin';
 import { formatDate, relativeTime } from '@/lib/format';
 import { foundingAction, setModeratorAction, setRoleAction } from '@/server/actions/admin';
-import { adminTeam } from '@/server/admin';
+import { adminOverview, adminTeam } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
 import { getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Team & access' };
 
 export default async function AdminTeamPage() {
-  const [t, locale, result, taxonomy] = await Promise.all([getT(), getLocale(), adminTeam(), getTaxonomy()]);
+  const [t, locale, result, taxonomy, overview] = await Promise.all([getT(), getLocale(), adminTeam(), getTaxonomy(), adminOverview()]);
   if (!result.ok) return <><PageHeader title={t('admin.team.title')} sub={t('admin.team.sub')} /><DataUnavailable result={result} t={t} /></>;
   const team = result.data;
   const reasonLabels = { reason: t('admin.reasonLabel'), reasonHint: t('admin.reasonHint') };
@@ -27,6 +27,8 @@ export default async function AdminTeamPage() {
   const member = (username: string) => <Link className="link" href={`/admin/people/${encodeURIComponent(username)}`}>u/{username}</Link>;
   const mfaPill = (on: boolean) => <span className={`pill ${on ? 'green' : 'red'}`}>{on ? <Icon name="check" /> : <Icon name="alert" />}{on ? t('admin.team.mfaOn') : t('admin.team.mfaOff')}</span>;
   const in90 = isoDateInDays(90);
+  const owner = overview.ok ? overview.data.owner : null;
+  const isOwner = overview.ok && overview.data.is_owner;
 
   return (
     <>
@@ -39,26 +41,59 @@ export default async function AdminTeamPage() {
       <section className="admin-section card card-p" aria-labelledby="admins-h">
         <div className="row between wrap mb8">
           <h2 id="admins-h" style={{ fontSize: 16 }}>{t('admin.team.admins')}</h2>
-          <ActionForm action={setRoleAction} label={t('admin.team.addAdmin')} submit={t('admin.member.makeAdmin')}
-            consequence={t('admin.member.makeAdminHelp')} hidden={{ admin: 'true' }} labels={reasonLabels}>
-            <div className="field">
-              <label htmlFor="admin-username">{t('admin.username')}</label>
-              <input id="admin-username" name="username" className="input" pattern="[A-Za-z0-9_]{3,20}" required />
-            </div>
-          </ActionForm>
+          {isOwner ? (
+            <ActionForm action={setRoleAction} label={t('admin.team.addAdmin')} submit={t('admin.member.makeAdmin')} tone="primary"
+              consequence={t('admin.member.makeAdminHelp')} hidden={{ admin: 'true' }} labels={reasonLabels}
+              reasons={[t('admin.team.reasonJoin')]}>
+              <div className="field">
+                <label htmlFor="admin-username">{t('admin.username')}</label>
+                <input id="admin-username" name="username" className="input" pattern="[A-Za-z0-9_]{3,20}" required />
+              </div>
+            </ActionForm>
+          ) : null}
         </div>
         <p className="small muted mb12">{t('admin.team.adminsHelp')}</p>
+        {isOwner ? (
+          <div className="banner info mb12">
+            <Icon name="info" />
+            <div>
+              <b>{t('admin.team.howTo')}</b>
+              <ol className="small" style={{ margin: '6px 0 0', paddingLeft: 18, listStyle: 'decimal' }}>
+                <li>{t('admin.team.howTo1')}</li>
+                <li>{t('admin.team.howTo2')}</li>
+                <li>{t('admin.team.howTo3')}</li>
+              </ol>
+              <p className="small mt8">{t('admin.team.howToRemove')}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="banner warn mb12" role="status">
+            <Icon name="lock" />
+            <div className="small">{owner ? t('admin.team.ownerOnly', { owner }) : t('admin.team.noOwner')}</div>
+          </div>
+        )}
         <div className="tbl-wrap">
           <table className="tbl">
-            <thead><tr><th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.team.since')}</th><th scope="col">{t('admin.member.mfa')}</th><th scope="col">{t('admin.member.lastSignIn')}</th><th scope="col" className="num">{t('admin.team.actions30')}</th></tr></thead>
+            <thead><tr><th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.team.since')}</th><th scope="col">{t('admin.member.mfa')}</th><th scope="col">{t('admin.member.lastSignIn')}</th><th scope="col" className="num">{t('admin.team.actions30')}</th>{isOwner ? <th scope="col" /> : null}</tr></thead>
             <tbody>
               {team.admins.map((a) => (
                 <tr key={a.username}>
-                  <td>{member(a.username)} {a.is_self ? <span className="pill">{t('admin.team.you')}</span> : null}</td>
+                  <td>
+                    {member(a.username)} {a.username === owner ? <span className="pill blue">{t('admin.role.owner')}</span> : null}
+                    {a.is_self ? <span className="pill">{t('admin.team.you')}</span> : null}
+                  </td>
                   <td>{formatDate(a.since, locale)}{a.granted_by ? <span className="xs muted">{t('admin.team.by', { user: a.granted_by })}</span> : null}</td>
                   <td>{mfaPill(a.mfa)}</td>
                   <td>{a.last_sign_in_at ? relativeTime(a.last_sign_in_at, t) : '—'}</td>
                   <td className="num">{a.actions_30d}</td>
+                  {isOwner ? (
+                    <td>
+                      {a.is_self ? null : (
+                        <ActionForm action={setRoleAction} label={t('admin.member.removeAdmin')} submit={t('admin.member.removeAdmin')} tone="danger"
+                          consequence={t('admin.member.removeAdminHelp')} hidden={{ username: a.username, admin: 'false' }} labels={reasonLabels} />
+                      )}
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

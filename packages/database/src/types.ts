@@ -17,6 +17,7 @@ import type {
   AdminLinks,
   AdminLogEntry,
   AdminMember,
+  AdminMemberReports,
   AdminMetrics,
   AdminNotesHealth,
   AdminOverview,
@@ -37,6 +38,8 @@ import type {
 import type {
   ContentStatus,
   Locale,
+  MemberReportOutcome,
+  MemberReportReason,
   NoteClassification,
   NoteStatus,
   PostType,
@@ -340,6 +343,8 @@ export type ProfileView = {
   joined_at: string;
   deleted: boolean;
   is_me: boolean;
+  /** Admins are named publicly, as zone moderators are (…019). */
+  is_admin: boolean;
   moderates: string[];
   post_count: number;
   comment_count: number;
@@ -457,6 +462,10 @@ export type Database = {
         Args: { p_target_kind: 'post' | 'comment'; p_target_id: string; p_reason: string; p_details?: string };
         Returns: { collapsed: boolean };
       };
+      report_member: {
+        Args: { p_username: string; p_reason: MemberReportReason; p_details?: string };
+        Returns: undefined;
+      };
       resolve_reports: {
         Args: {
           p_target_kind: 'post' | 'comment';
@@ -535,6 +544,8 @@ export type Database = {
       admin_links: { Args: Record<string, never>; Returns: AdminLinks };
       admin_link_decide: { Args: { p_kind: 'post' | 'comment'; p_id: string; p_decision: LinkDecision; p_reason: string }; Returns: undefined };
       admin_link_site: { Args: { p_host: string; p_decision: SiteDecision; p_reason: string }; Returns: number };
+      admin_member_reports: { Args: Record<string, never>; Returns: AdminMemberReports };
+      admin_resolve_member_reports: { Args: { p_user: string; p_outcome: MemberReportOutcome; p_reason: string }; Returns: number };
       admin_restore_content: { Args: { p_kind: 'post' | 'comment'; p_id: string; p_reason: string }; Returns: undefined };
       admin_set_role: { Args: { p_user: string; p_admin: boolean; p_reason: string }; Returns: undefined };
       admin_end_founding: { Args: { p_user: string; p_reason: string }; Returns: undefined };

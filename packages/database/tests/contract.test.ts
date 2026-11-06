@@ -8,6 +8,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   APPEAL_STATUSES,
   CONTENT_STATUSES,
+  MEMBER_REPORT_OUTCOMES,
+  MEMBER_REPORT_REASONS,
   MOD_ACTIONS,
   NOTE_CLASSIFICATIONS,
   NOTE_STATUSES,
@@ -64,6 +66,8 @@ describe('domain vocabulary matches the schema', () => {
     ['mod_actions', 'action', MOD_ACTIONS],
     ['staff_notes', 'label', STAFF_NOTE_LABELS],
     ['shield_phrases', 'action', SHIELD_ACTIONS],
+    ['member_reports', 'reason', MEMBER_REPORT_REASONS],
+    ['member_reports', 'status', ['open', ...MEMBER_REPORT_OUTCOMES]],
   ])('%s.%s', async (table, column, values) => {
     expect(await checkValues(table, column)).toEqual([...values].sort());
   });

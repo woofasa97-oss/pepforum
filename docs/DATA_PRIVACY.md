@@ -9,6 +9,7 @@
 | Username, bio, conflicts of interest, home zone, locale | `profiles` | Public profile | Tombstoned on deletion (username replaced, fields cleared) |
 | Posts, revisions, comments | `posts`, `post_revisions`, `comments` | Core service | Kept (attributed to the anonymised account) unless the member chooses "erase my content" |
 | Votes, ratings, reports | `post_votes`, `note_ratings`, `reports` | Scoring and moderation | Kept as anonymous records |
+| Member reports | `member_reports`: reporter, reported member, reason, the reporter's details | Admins investigating a member | Kept as moderation records. Only admins read them; the reported member never learns who reported them |
 | Karma ledger, strikes, sanctions, moderator log | `ledger_events`, `strikes`, `sanctions`, `mod_actions` | Accountability, appeals | Kept; ledger rows point at the anonymised id |
 | Rate-limit events | `private.rate_limit_events` | Abuse prevention | 2 days |
 | Staff notes on members | `staff_notes` | Moderation context (staff only, append-only) | Kept with the moderation record |
@@ -29,7 +30,7 @@
 
 | Right | Implementation |
 |---|---|
-| Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports, ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
+| Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports (including member reports you filed), ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
 | Correction | Profile fields are editable; anything else via privacy@pepforum.ca |
 | Deletion | Settings → Delete account. The member re-enters their password or, for social-only accounts, must have signed in within the last 10 minutes. `request_account_deletion()` tombstones the profile immediately and the worker deletes the auth user within about 10 minutes. Optionally erases authored content. |
 | Information about automated decisions (Loi 25 s. 12.1) | Note status, karma and tiers are automated. The rules are published (`/legal/community-notes`), every change is listed in the member's ledger, and human review is available via appeals or the privacy officer. |

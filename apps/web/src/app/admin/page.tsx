@@ -49,6 +49,10 @@ function needs(o: AdminOverview, t: Translate): Need[] {
     list.push({ tone: 'amber', icon: 'eye', href: '/admin/moderation', cta: t('admin.home.review'),
       text: t('admin.home.collapsed', { n: o.collapsed, h: o.collapsed_next_reopen ? hoursUntil(o.collapsed_next_reopen, now) : 0 }) });
   }
+  if (o.member_reports_open > 0) {
+    list.push({ tone: 'red', icon: 'user', href: '/admin/reports', cta: t('admin.home.review'),
+      text: t('admin.home.memberReports', { n: o.member_reports_open, age: o.member_reports_oldest ? relativeTime(o.member_reports_oldest, t) : '' }) });
+  }
   if (o.links_pending > 0) {
     list.push({ tone: 'amber', icon: 'link', href: '/admin/links', cta: t('admin.home.review'),
       text: t('admin.home.links', { n: o.links_pending, age: o.links_oldest ? relativeTime(o.links_oldest, t) : '' }) });

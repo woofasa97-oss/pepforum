@@ -26,6 +26,7 @@ import {
   LinkSiteSchema,
   MemberReasonSchema,
   RenameMemberSchema,
+  ResolveMemberReportsSchema,
   RevealEmailSchema,
   RevokeSanctionSchema,
   RevokeStrikeSchema,
@@ -125,6 +126,22 @@ export async function setRoleAction(_prev: ActionState, form: FormData): Promise
   const id = await memberId(parsed.data.username);
   if (!id) return { ok: false, fieldErrors: { username: (await getT())('errors.notFound') } };
   return run('admin_set_role', { p_user: id, p_admin: parsed.data.admin === 'true', p_reason: parsed.data.reason });
+}
+
+// ── Member reports ───────────────────────────────────────────────────────
+export async function resolveMemberReportsAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = ResolveMemberReportsSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const t = await getT();
+  const id = await memberId(parsed.data.username);
+  if (!id) return { ok: false, message: t('errors.notFound') };
+  const { data, error } = await rpc('admin_resolve_member_reports', { p_user: id, p_outcome: parsed.data.outcome, p_reason: parsed.data.reason });
+  if (error) {
+    logUnexpected('admin_resolve_member_reports', error);
+    return { ok: false, message: messageForDbError(error, t) };
+  }
+  revalidatePath('/admin', 'layout');
+  return { ok: true, message: t('admin.reports.closedDone', { n: Number(data) }) };
 }
 
 export async function setModeratorAction(_prev: ActionState, form: FormData): Promise<ActionState> {

@@ -6,6 +6,8 @@
 import {
   LINK_DECISIONS,
   LOCALES,
+  MEMBER_REPORT_OUTCOMES,
+  MEMBER_REPORT_REASONS,
   NOTE_CLASSIFICATIONS,
   POST_TYPES,
   RATING_REASONS,
@@ -122,6 +124,12 @@ export const ReportSchema = z.object({
   details: z.string().trim().max(500).optional(),
 });
 
+export const ReportMemberSchema = z.object({
+  username: z.string().regex(USERNAME_PATTERN),
+  reason: z.enum(MEMBER_REPORT_REASONS),
+  details: z.string().trim().max(1000).optional(),
+});
+
 export const ProfileSchema = z.object({
   bio: z.string().trim().max(500),
   coi: z.string().trim().max(300),
@@ -177,6 +185,7 @@ export const ShieldTestSchema = z.object({ text: trimmed(1, 10000) });
 export const LinkDecisionSchema = z.object({
   kind: z.enum(['post', 'comment']), id, decision: z.enum(LINK_DECISIONS), reason: reason.optional(),
 });
+export const ResolveMemberReportsSchema = z.object({ username, outcome: z.enum(MEMBER_REPORT_OUTCOMES), reason });
 export const LinkSiteSchema = z.object({ host: trimmed(3, 253), decision: z.enum(SITE_DECISIONS), reason: reason.optional() });
 /** `raw` (JSON) is used by Revert; otherwise the value is built from typed inputs. */
 export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });

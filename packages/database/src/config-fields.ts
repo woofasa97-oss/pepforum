@@ -116,7 +116,7 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('moderation.appeal_window_days', 'penalties', 'integer', 'days'),
 
   // Rate limits
-  ...['vote', 'comment', 'post', 'post_newcomer', 'post_low_integrity', 'edit', 'note', 'rating', 'queue', 'report', 'appeal', 'export',
+  ...['vote', 'comment', 'post', 'post_newcomer', 'post_low_integrity', 'edit', 'note', 'rating', 'queue', 'report', 'report_member', 'appeal', 'export',
       'onboarding', 'admin_action'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
 
   // Security

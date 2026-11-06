@@ -49,6 +49,7 @@ describe('access', () => {
     `select public.admin_system_status()`,
     `select public.admin_shield()`,
     `select public.admin_shield_test('hello')`,
+    `select public.admin_member_reports()`,
     `select public.mod_queue(null)`,
     `select public.open_appeals(null)`,
   ];
@@ -71,6 +72,7 @@ describe('access', () => {
     `select public.admin_shield_add('domain', 'vendor.example', null, 'vendor')`,
     `select public.admin_shield_remove('domain', 'vendor.example', 'mistake')`,
     `select public.admin_set_config('notes.min_ratings', '6', 'more ratings')`,
+    `select public.admin_resolve_member_reports(gen_random_uuid(), 'dismissed', 'checked')`,
   ];
 
   it('members and moderators are refused; admins need an MFA session', async () => {
@@ -98,16 +100,18 @@ describe('access', () => {
 });
 
 describe('roles', () => {
-  it('admins grant and revoke admin, never their own, and it is logged', async () => {
+  it('the owner grants and revokes admin, never their own, and it is logged', async () => {
     const a = await createAdmin();
+    await db.sql(`insert into public.user_roles (user_id, role) values ($1, 'owner')`, [a]);
     const b = await db.createUser();
     await db.as(user(a, 'aal2'), `select public.admin_set_role($1, true, 'Second admin for coverage')`, [b]);
     expect(await lastLog('grant_admin')).toMatchObject({ actor_id: a, target_user_id: b });
 
     expect((await db.expectError(user(a, 'aal2'), `select public.admin_set_role($1, false, 'Leaving')`, [a])).message).toBe('conflict_of_interest');
-    await db.as(user(b, 'aal2'), `select public.admin_set_role($1, false, 'Rotation')`, [a]);
-    const { n } = await db.sqlOne<{ n: number }>(`select count(*)::int as n from public.user_roles where user_id = $1`, [a]);
+    await db.as(user(a, 'aal2'), `select public.admin_set_role($1, false, 'Rotation')`, [b]);
+    const { n } = await db.sqlOne<{ n: number }>(`select count(*)::int as n from public.user_roles where user_id = $1`, [b]);
     expect(n).toBe(0);
+    await db.sql(`delete from public.user_roles where role = 'owner'`);
   });
 
   it('requires a reason', async () => {

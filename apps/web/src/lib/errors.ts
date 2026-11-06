@@ -20,6 +20,8 @@ const SPECIFIC_MESSAGES = new Set<string>([
   'blocked_by_shield', 'comments_locked', 'pin_limit', 'already_pinned', 'last_admin', 'config_out_of_range', 'config_type_mismatch', 'reason_required', 'not_removed', 'already_hidden', 'not_hidden', 'username_taken', 'invalid_domain', 'invalid_phrase',
   // Link review (…018)
   'not_pending',
+  // Member reports and the site owner (…019)
+  'owner_only', 'report_self',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

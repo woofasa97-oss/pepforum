@@ -10,7 +10,7 @@ import { redirect } from 'next/navigation';
 
 import type { ActionState } from '@/lib/action-state';
 import { logUnexpected, messageForDbError } from '@/lib/errors';
-import { CommentSchema, CreatePostSchema, EditPostSchema, ReportSchema, VoteSchema, fieldErrors, formToObject } from '@/lib/validation';
+import { CommentSchema, CreatePostSchema, EditPostSchema, ReportMemberSchema, ReportSchema, VoteSchema, fieldErrors, formToObject } from '@/lib/validation';
 import { getSupabase, getT, getViewer } from '@/server/context';
 
 export async function createPostAction(_prev: ActionState, form: FormData): Promise<ActionState> {
@@ -107,6 +107,24 @@ export async function voteAction(kind: 'post' | 'comment', targetId: string, val
     return { ok: false, message: messageForDbError(error, t) };
   }
   return { ok: true, score: data.score };
+}
+
+export async function reportMemberAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const t = await getT();
+  if (!(await getViewer())) return { ok: false, message: t('errors.signInRequired') };
+  const parsed = ReportMemberSchema.safeParse(formToObject(form));
+  if (!parsed.success) return { ok: false, message: t('errors.invalid') };
+  const supabase = await getSupabase();
+  const { error } = await supabase.rpc('report_member', {
+    p_username: parsed.data.username,
+    p_reason: parsed.data.reason,
+    p_details: parsed.data.details ?? '',
+  });
+  if (error) {
+    logUnexpected('report_member', error);
+    return { ok: false, message: messageForDbError(error, t) };
+  }
+  return { ok: true, message: t('memberReport.sent') };
 }
 
 export async function reportAction(_prev: ActionState, form: FormData): Promise<ActionState> {

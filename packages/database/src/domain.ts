@@ -56,6 +56,23 @@ export const REPORT_REASONS = [
 ] as const;
 export type ReportReason = (typeof REPORT_REASONS)[number];
 
+/** Why a member reports another member (member_reports.reason, …019). */
+export const MEMBER_REPORT_REASONS = [
+  'harassment',
+  'sourcing',
+  'spam',
+  'impersonation',
+  'ban_evasion',
+  'privacy',
+  'underage',
+  'other',
+] as const;
+export type MemberReportReason = (typeof MEMBER_REPORT_REASONS)[number];
+
+/** How an admin closes the reports about a member. */
+export const MEMBER_REPORT_OUTCOMES = ['actioned', 'dismissed'] as const;
+export type MemberReportOutcome = (typeof MEMBER_REPORT_OUTCOMES)[number];
+
 export const VIOLATIONS = ['sourcing', 'medical_advice', 'harassment', 'misinformation', 'spam', 'before_after', 'other'] as const;
 export type Violation = (typeof VIOLATIONS)[number];
 
@@ -93,6 +110,7 @@ export const MOD_ACTIONS = [
   'shield_rule_added', 'shield_rule_removed', 'shield_hold', 'taxonomy_change',
   'lookup_email', 'reveal_email',
   'link_hold', 'link_approved', 'link_declined', 'site_approved', 'site_unapproved',
+  'member_reports_actioned', 'member_reports_dismissed',
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 

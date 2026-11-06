@@ -5,7 +5,7 @@ import { describeRequirement, messageForDbError } from '@/lib/errors';
 import { removalReasonLabel } from '@/lib/format';
 import { en, fr, translator } from '@/lib/i18n';
 import { buildThread } from '@/lib/thread';
-import { CreatePostSchema, ProposeNoteSchema, RateNoteSchema, SignUpSchema, formToObject } from '@/lib/validation';
+import { CreatePostSchema, ProposeNoteSchema, RateNoteSchema, ReportMemberSchema, SignUpSchema, formToObject } from '@/lib/validation';
 
 const t = translator('en');
 
@@ -29,6 +29,8 @@ describe('error mapping', () => {
     expect(removalReasonLabel('link_declined', t)).toBe(en['post.removal.link_declined']);
     expect(removalReasonLabel(null, t)).toBe('');
     expect(messageForDbError({ code: 'PF409', message: 'not_pending' }, t)).toBe(en['errors.not_pending']);
+    expect(messageForDbError({ code: 'PF403', message: 'owner_only' }, t)).toBe(en['errors.owner_only']);
+    expect(messageForDbError({ code: 'PF422', message: 'report_self' }, t)).toBe(en['errors.report_self']);
   });
 
   it('never leaks unknown internal errors', () => {
@@ -60,6 +62,13 @@ describe('i18n', () => {
 });
 
 describe('validation', () => {
+  it('accepts member reports with a known reason and short details', () => {
+    expect(ReportMemberSchema.safeParse({ username: 'maple_you', reason: 'impersonation', details: 'Claims to be my doctor.' }).success).toBe(true);
+    expect(ReportMemberSchema.safeParse({ username: 'maple_you', reason: 'rude' }).success).toBe(false);
+    expect(ReportMemberSchema.safeParse({ username: 'no spaces', reason: 'spam' }).success).toBe(false);
+    expect(ReportMemberSchema.safeParse({ username: 'maple_you', reason: 'other', details: 'x'.repeat(1001) }).success).toBe(false);
+  });
+
   it('requires 12+ character passwords and valid usernames at sign-up', () => {
     const base = { email: 'a@b.ca', password: 'correct-horse-battery', username: 'maple_you', locale: 'en', ageAck: 'on', terms: 'on' };
     expect(SignUpSchema.safeParse(base).success).toBe(true);

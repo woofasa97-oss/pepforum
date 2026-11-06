@@ -26,7 +26,9 @@ export function StandingCard({ standing, t }: { standing: StandingView; t: Trans
         <div className="stat" style={{ padding: 8 }}><div className="v" style={{ fontSize: 16 }}>{Number(standing.mod_xp).toLocaleString()}</div><div className="l">{t('standing.modXp')}</div></div>
         <div className="stat" style={{ padding: 8 }}><div className="v" style={{ fontSize: 16 }}>{standing.integrity}</div><div className="l">{t('standing.integrity')}</div></div>
       </div>
-      {next !== undefined ? (
+      {standing.is_admin ? (
+        <p className="xs mt12"><span className="pill blue">{t('profile.admin')}</span> {t('standing.adminNote')}</p>
+      ) : next !== undefined ? (
         <div className="mt12">
           <Progress value={standing.karma - floor} max={next - floor} label={t('standing.toNext', { n: next - standing.karma, tier: t(`tier.${standing.tier + 1}` as MessageKey) })} />
           <div className="xs faint mt8">{t('standing.toNext', { n: (next - standing.karma).toLocaleString(), tier: t(`tier.${standing.tier + 1}` as MessageKey) })}</div>
