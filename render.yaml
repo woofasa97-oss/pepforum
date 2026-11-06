@@ -35,6 +35,10 @@ services:
         sync: false
       - key: AD_VISITOR_SALT    # optional: ad frequency-cap salt
         generateValue: true
+      - key: GOOGLE_CLIENT_ID   # optional: Google sign-in on your own domain (docs/DEPLOYMENT.md)
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
 
   - type: cron
     name: pepforum-worker

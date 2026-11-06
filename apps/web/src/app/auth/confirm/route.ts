@@ -1,6 +1,7 @@
 import type { EmailOtpType } from '@supabase/supabase-js';
 import type { NextRequest } from 'next/server';
 
+import { finishSignIn } from '@/lib/auth-finish';
 import { redirectWithinSite, safeRedirectPath } from '@/lib/safe-redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -30,15 +31,6 @@ export async function GET(request: NextRequest) {
   }
   if (!ok) return redirectWithinSite(params.has('error') ? '/auth/sign-in?error=provider' : '/auth/sign-in?error=confirm');
 
-  // Same second factor as password sign-in: members with TOTP finish at aal2.
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (aal && aal.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
-    return redirectWithinSite(`/auth/mfa?next=${encodeURIComponent(next)}`);
-  }
-
-  // A first social sign-in still has to choose a username and confirm their age.
-  const { data: standing } = await supabase.rpc('my_standing');
-  if (standing?.needs_onboarding) return redirectWithinSite(`/auth/welcome?next=${encodeURIComponent(next)}`);
-
-  return redirectWithinSite(next);
+  // Same second factor as password sign-in; a first social sign-in still picks a username.
+  return finishSignIn(supabase, next);
 }

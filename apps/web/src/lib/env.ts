@@ -18,6 +18,9 @@ const EnvSchema = z.object({
   VAPID_PUBLIC_KEY: z.string().min(20).optional(),
   // Ad frequency capping (…025): salts the per-visitor token. Any random string.
   AD_VISITOR_SALT: z.string().min(8).optional(),
+  // "Continue with Google" on our own domain (lib/google-oauth.ts). Both set → our flow; otherwise Supabase's.
+  GOOGLE_CLIENT_ID: z.string().regex(/\.apps\.googleusercontent\.com$/, 'expected the OAuth client ID ending in .apps.googleusercontent.com').optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(10).optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 

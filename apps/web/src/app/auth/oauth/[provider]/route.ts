@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import { isOAuthProvider } from '@/lib/auth-providers';
 import { env } from '@/lib/env';
+import { GOOGLE_COOKIE, encodeFlow, googleAuthorizeUrl, newGoogleFlow } from '@/lib/google-oauth';
 import { redirectWithinSite, safeRedirectPath } from '@/lib/safe-redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -18,6 +19,18 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   if (!isOAuthProvider(provider)) return redirectWithinSite('/auth/sign-in?error=provider');
 
   const next = safeRedirectPath(request.nextUrl.searchParams.get('next'));
+
+  // Google on our own domain when its client is configured (see lib/google-oauth.ts).
+  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SITE_URL, NODE_ENV } = env();
+  if (provider === 'google' && GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
+    const flow = newGoogleFlow(next);
+    const response = NextResponse.redirect(googleAuthorizeUrl(flow, GOOGLE_CLIENT_ID, `${SITE_URL}/auth/oauth/google/callback`));
+    response.cookies.set(GOOGLE_COOKIE, encodeFlow(flow), {
+      httpOnly: true, secure: NODE_ENV === 'production', sameSite: 'lax', path: '/auth/oauth/google', maxAge: 600,
+    });
+    return response;
+  }
+
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,

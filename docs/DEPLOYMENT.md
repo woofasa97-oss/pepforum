@@ -35,10 +35,14 @@
    | Apple | Apple Developer → Certificates, IDs & Profiles → Services ID + Sign in with Apple key | Needs a paid Apple Developer account. The secret is a JWT that expires every 6 months: put a renewal reminder in the runbook. |
    | Microsoft (Azure) | Microsoft Entra admin center → App registrations | Supported account types: personal and work accounts. |
    | Facebook | Meta for Developers → Create app → Facebook Login | Switch the app to Live mode. |
-   | X | X Developer Portal → Project → User authentication settings (OAuth 2.0) | Use the **X / Twitter (OAuth 2.0)** provider in Supabase. |
+   | X | X Developer Portal → Project → User authentication settings (OAuth 2.0, type *Web App*) | Use the **X / Twitter (OAuth 2.0)** provider in Supabase. Turn on **Request email from users** (it needs your terms and privacy URLs): members without a confirmed email can read but not take part. |
    | Discord, GitHub, LinkedIn, Twitch, Spotify, Slack, GitLab, Bitbucket, Notion, Figma, Zoom, Kakao | That platform's developer settings | Same pattern: callback URL in, client ID and secret out. |
 
    The first time someone signs in with a provider, they choose a pseudonymous username and confirm they're an adult (`/auth/welcome`). Until then they can read but not post, vote, comment or report. If their provider email matches an existing account, Supabase links the two (only for emails the provider has verified).
+   **Google showing your brand.** By default Google's screen says "to continue to <ref>.supabase.co", because Google sends people back to Supabase. To show your site instead, let the web app handle Google itself (`apps/web/src/lib/google-oauth.ts`):
+   1. In Google Cloud → Google Auth Platform → **Clients** → your Web client: add the redirect URI `https://<your-domain>/auth/oauth/google/callback` (keep the Supabase one).
+   2. On the web service in Render, set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to that client's ID and secret. From the next deploy, Google's screen names your domain. Remove both to fall back to Supabase's flow.
+   3. For your **name and logo** on that screen: Google Auth Platform → **Branding**: app name, a 120×120 logo, home page, privacy policy and terms URLs, and your domain under *Authorized domains*. Prove you own the domain in [Google Search Console](https://search.google.com/search-console) (a DNS TXT record), then **Submit for verification**. Google reviews it in a few business days; until then it shows the domain.
 8. **Auth → SMTP:** configure a real provider. The built-in sender is rate-limited and meant for testing only.
 9. **Auth → MFA:** turn TOTP on.
 10. **Auth → CAPTCHA:** choose Cloudflare Turnstile and add the secret. The site key goes to Render as `TURNSTILE_SITE_KEY`.
