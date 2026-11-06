@@ -1,6 +1,7 @@
 'use client';
 
 import { MEMBER_REPORT_REASONS } from '@pepforum/database';
+import Link from 'next/link';
 import { useActionState } from 'react';
 
 import { FormMessage } from '@/components/ui/Bits';
@@ -47,6 +48,9 @@ export function ReportMemberForm({ username, labels }: { username: string; label
               <span id="member-report-hint" className="xs faint">{labels['memberReport.detailsHint']}</span>
             </div>
             <SubmitButton className="btn dark sm">{labels['memberReport.submit']}</SubmitButton>
+            <p className="xs mt8">
+              <Link className="link" href={`/contact/new?kind=report_member&user=${encodeURIComponent(username)}`}>{labels['memberReport.ticket']}</Link>
+            </p>
           </form>
         )}
       </div>

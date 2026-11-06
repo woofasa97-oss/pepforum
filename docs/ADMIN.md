@@ -1,6 +1,6 @@
 # Admin console guide (`/admin`)
 
-The console is where admins look after Pepforum without touching SQL. Everything here is enforced by the database (migrations `…015_admin_console`, `…016_sourcing_shield`, `…018_link_review` and `…019_member_reports_and_owner`): the web pages only display what the admin RPCs return and send changes back to them.
+The console is where admins look after Pepforum without touching SQL. Everything here is enforced by the database (migrations `…015_admin_console`, `…016_sourcing_shield`, `…018_link_review`, `…019_member_reports_and_owner` and `…020_support_tickets`): the web pages only display what the admin RPCs return and send changes back to them.
 
 ## Getting in
 
@@ -22,6 +22,7 @@ The console is where admins look after Pepforum without touching SQL. Everything
 | Section | Use it to |
 |---|---|
 | **Home** | See what needs you today, and community health (active members, posts, notes, reports) over 7, 30 or 90 days, with how well moderation is working. Download the numbers as CSV. |
+| **Inbox** | Read and answer what members send the team from **Contact the team**: suggestions, reports about a member or a post, problems with the site, account help. See "Inbox" below. |
 | **Moderation** | Work the report queue across every zone, including posts held by the shield. Decide appeals, including sanction appeals that only admins can decide. Read the log of who did what (with Undo where possible). See each moderator's speed and how often appeals overturn them. |
 | **Links** | Approve or decline every link members post. Approve a whole site once (e.g. `pubmed.ncbi.nlm.nih.gov`) and its future links go straight through; block a vendor site and everything waiting on it is declined. See "Link review" below. |
 | **Member reports** | Members reporting another member (harassment, selling, impersonation, a banned member back on a new account…). One card per member with every open report about them. See "Member reports" below. |
@@ -38,12 +39,13 @@ The public **[/transparency](../apps/web/src/app/transparency/page.tsx)** page p
 ## A daily routine (10 minutes)
 
 1. **Home:** clear the "Needs you" list from top to bottom. Red first.
-2. **Links:** approve or decline what's waiting. When several items link to the same site, use **Approve site** in "Sites waiting".
-3. **Member reports:** look into each member, act from their page if needed, then close the reports.
-4. **Moderation → Queue:** keep or remove each item. Held posts never reopen on their own, so they wait for you.
-5. **Moderation → Appeals:** decide the ones you didn't act on yourself.
-6. **System:** jobs should all say *Running*, and the self-audit *0 problems*.
-7. Weekly: skim **Community notes → Signs of manipulation**, and **Moderation → Moderator performance**.
+2. **Inbox:** answer everything under *Waiting for us*, oldest first.
+3. **Links:** approve or decline what's waiting. When several items link to the same site, use **Approve site** in "Sites waiting".
+4. **Member reports:** look into each member, act from their page if needed, then close the reports.
+5. **Moderation → Queue:** keep or remove each item. Held posts never reopen on their own, so they wait for you.
+6. **Moderation → Appeals:** decide the ones you didn't act on yourself.
+7. **System:** jobs should all say *Running*, and the self-audit *0 problems*.
+8. Weekly: skim **Community notes → Signs of manipulation**, and **Moderation → Moderator performance**.
 
 ## Sourcing shield: how rules behave
 
@@ -106,6 +108,23 @@ On **Member reports**, each card is one member, with their karma, integrity, act
 
 Both are logged, and "Closed in the last 30 days" shows who decided what. If reports are about you, another admin has to decide them. Once closed, members can report the same person again.
 
+## Inbox
+
+Members write to the team from **Contact the team** (`/contact`, linked in the footer and from the inbox icon in the header). They pick what it's about: a suggestion, reporting a member (they give the username), reporting a post or comment (with an optional link), something broken, help with their account, or something else. Each ticket is a private conversation between that member and the admins; other members never see it.
+
+| Status | Means |
+|---|---|
+| **Waiting for us** | New, or the member wrote last. The sidebar badge and Home count these. Oldest first. |
+| **Waiting for the member** | An admin replied. If the member answers, it comes back to *Waiting for us*. |
+| **Closed** | Read-only for the member, who can open a new ticket. You can still reply (which reopens it) or **Reopen** it. |
+
+- **Replying.** Your reply shows to the member as "Pepforum team"; only admins see which admin wrote it. Tick *Close the ticket after sending* for a final answer (e.g. thanking someone for a suggestion). Replies are plain text, can't be edited, and count towards `rate_limit.admin_action`.
+- **Telling the member.** Until they open the ticket, the member sees a green notice at the top of every page and a dot on the header's inbox icon. There's no email notification.
+- **Reports.** A ticket about a member links to their page in **People**, where you act (warn, freeze, suspend, ban). Replying or closing a ticket never sanctions anyone. Post-and-comment reports from a post's own Report button still go to the moderation queue; tickets are for when someone needs to explain more.
+- **Your own tickets.** If an admin writes in, another admin has to answer or close it.
+- **Limits.** Members need the basic *report* permission (signed up, email confirmed, not suspended or banned). Each can open 5 tickets a day (`rate_limit.open_ticket`) and reply 30 times an hour (`rate_limit.ticket_reply`).
+- **Privacy.** Tickets are in the member's data export (without which admin replied). Deleting the account deletes their tickets.
+
 ## Where the code lives
 
 | Concern | Location |
@@ -114,7 +133,8 @@ Both are logged, and "Closed in the last 30 days" shows who decided what. If rep
 | Shield, held status, all-zones queue | `supabase/migrations/…016_sourcing_shield.sql` |
 | Link review, approved sites | `supabase/migrations/…018_link_review.sql` |
 | Member reports, site owner, admins' gates | `supabase/migrations/…019_member_reports_and_owner.sql` |
-| Tests | `packages/database/tests/{admin,shield,links,member-reports,owner-and-admins}.test.ts`, `apps/web/tests/admin.test.ts` |
+| Contact the team (tickets, inbox) | `supabase/migrations/…020_support_tickets.sql`, `apps/web/src/app/contact/**`, `apps/web/src/app/admin/inbox/**` |
+| Tests | `packages/database/tests/{admin,shield,links,member-reports,owner-and-admins,support-tickets}.test.ts`, `apps/web/tests/admin.test.ts` |
 | Pages | `apps/web/src/app/admin/**` |
 | Reads / writes | `apps/web/src/server/admin.ts`, `apps/web/src/server/actions/admin.ts` |
 | Settings registry (groups, inputs, units) | `packages/database/src/config-fields.ts` |

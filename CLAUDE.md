@@ -39,7 +39,7 @@ pnpm worker:dry-run        # score the demo seed locally
 | Server reads / writes | `apps/web/src/server/queries.ts` / `apps/web/src/server/actions/*.ts` |
 | Validation | `apps/web/src/lib/validation.ts` (mirrors SQL constraints) |
 | Error → message mapping | `apps/web/src/lib/errors.ts` (SQLSTATE `PFxxx` codes from `…001_foundation.sql`) |
-| Admin console | `admin_*` RPCs in `…015`/`…016`/`…018`/`…019`, `apps/web/src/app/admin/**`, `server/admin.ts`, `server/actions/admin.ts`; see docs/ADMIN.md. Admins never edit karma or note status (ADR-0006); only the site owner adds or removes admins. |
+| Admin console | `admin_*` RPCs in `…015`/`…016`/`…018`/`…019`/`…020`, `apps/web/src/app/admin/**`, `server/admin.ts`, `server/actions/admin.ts`; see docs/ADMIN.md. Admins never edit karma or note status (ADR-0006); only the site owner adds or removes admins. |
 | A new `app_config` key | Migration insert (+ `bounds` if numeric), `packages/database/src/config-fields.ts`, `admin.cfg.*`/`admin.cfgHelp.*` strings; the DB test fails until all three exist |
 
 ## Project skills

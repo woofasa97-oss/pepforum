@@ -48,5 +48,7 @@ export const adminSystemStatus = cache(() => call('admin_system_status', {}));
 export const adminShield = cache(() => call('admin_shield', {}));
 export const adminLinks = cache(() => call('admin_links', {}));
 export const adminMemberReports = cache(() => call('admin_member_reports', {}));
+export const adminTickets = (args: Functions['admin_tickets']['Args']) => call('admin_tickets', args);
+export const adminTicket = cache((id: string) => call('admin_ticket', { p_ticket: id }));
 export const adminQueue = cache(() => call('mod_queue', { p_zone: null }));
 export const adminAppeals = cache(() => call('open_appeals', { p_zone: null }));

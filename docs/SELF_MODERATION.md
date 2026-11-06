@@ -127,6 +127,7 @@ The strike costs 15 integrity for 90 days and −10 karma, capped at −30 note-
 
 - **Reports:** weight is 0.5–1.5 depending on the reporter's integrity. Each member can file 10 per day, once per item.
 - **Member reports** (…019): a report about a person rather than one post goes to admins only, from the **Report member** button on their profile. It never collapses anything or changes anyone's karma; admins close it as *action taken* or *dismissed* after acting (or not) from the member's page. Each member can report 5 people a day (`rate_limit.report_member`), with one open report per person. See [ADMIN.md](ADMIN.md#member-reports).
+- **Contact the team** (…020): members can also open a private ticket to the admins (a suggestion, a report about a member or a post, a problem, account help) and talk it through. Tickets never act on anyone: admins act from the member's page. Each member can open 5 a day (`rate_limit.open_ticket`) and reply 30 times an hour (`rate_limit.ticket_reply`). See [ADMIN.md](ADMIN.md#inbox).
 - **Auto-collapse:** content collapses (it is never deleted) when the open reports reach total weight ≥ 3 from at least 3 distinct reporters whose accounts are at least 14 days old.
   - Content by a Trusted+ author collapses only if a Steward is among the reporters.
   - If no moderator reviews it within 48 hours, the collapse reverts.
@@ -162,6 +163,8 @@ New settings:
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |
+| `rate_limit.open_ticket` | 5 / day | Tickets one member can open to the team (…020) |
+| `rate_limit.ticket_reply` | 30 / hour | Replies one member can add to their own tickets (…020) |
 | `site.announcement` | empty | Site-wide banner `{en, fr, tone: info\|warn, until}` |
 
 Numeric settings now carry `app_config.bounds` (min/max), which `admin_set_config` checks along with the shape of `tiers.thresholds` and the `rate_limit.*` objects.

@@ -18,6 +18,7 @@ import {
   SITE_DECISIONS,
   SOURCE_KINDS,
   STAFF_NOTE_LABELS,
+  TICKET_KINDS,
   VIOLATIONS,
 } from '@pepforum/database';
 import { z } from 'zod';
@@ -130,6 +131,18 @@ export const ReportMemberSchema = z.object({
   details: z.string().trim().max(1000).optional(),
 });
 
+/** Contact the team (…020). The about-fields are optional: the RPC requires a username only for report_member. */
+export const OpenTicketSchema = z.object({
+  kind: z.enum(TICKET_KINDS),
+  subject: trimmed(3, 120),
+  body: trimmed(10, 4000),
+  aboutUsername: z.union([z.literal(''), z.string().trim().regex(USERNAME_PATTERN)]).optional(),
+  aboutUrl: z.union([z.literal(''), z.string().trim().max(500).regex(/^https:\/\/\S+$/)]).optional(),
+}).refine((v) => v.kind !== 'report_member' || Boolean(v.aboutUsername), { path: ['aboutUsername'] });
+
+export const TicketReplySchema = z.object({ ticketId: z.uuid(), body: trimmed(1, 4000), close: z.literal('on').optional() });
+export const TicketIdSchema = z.object({ ticketId: z.uuid() });
+
 export const ProfileSchema = z.object({
   bio: z.string().trim().max(500),
   coi: z.string().trim().max(300),
@@ -185,6 +198,7 @@ export const ShieldTestSchema = z.object({ text: trimmed(1, 10000) });
 export const LinkDecisionSchema = z.object({
   kind: z.enum(['post', 'comment']), id, decision: z.enum(LINK_DECISIONS), reason: reason.optional(),
 });
+export const TicketClosedSchema = z.object({ ticketId: id, closed: onOff });
 export const ResolveMemberReportsSchema = z.object({ username, outcome: z.enum(MEMBER_REPORT_OUTCOMES), reason });
 export const LinkSiteSchema = z.object({ host: trimmed(3, 253), decision: z.enum(SITE_DECISIONS), reason: reason.optional() });
 /** `raw` (JSON) is used by Revert; otherwise the value is built from typed inputs. */

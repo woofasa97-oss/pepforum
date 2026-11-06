@@ -25,6 +25,8 @@ import type {
   AdminShield,
   AdminSystemStatus,
   AdminTeam,
+  AdminTicketView,
+  AdminTickets,
   ContentKind,
   JobName,
   LinkDecision,
@@ -48,6 +50,8 @@ import type {
   ShieldAction,
   SourceKind,
   StaffNoteLabel,
+  TicketKind,
+  TicketStatus,
 } from './domain.ts';
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -321,11 +325,40 @@ export type StandingView = {
   writing_locked_until: string | null;
   is_moderator: boolean;
   is_admin: boolean;
+  /** Tickets with a team reply the member hasn't opened (…020). */
+  support_unread: number;
   /** null = allowed, otherwise a reason key such as "tier:2". */
   capabilities: Record<string, string | null>;
   tier_thresholds: number[];
   active_strikes: Array<{ reason: string; points: number; expires_at: string }>;
   active_sanctions: Array<{ kind: string; reason: string; ends_at: string | null }>;
+};
+
+/** A member's own ticket in their list (…020). */
+export type MyTicketSummary = {
+  id: string;
+  kind: TicketKind;
+  subject: string;
+  status: TicketStatus;
+  created_at: string;
+  last_message_at: string;
+  /** The team replied since the member last opened it. */
+  unread: boolean;
+  messages: number;
+};
+
+/** A member's own ticket with its thread. Team replies carry no author name. */
+export type MyTicketView = {
+  id: string;
+  kind: TicketKind;
+  subject: string;
+  status: TicketStatus;
+  about_username: string | null;
+  about_url: string | null;
+  created_at: string;
+  closed_at: string | null;
+  closed_by_team: boolean;
+  messages: Array<{ id: string; body: string; from_staff: boolean; created_at: string }>;
 };
 
 export type ProfileView = {
@@ -466,6 +499,14 @@ export type Database = {
         Args: { p_username: string; p_reason: MemberReportReason; p_details?: string };
         Returns: undefined;
       };
+      open_ticket: {
+        Args: { p_kind: TicketKind; p_subject: string; p_body: string; p_about_username?: string | null; p_about_url?: string | null };
+        Returns: string;
+      };
+      reply_ticket: { Args: { p_ticket: string; p_body: string }; Returns: undefined };
+      close_my_ticket: { Args: { p_ticket: string }; Returns: undefined };
+      my_tickets: { Args: Record<string, never>; Returns: MyTicketSummary[] };
+      my_ticket: { Args: { p_ticket: string }; Returns: MyTicketView | null };
       resolve_reports: {
         Args: {
           p_target_kind: 'post' | 'comment';
@@ -546,6 +587,10 @@ export type Database = {
       admin_link_site: { Args: { p_host: string; p_decision: SiteDecision; p_reason: string }; Returns: number };
       admin_member_reports: { Args: Record<string, never>; Returns: AdminMemberReports };
       admin_resolve_member_reports: { Args: { p_user: string; p_outcome: MemberReportOutcome; p_reason: string }; Returns: number };
+      admin_tickets: { Args: { p_status?: TicketStatus; p_kind?: TicketKind | null }; Returns: AdminTickets };
+      admin_ticket: { Args: { p_ticket: string }; Returns: AdminTicketView | null };
+      admin_reply_ticket: { Args: { p_ticket: string; p_body: string; p_close?: boolean }; Returns: undefined };
+      admin_set_ticket_closed: { Args: { p_ticket: string; p_closed: boolean }; Returns: undefined };
       admin_restore_content: { Args: { p_kind: 'post' | 'comment'; p_id: string; p_reason: string }; Returns: undefined };
       admin_set_role: { Args: { p_user: string; p_admin: boolean; p_reason: string }; Returns: undefined };
       admin_end_founding: { Args: { p_user: string; p_reason: string }; Returns: undefined };

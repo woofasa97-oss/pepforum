@@ -45,6 +45,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       label: t('admin.nav.daily'),
       items: [
         { href: '/admin', label: t('admin.nav.home'), icon: 'home' },
+        { href: '/admin/inbox', label: t('admin.nav.inbox'), icon: 'inbox', badge: o?.tickets_open ?? 0 },
         { href: '/admin/moderation', label: t('admin.nav.moderation'), icon: 'flag', badge: o ? o.reports_open + o.appeals_open + o.held : 0 },
         { href: '/admin/links', label: t('admin.nav.links'), icon: 'link', badge: o?.links_pending ?? 0 },
         { href: '/admin/reports', label: t('admin.nav.reports'), icon: 'user', badge: o?.member_reports_open ?? 0 },

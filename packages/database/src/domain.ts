@@ -73,6 +73,14 @@ export type MemberReportReason = (typeof MEMBER_REPORT_REASONS)[number];
 export const MEMBER_REPORT_OUTCOMES = ['actioned', 'dismissed'] as const;
 export type MemberReportOutcome = (typeof MEMBER_REPORT_OUTCOMES)[number];
 
+/** What a member writes to the team about (support_tickets.kind, …020). */
+export const TICKET_KINDS = ['suggestion', 'report_member', 'report_content', 'bug', 'account', 'other'] as const;
+export type TicketKind = (typeof TICKET_KINDS)[number];
+
+/** open = waiting for the team; answered = waiting for the member. */
+export const TICKET_STATUSES = ['open', 'answered', 'closed'] as const;
+export type TicketStatus = (typeof TICKET_STATUSES)[number];
+
 export const VIOLATIONS = ['sourcing', 'medical_advice', 'harassment', 'misinformation', 'spam', 'before_after', 'other'] as const;
 export type Violation = (typeof VIOLATIONS)[number];
 

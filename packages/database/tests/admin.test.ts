@@ -50,6 +50,8 @@ describe('access', () => {
     `select public.admin_shield()`,
     `select public.admin_shield_test('hello')`,
     `select public.admin_member_reports()`,
+    `select public.admin_tickets('open', null)`,
+    `select public.admin_ticket(gen_random_uuid())`,
     `select public.mod_queue(null)`,
     `select public.open_appeals(null)`,
   ];
@@ -73,6 +75,8 @@ describe('access', () => {
     `select public.admin_shield_remove('domain', 'vendor.example', 'mistake')`,
     `select public.admin_set_config('notes.min_ratings', '6', 'more ratings')`,
     `select public.admin_resolve_member_reports(gen_random_uuid(), 'dismissed', 'checked')`,
+    `select public.admin_reply_ticket(gen_random_uuid(), 'Thanks for writing in.')`,
+    `select public.admin_set_ticket_closed(gen_random_uuid(), true)`,
   ];
 
   it('members and moderators are refused; admins need an MFA session', async () => {

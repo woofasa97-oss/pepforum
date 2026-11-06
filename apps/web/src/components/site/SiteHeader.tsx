@@ -9,6 +9,7 @@ import { getAnnouncement, getTaxonomy } from '@/server/queries';
 
 import { Logo } from './Logo';
 import { NavLink } from './NavLink';
+import { ReplyNotice } from './ReplyNotice';
 
 /** Global header + zone bar. Server-rendered; forms work without JavaScript. */
 export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefined }) {
@@ -41,6 +42,12 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
                   <Avatar name={standing.username} />
                   <span className="hide-sm xs">{standing.karma.toLocaleString()} ★</span>
                 </Link>
+                <Link href="/contact" className="icon-btn hide-sm"
+                  aria-label={standing.support_unread > 0 ? t('nav.contactUnread', { n: standing.support_unread }) : t('nav.contact')}
+                  title={t('nav.contact')}>
+                  <Icon name="inbox" />
+                  {standing.support_unread > 0 ? <span className="unread-dot" /> : null}
+                </Link>
                 <Link href="/settings" className="icon-btn hide-sm" aria-label={t('nav.settings')}><Icon name="user" /></Link>
                 <form action={signOutAction}>
                   <button type="submit" className="navbtn hide-sm">{t('nav.signOut')}</button>
@@ -60,6 +67,9 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           <Icon name={announcement?.tone === 'warn' ? 'alert' : 'info'} />
           <span>{announcementText}</span>
         </div>
+      ) : null}
+      {standing && standing.support_unread > 0 ? (
+        <ReplyNotice text={t('contact.replyBanner', { n: standing.support_unread })} cta={t('contact.replyBannerCta')} />
       ) : null}
       {standing?.needs_onboarding ? (
         <div className="onboard-bar" role="status">

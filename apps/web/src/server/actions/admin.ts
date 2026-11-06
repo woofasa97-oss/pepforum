@@ -37,6 +37,8 @@ import {
   ShieldRemoveSchema,
   ShieldTestSchema,
   StaffNoteSchema,
+  TicketClosedSchema,
+  TicketReplySchema,
   ToggleSchema,
   ZoneSchema,
   fieldErrors,
@@ -142,6 +144,29 @@ export async function resolveMemberReportsAction(_prev: ActionState, form: FormD
   }
   revalidatePath('/admin', 'layout');
   return { ok: true, message: t('admin.reports.closedDone', { n: Number(data) }) };
+}
+
+// ── Inbox (…020) ──────────────────────────────────────────────────────────
+export async function adminReplyTicketAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = TicketReplySchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const t = await getT();
+  const close = parsed.data.close === 'on';
+  const { error } = await rpc('admin_reply_ticket', { p_ticket: parsed.data.ticketId, p_body: parsed.data.body, p_close: close });
+  if (error) {
+    logUnexpected('admin_reply_ticket', error);
+    return { ok: false, message: messageForDbError(error, t) };
+  }
+  revalidatePath('/admin', 'layout');
+  return { ok: true, message: close ? t('admin.inbox.sentClosed') : t('admin.inbox.sent') };
+}
+
+export async function adminSetTicketClosedAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = TicketClosedSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const closed = parsed.data.closed === 'true';
+  const t = await getT();
+  return run('admin_set_ticket_closed', { p_ticket: parsed.data.ticketId, p_closed: closed }, closed ? t('admin.inbox.closedDone') : t('admin.inbox.reopenedDone'));
 }
 
 export async function setModeratorAction(_prev: ActionState, form: FormData): Promise<ActionState> {

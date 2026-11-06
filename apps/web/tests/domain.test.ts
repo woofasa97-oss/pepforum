@@ -5,7 +5,9 @@ import { describeRequirement, messageForDbError } from '@/lib/errors';
 import { removalReasonLabel } from '@/lib/format';
 import { en, fr, translator } from '@/lib/i18n';
 import { buildThread } from '@/lib/thread';
-import { CreatePostSchema, ProposeNoteSchema, RateNoteSchema, ReportMemberSchema, SignUpSchema, formToObject } from '@/lib/validation';
+import {
+  CreatePostSchema, OpenTicketSchema, ProposeNoteSchema, RateNoteSchema, ReportMemberSchema, SignUpSchema, TicketReplySchema, formToObject,
+} from '@/lib/validation';
 
 const t = translator('en');
 
@@ -31,6 +33,7 @@ describe('error mapping', () => {
     expect(messageForDbError({ code: 'PF409', message: 'not_pending' }, t)).toBe(en['errors.not_pending']);
     expect(messageForDbError({ code: 'PF403', message: 'owner_only' }, t)).toBe(en['errors.owner_only']);
     expect(messageForDbError({ code: 'PF422', message: 'report_self' }, t)).toBe(en['errors.report_self']);
+    expect(messageForDbError({ code: 'PF409', message: 'ticket_closed' }, t)).toBe(en['errors.ticket_closed']);
   });
 
   it('never leaks unknown internal errors', () => {
@@ -67,6 +70,20 @@ describe('validation', () => {
     expect(ReportMemberSchema.safeParse({ username: 'maple_you', reason: 'rude' }).success).toBe(false);
     expect(ReportMemberSchema.safeParse({ username: 'no spaces', reason: 'spam' }).success).toBe(false);
     expect(ReportMemberSchema.safeParse({ username: 'maple_you', reason: 'other', details: 'x'.repeat(1001) }).success).toBe(false);
+  });
+
+  it('checks tickets to the team like the database does', () => {
+    const base = { kind: 'suggestion', subject: 'Dark mode on notes', body: 'The notes page ignores the dark theme.' };
+    expect(OpenTicketSchema.safeParse(base).success).toBe(true);
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'praise' }).success).toBe(false);
+    expect(OpenTicketSchema.safeParse({ ...base, subject: 'Hi' }).success).toBe(false);
+    expect(OpenTicketSchema.safeParse({ ...base, body: 'Too short' }).success).toBe(false);
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'bug', aboutUrl: 'http://pepforum.ca/x' }).success).toBe(false);
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'bug', aboutUrl: 'https://pepforum.ca/post/1' }).success).toBe(true);
+    // A member report needs to say who.
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'report_member', aboutUsername: '' }).success).toBe(false);
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'report_member', aboutUsername: 'maple_you' }).success).toBe(true);
+    expect(TicketReplySchema.safeParse({ ticketId: '6f1c2c84-3f7e-4d33-9a35-0e5c1d2b7a10', body: '   ' }).success).toBe(false);
   });
 
   it('requires 12+ character passwords and valid usernames at sign-up', () => {

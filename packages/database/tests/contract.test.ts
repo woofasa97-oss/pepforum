@@ -23,6 +23,8 @@ import {
   SHIELD_ACTIONS,
   SOURCE_KINDS,
   STAFF_NOTE_LABELS,
+  TICKET_KINDS,
+  TICKET_STATUSES,
   inferSourceKind,
 } from '../src/index.ts';
 import { TestDb } from '../src/testing/index.ts';
@@ -68,6 +70,8 @@ describe('domain vocabulary matches the schema', () => {
     ['shield_phrases', 'action', SHIELD_ACTIONS],
     ['member_reports', 'reason', MEMBER_REPORT_REASONS],
     ['member_reports', 'status', ['open', ...MEMBER_REPORT_OUTCOMES]],
+    ['support_tickets', 'kind', TICKET_KINDS],
+    ['support_tickets', 'status', TICKET_STATUSES],
   ])('%s.%s', async (table, column, values) => {
     expect(await checkValues(table, column)).toEqual([...values].sort());
   });

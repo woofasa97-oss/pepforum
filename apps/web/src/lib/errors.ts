@@ -22,6 +22,8 @@ const SPECIFIC_MESSAGES = new Set<string>([
   'not_pending',
   // Member reports and the site owner (…019)
   'owner_only', 'report_self',
+  // Contact the team (…020)
+  'ticket_closed',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

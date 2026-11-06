@@ -53,6 +53,10 @@ function needs(o: AdminOverview, t: Translate): Need[] {
     list.push({ tone: 'red', icon: 'user', href: '/admin/reports', cta: t('admin.home.review'),
       text: t('admin.home.memberReports', { n: o.member_reports_open, age: o.member_reports_oldest ? relativeTime(o.member_reports_oldest, t) : '' }) });
   }
+  if (o.tickets_open > 0) {
+    list.push({ tone: 'amber', icon: 'inbox', href: '/admin/inbox', cta: t('admin.home.answer'),
+      text: t('admin.home.tickets', { n: o.tickets_open, age: o.tickets_oldest ? relativeTime(o.tickets_oldest, t) : '' }) });
+  }
   if (o.links_pending > 0) {
     list.push({ tone: 'amber', icon: 'link', href: '/admin/links', cta: t('admin.home.review'),
       text: t('admin.home.links', { n: o.links_pending, age: o.links_oldest ? relativeTime(o.links_oldest, t) : '' }) });

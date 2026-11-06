@@ -15,6 +15,8 @@ import type {
   SanctionKind,
   ShieldAction,
   StaffNoteLabel,
+  TicketKind,
+  TicketStatus,
   Violation,
 } from './domain.ts';
 
@@ -33,6 +35,9 @@ export type AdminOverview = {
   /** Members with open member reports (…019), and the oldest of those reports. */
   member_reports_open: number;
   member_reports_oldest: string | null;
+  /** Tickets waiting for the team (…020), and when the longest-waiting one last moved. */
+  tickets_open: number;
+  tickets_oldest: string | null;
   /** The site owner's username: the one admin who adds and removes admins. */
   owner: string | null;
   is_owner: boolean;
@@ -325,6 +330,59 @@ export type AdminMemberReports = {
   recent: Array<{ username: string; outcome: MemberReportOutcome; reason: string; reports: number; by: string | null; at: string }>;
   actioned_30d: number;
   dismissed_30d: number;
+};
+
+/** One row of the admin inbox (…020). */
+export type AdminTicketRow = {
+  id: string;
+  kind: TicketKind;
+  subject: string;
+  status: TicketStatus;
+  member: string;
+  member_tier: number;
+  member_is_admin: boolean;
+  /** The member a report is about. */
+  about: string | null;
+  created_at: string;
+  last_message_at: string;
+  messages: number;
+  last_from_staff: boolean;
+  /** First 160 characters of the latest message. */
+  preview: string;
+};
+
+export type AdminTickets = {
+  tickets: AdminTicketRow[];
+  counts: { open: number; answered: number; closed_30d: number };
+  open_by_kind: Partial<Record<TicketKind, number>>;
+};
+
+export type AdminTicketView = {
+  id: string;
+  kind: TicketKind;
+  subject: string;
+  status: TicketStatus;
+  about: string | null;
+  about_url: string | null;
+  created_at: string;
+  last_message_at: string;
+  closed_at: string | null;
+  closed_by: string | null;
+  closed_by_member: boolean;
+  /** The ticket is the viewing admin's own: another admin has to answer it. */
+  is_self: boolean;
+  member: {
+    username: string;
+    tier: number;
+    karma: number;
+    integrity: number;
+    joined: string;
+    deleted: boolean;
+    is_admin: boolean;
+    sanction: 'ban' | 'suspension' | 'freeze' | null;
+    tickets: number;
+  };
+  messages: Array<{ id: string; body: string; from_staff: boolean; author: string; created_at: string }>;
 };
 
 export type ShieldMatch = { rule_kind: 'domain' | 'phrase'; rule: string; action: ShieldAction };

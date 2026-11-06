@@ -117,7 +117,7 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
 
   // Rate limits
   ...['vote', 'comment', 'post', 'post_newcomer', 'post_low_integrity', 'edit', 'note', 'rating', 'queue', 'report', 'report_member', 'appeal', 'export',
-      'onboarding', 'admin_action'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
+      'onboarding', 'open_ticket', 'ticket_reply', 'admin_action'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
 
   // Security
   f('security.require_mfa_for_staff', 'security', 'boolean', undefined, true),

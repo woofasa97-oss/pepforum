@@ -12,7 +12,7 @@ import { getLocale, getStanding, getT } from '@/server/context';
 import { getFeed, getProfile, getTaxonomy } from '@/server/queries';
 
 const REPORT_MEMBER_LABEL_KEYS = [
-  'memberReport.open', 'memberReport.intro', 'memberReport.reason', 'memberReport.details', 'memberReport.detailsHint', 'memberReport.submit',
+  'memberReport.open', 'memberReport.intro', 'memberReport.reason', 'memberReport.details', 'memberReport.detailsHint', 'memberReport.submit', 'memberReport.ticket',
   ...MEMBER_REPORT_REASONS.map((r) => `memberReport.reason.${r}` as const),
 ] satisfies MessageKey[];
 

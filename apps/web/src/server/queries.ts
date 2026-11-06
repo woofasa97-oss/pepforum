@@ -10,6 +10,8 @@ import type {
   LedgerEventRow,
   ModActionRow,
   ModQueueItem,
+  MyTicketSummary,
+  MyTicketView,
   NoteDetailView,
   NoteView,
   PostDetailRow,
@@ -224,4 +226,25 @@ export async function getModQueue(zone: string): Promise<{ items: ModQueueItem[]
   if (queue.error) return { error: queue.error };
   if (appeals.error) return { error: appeals.error };
   return { items: queue.data, appeals: appeals.data };
+}
+
+/** A read-API function that doesn't exist yet: the code was deployed before `supabase db push`. */
+const isMissingFunction = (error: DbErrorLike) => error.code === 'PGRST202' || error.code === '42883';
+
+/** The member's own tickets to the team (…020). Empty until the migration is applied. */
+export async function getMyTickets(): Promise<MyTicketSummary[]> {
+  if (!(await getViewer())) return [];
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_tickets');
+  if (result.error && isMissingFunction(result.error)) return [];
+  return unwrap('my_tickets', result);
+}
+
+/** One of the member's tickets with its thread; opening it marks the team's replies read. */
+export async function getMyTicket(ticketId: string): Promise<MyTicketView | null> {
+  if (!(await getViewer())) return null;
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_ticket', { p_ticket: ticketId });
+  if (result.error && isMissingFunction(result.error)) return null;
+  return unwrap('my_ticket', result);
 }
