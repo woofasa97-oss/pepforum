@@ -11,14 +11,15 @@ type Three = typeof ThreeModule;
  * The prototype's extruded 3D maple leaf: it follows the pointer and can be
  * dragged to spin. three.js is loaded only after hydration, and nothing loads
  * for reduced-motion users or without WebGL. The flat SVG leaf shows until
- * this mounts (`.bhero:has(.leaf3d.on) .leaf` in globals.css).
+ * this mounts (`.bhero:has(.leaf3d.on) .leaf` in globals.css). Phones get
+ * neither leaf, so three.js isn't downloaded there either.
  */
 export function Leaf3D() {
   const host = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 760px)').matches) return;
     let unmount: (() => void) | undefined;
     let cancelled = false;
     void import('three').then((THREE) => {

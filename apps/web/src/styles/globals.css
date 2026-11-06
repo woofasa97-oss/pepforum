@@ -414,10 +414,16 @@ img.avatar { object-fit: cover; background: var(--surface-2); }
 .bstrip svg { width: 40px; height: 40px; stroke-width: 1.6; }
 .bstrip small { display: block; font-family: var(--font); font-weight: 400; color: var(--text-3); font-size: 12px; }
 @media (max-width: 760px) {
-  .bhero { margin: -12px -12px 0; padding: 36px 12px 140px; }
-  .bhero .leaf { right: 8px; top: auto; bottom: 12px; transform: none; width: 96px; opacity: .9; }
-  .bhero .in { position: static; min-height: 0; }
-  .bhero .leaf3d { width: 52%; right: -12px; top: auto; bottom: 0; height: 150px; }
+  /* Portrait phones: no leaf, and the hero only as tall as its text. */
+  .bhero { margin: -12px -12px 0; padding: 32px 4px 56px; min-height: 0; }
+  .bhero .leaf, .bhero .leaf3d { display: none; }
+  /* Keep the peaks below the text; the sky's top colour is --navy, so the seam doesn't show. */
+  .bhero .scene { top: auto; height: 58%; }
+  .bhero .in { min-height: 0; padding: 0 12px; }
+  .bhero p { margin-top: 12px; }
+  .bhero .cta { margin-top: 22px; }
+  .bhero .cta .btn { flex: 1 1 auto; }
+  .bhero .btn.red, .bhero .btn.ghost { padding: 13px 14px; }
   .bstrip { grid-template-columns: 1fr 1fr; }
   .bstrip a { border-bottom: 1px solid var(--border); }
   .bstrip a:nth-child(2n) { border-right: 0; }
@@ -457,6 +463,12 @@ code.secret { font-family: ui-monospace, monospace; font-size: 12px; overflow-wr
   .ftr-in { grid-template-columns: 1fr; }
   .rate-opts { grid-template-columns: 1fr; }
   .vote button { width: 40px; height: 40px; }
+}
+@media (max-width: 400px) {
+  .hdr-in { gap: 6px; }
+  .nav { gap: 0; }
+  .nav a, .nav button.navbtn { padding: 7px 7px; }
+  .hdr .btn.ghost-light { padding-left: 10px; padding-right: 10px; }
 }
 .vote-link { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-3); }
 .vote-link:hover { background: var(--surface-3); color: var(--text); }

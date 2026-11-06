@@ -57,7 +57,7 @@ function Scene() {
 }
 
 /** Home-page brand hero and the four-way shortcut strip under it (from the prototype). */
-export function BrandHero({ t, signedIn }: { t: Translate; signedIn: boolean }) {
+export function BrandHero({ t, signedIn, regions }: { t: Translate; signedIn: boolean; regions: boolean }) {
   return (
     <>
       <section className="bhero" aria-label={t('home.hero.label')}>
@@ -71,7 +71,10 @@ export function BrandHero({ t, signedIn }: { t: Translate; signedIn: boolean }) 
             {signedIn ? (
               <>
                 <Link className="btn red" href="/submit">{t('nav.submit')} →</Link>
-                <Link className="btn ghost" href="#zones">{t('home.hero.exploreZones')}</Link>
+                {/* The zone bar is hidden while regions are off (…026), so "Explore zones" would go nowhere. */}
+                {regions
+                  ? <Link className="btn ghost" href="#zones">{t('home.hero.exploreZones')}</Link>
+                  : <Link className="btn ghost" href="/legal/community-notes">{t('notes.whatIs')}</Link>}
               </>
             ) : (
               <>
