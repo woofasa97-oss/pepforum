@@ -21,6 +21,17 @@ const EnvSchema = z.object({
   // "Continue with Google" on our own domain (lib/google-oauth.ts). Both set → our flow; otherwise Supabase's.
   GOOGLE_CLIENT_ID: z.string().regex(/\.apps\.googleusercontent\.com$/, 'expected the OAuth client ID ending in .apps.googleusercontent.com').optional(),
   GOOGLE_CLIENT_SECRET: z.string().min(10).optional(),
+  // Verified social accounts (…028, lib/socials.ts). The key is shared with the database
+  // (private.app_secrets 'social_attestation'); each network appears once its app is set.
+  SOCIAL_ATTESTATION_KEY: z.string().min(32, 'use at least 32 random characters').optional(),
+  X_CLIENT_ID: z.string().min(5).optional(),
+  X_CLIENT_SECRET: z.string().min(5).optional(),
+  INSTAGRAM_CLIENT_ID: z.string().min(5).optional(),
+  INSTAGRAM_CLIENT_SECRET: z.string().min(5).optional(),
+  TIKTOK_CLIENT_KEY: z.string().min(5).optional(),
+  TIKTOK_CLIENT_SECRET: z.string().min(5).optional(),
+  REDDIT_CLIENT_ID: z.string().min(5).optional(),
+  REDDIT_CLIENT_SECRET: z.string().min(5).optional(),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 

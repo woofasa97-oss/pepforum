@@ -79,6 +79,7 @@ import type {
   RatingValue,
   ShieldAction,
   SourceKind,
+  SocialPlatform,
   StaffNoteLabel,
   TicketKind,
   TicketStatus,
@@ -398,6 +399,16 @@ export type MyTicketView = {
   messages: Array<{ id: string; body: string; from_staff: boolean; created_at: string }>;
 };
 
+/** A verified social account as shown on a profile (…028). `audience` = followers or subscribers. */
+export type SocialBadge = { platform: SocialPlatform; handle: string; audience: number; url: string; verified_at: string };
+
+/** The caller's verified accounts, their bonus, and whether verification is set up on the server (…028). */
+export type MySocialAccounts = {
+  accounts: Array<SocialBadge & { metrics: Record<string, number | string> }>;
+  bonus: number;
+  configured: boolean;
+};
+
 /** One person in a followers/following list (…027). `friend` = they follow each other. */
 export type FollowRow = { username: string; tier: number; avatar: string | null; friend: boolean; is_me: boolean };
 
@@ -426,6 +437,8 @@ export type ProfileView = {
   following: number;
   is_following: boolean;
   follows_you: boolean;
+  /** Verified social accounts (…028), largest audience first. */
+  socials: SocialBadge[];
   moderates: string[];
   post_count: number;
   comment_count: number;
@@ -702,6 +715,13 @@ export type Database = {
       get_media_access: { Args: { p_id: string }; Returns: MediaAccess | null };
       set_avatar: { Args: { p_media: string | null }; Returns: undefined };
       set_follow: { Args: { p_username: string; p_follow: boolean }; Returns: { following: boolean; followers: number; friends: boolean } };
+      link_social_account: {
+        Args: { p_platform: SocialPlatform; p_external_id: string; p_handle: string; p_audience: number; p_profile_url: string; p_metrics: string; p_issued_at: number; p_signature: string };
+        Returns: { platform: SocialPlatform; handle: string; audience: number; bonus: number };
+      };
+      unlink_social_account: { Args: { p_platform: SocialPlatform }; Returns: number };
+      my_social_accounts: { Args: Record<string, never>; Returns: MySocialAccounts | null };
+      admin_unlink_social: { Args: { p_user: string; p_platform: SocialPlatform; p_reason: string }; Returns: undefined };
       get_follows: { Args: { p_username: string; p_kind: 'followers' | 'following'; p_page?: number }; Returns: FollowRow[] | null };
       admin_media: { Args: { p_status?: MediaStatus; p_page?: number }; Returns: AdminMedia };
       admin_remove_media: { Args: { p_id: string; p_reason: string }; Returns: undefined };

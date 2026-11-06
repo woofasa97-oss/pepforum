@@ -6,6 +6,7 @@ import type {
   AppealView,
   CategoryRow,
   FollowRow,
+  MySocialAccounts,
   CityRow,
   CommentRow,
   FeedRow,
@@ -406,3 +407,26 @@ export async function getFollows(username: string, kind: 'followers' | 'followin
   if (result.error && isMissingFunction(result.error)) return [];
   return unwrap('get_follows', result);
 }
+
+/** The member's verified social accounts and bonus (…028); null before the migration or when signed out. */
+export async function getMySocialAccounts(): Promise<MySocialAccounts | null> {
+  if (!(await getViewer())) return null;
+  const supabase = await getSupabase();
+  const result = await supabase.rpc('my_social_accounts');
+  if (result.error) {
+    if (!isMissingFunction(result.error)) logUnexpected('my_social_accounts', result.error);
+    return null;
+  }
+  return result.data;
+}
+
+/** The public bonus rules (socials.bonus_*), for the explanation on Settings. */
+export const getSocialBonusRules = cache(async (): Promise<{ min: number; step: number; max: number }> => {
+  const supabase = await getSupabase();
+  const { data } = await supabase.from('app_config').select('key, value').in('key', ['socials.bonus_min_audience', 'socials.bonus_step_karma', 'socials.bonus_max_karma']);
+  const get = (key: string, fallback: number) => {
+    const value = data?.find((row) => row.key === key)?.value;
+    return typeof value === 'number' ? value : fallback;
+  };
+  return { min: get('socials.bonus_min_audience', 1000), step: get('socials.bonus_step_karma', 25), max: get('socials.bonus_max_karma', 100) };
+});

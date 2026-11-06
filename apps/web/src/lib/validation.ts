@@ -20,6 +20,7 @@ import {
   SANCTION_KINDS,
   SHIELD_ACTIONS,
   SITE_DECISIONS,
+  SOCIAL_PLATFORMS,
   SOURCE_KINDS,
   STAFF_NOTE_LABELS,
   TICKET_KINDS,
@@ -212,6 +213,7 @@ export const ShieldTestSchema = z.object({ text: trimmed(1, 10000) });
 export const LinkDecisionSchema = z.object({
   kind: z.enum(['post', 'comment']), id, decision: z.enum(LINK_DECISIONS), reason: reason.optional(),
 });
+export const AdminUnlinkSocialSchema = z.object({ username, platform: z.enum(SOCIAL_PLATFORMS), reason });
 export const TicketClosedSchema = z.object({ ticketId: id, closed: onOff });
 export const ResolveMemberReportsSchema = z.object({ username, outcome: z.enum(MEMBER_REPORT_OUTCOMES), reason });
 export const LinkSiteSchema = z.object({ host: trimmed(3, 253), decision: z.enum(SITE_DECISIONS), reason: reason.optional() });

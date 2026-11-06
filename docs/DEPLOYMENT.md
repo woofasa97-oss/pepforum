@@ -60,6 +60,27 @@
       Then turn on two-factor sign-in in Settings, sign in again, and run everything else from `/admin` (Team & access adds admins and moderators). See docs/ADMIN.md, "The site owner".
     - `security.require_mfa_for_staff` must stay `true` in production.
 
+### Verified social accounts (optional)
+
+Members verify an X, YouTube, Instagram, TikTok or Reddit account from **Settings → Verified accounts** (migration …028, `apps/web/src/lib/socials.ts`). Verification is off until you set it up, and each network appears only once its app is configured.
+
+1. **The shared key.** Generate a random key (for example `openssl rand -hex 32`). Put it in the Supabase SQL editor:
+   ```sql
+   insert into private.app_secrets (name, value) values ('social_attestation', '<the key>')
+   on conflict (name) do update set value = excluded.value;
+   ```
+   Then set the same value as `SOCIAL_ATTESTATION_KEY` on the web service in Render. The web server signs every verification with it, and the database rejects anything it didn't sign.
+2. **One developer app per network.** In each, register the callback `https://<your-domain>/social/<network>/callback`, then put the app's ID and secret on the web service:
+
+   | Network | Where | Permissions | Render variables | Notes |
+   |---|---|---|---|---|
+   | X | developer.x.com → Project → App → User authentication settings (OAuth 2.0, *Web App*) | `users.read`, `tweet.read` | `X_CLIENT_ID`, `X_CLIENT_SECRET` | Can be the same app as Sign in with X (add both callbacks). X's free API tier allows only a small number of reads a day. |
+   | YouTube | Google Cloud (same client as Google sign-in) → enable **YouTube Data API v3**; add the scope on the consent screen | `youtube.readonly` | uses `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | A sensitive scope: until Google verifies it, members see an "unverified app" warning. |
+   | Instagram | developers.facebook.com → app → *Instagram API with Instagram Login* | `instagram_business_basic` | `INSTAGRAM_CLIENT_ID`, `INSTAGRAM_CLIENT_SECRET` | Works for Business and Creator accounts only. Needs Meta app review before the public can use it. |
+   | TikTok | developers.tiktok.com → app → Login Kit | `user.info.basic`, `user.info.profile`, `user.info.stats` | `TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET` | Needs TikTok app review. |
+   | Reddit | reddit.com/prefs/apps → *web app* | `identity` | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Audience = the profile's followers. |
+3. **The bonus** is tuned in Rules & settings (`socials.bonus_*`, docs/SELF_MODERATION.md).
+
 ## 2. Render (web and worker)
 
 1. **New Blueprint**, pointing at this repo. `render.yaml` creates:

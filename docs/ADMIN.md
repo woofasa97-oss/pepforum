@@ -149,6 +149,10 @@ Pepforum sells one reviewed sponsored card per feed. The money and policy rules 
 - **Reports.** Any member can report an ad. *Resolve* closes the report; *Stop campaign* closes every report on it, stops serving and releases the unspent reservation. Days already charged stay charged; refund from the advertiser card if warranted.
 - **The switch.** `ads.enabled` (Rules & settings → Images, clinicians, notifications & ads) hides every slot without touching campaigns; days off still count towards a flight. Pricing (`ads.cpm.*`, `ads.min_booking_microcad`) applies to campaigns submitted after the change.
 
+## Verified social accounts
+
+Members can verify an X, YouTube, Instagram, TikTok or Reddit account from Settings; badges show on their profile, and a verified audience earns a one-time karma bonus capped at Member (see docs/SELF_MODERATION.md). On a member's public profile, admins see **Remove** next to each badge: use it for vendor or sourcing accounts and for accounts that aren't theirs. It takes the bonus back and is logged as *Verified account removed*. Setup: docs/DEPLOYMENT.md, "Verified social accounts".
+
 ## Where the code lives
 
 | Concern | Location |

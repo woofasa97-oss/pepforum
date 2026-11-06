@@ -38,6 +38,8 @@ Plus two counters used for note privileges: **rater impact** (settled ratings th
 
 **Hysteresis:** you're promoted the moment you reach a threshold, but demoted only when karma falls below 90% of your current tier's threshold (`tiers.demotion_ratio`), so privileges don't flicker.
 
+**Verified social accounts** (…028): a member who verifies an X, YouTube, Instagram, TikTok or Reddit account (by signing in to it) gets a badge and a one-time bonus for their largest verified audience: `min(max, step × (1 + ⌊log₁₀(audience ÷ min)⌋))`, i.e. 1k → 25, 10k → 50, 100k → 75, 1M+ → 100 karma by default. The bonus is capped at Member on purpose: followers can be bought and large peptide accounts are often vendors, so Trusted and above still have to be earned here. It is one ledger fact (`social_verified`), recalculated when accounts change; removing the account (by the member, or by an admin for a vendor or impersonation) takes it back.
+
 ### Capability gates
 
 `private.capability_check(user, capability)` returns `NULL` (allowed) or a reason key (`tier:2`, `account_age:30`, `integrity:70`, `rater_impact:5`, `writing_locked`, `frozen`, `sanctioned`, `email_unconfirmed`, `onboarding`…). The UI renders the reason as a sentence ("Requires Trusted").
@@ -164,6 +166,10 @@ New settings:
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |
+| `socials.bonus_min_audience` | 1000 | Verified audience needed for a karma bonus (…028) |
+| `socials.bonus_step_karma` | 25 | Bonus karma at the minimum and per tenfold audience |
+| `socials.bonus_max_karma` | 100 | Cap on the one-time bonus (100 = exactly Member) |
+| `rate_limit.social_link` | 10 / day | Social accounts verified or removed per member |
 | `rate_limit.follow` | 60 / hour | Follows and unfollows per member (…027) |
 | `rate_limit.avatar` | 10 / day | Profile picture changes per member (…027) |
 | `rate_limit.open_ticket` | 5 / day | Tickets one member can open to the team (…020) |

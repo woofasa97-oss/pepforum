@@ -20,7 +20,7 @@ export type ConfigInput =
   | 'classifications'
   | 'announcement';  // edited on the Announcement tab
 
-export type ConfigUnit = 'days' | 'hours' | 'karma' | 'xp' | 'points' | 'integrity' | 'ratings' | 'votes' | 'raters' | 'ratio' | 'microcad' | 'bytes' | 'images';
+export type ConfigUnit = 'days' | 'hours' | 'karma' | 'xp' | 'points' | 'integrity' | 'ratings' | 'votes' | 'raters' | 'ratio' | 'microcad' | 'bytes' | 'images' | 'followers';
 
 export type ConfigField = {
   readonly key: string;
@@ -128,10 +128,13 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('ads.min_booking_microcad', 'features', 'integer', 'microcad'),
   f('ads.flight_days', 'features', 'integer', 'days'),
   f('features.regions', 'features', 'boolean'),
+  f('socials.bonus_min_audience', 'features', 'integer', 'followers'),
+  f('socials.bonus_step_karma', 'features', 'integer', 'karma'),
+  f('socials.bonus_max_karma', 'features', 'integer', 'karma'),
 
   // Rate limits
   ...['vote', 'comment', 'post', 'post_newcomer', 'post_low_integrity', 'edit', 'note', 'rating', 'queue', 'report', 'report_member', 'appeal', 'export',
-      'onboarding', 'open_ticket', 'ticket_reply', 'follow', 'avatar', 'admin_action',
+      'onboarding', 'open_ticket', 'ticket_reply', 'follow', 'avatar', 'social_link', 'admin_action',
       'push_subscribe', 'notification_settings', 'upload', 'clinician_submit', 'ad_write', 'ad_report'].map((action) => f(`rate_limit.${action}`, 'rate_limits', 'rate_limit', undefined, true)),
 
   // Security

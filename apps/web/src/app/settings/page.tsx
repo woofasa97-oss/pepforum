@@ -1,3 +1,4 @@
+import { SOCIAL_PLATFORMS } from '@pepforum/database';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
@@ -5,20 +6,30 @@ import Link from 'next/link';
 
 import { DeleteAccountForm, MfaSetup, ProfileForm } from '@/components/settings/SettingsForms';
 import { Avatar } from '@/components/ui/Bits';
+import { SubmitButton } from '@/components/ui/SubmitButton';
 import { Icon } from '@/components/ui/Icon';
 import { hasPassword } from '@/lib/auth-providers';
+import { compactNumber, formatDate } from '@/lib/format';
 import { type MessageKey, pick } from '@/lib/i18n';
+import { PLATFORM_NAMES, audienceKey, displayHandle } from '@/lib/social-names';
+import { configuredPlatforms } from '@/lib/socials';
+import { unlinkSocialAction } from '@/server/actions/social';
 import { getLocale, getStanding, getSupabase, getT, getViewer } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
+import { getMySocialAccounts, getSocialBonusRules, getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Settings', robots: { index: false } };
 
 const PICTURE_RESULTS = ['saved', 'removed', 'invalid', 'too_large', 'unsupported', 'rate_limited', 'not_allowed', 'failed'] as const;
+const SOCIAL_RESULTS = ['linked', 'removed', 'cancelled', 'failed', 'taken', 'no_channel', 'rate_limited', 'unavailable'] as const;
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ avatar?: string }> }) {
-  const [t, locale, viewer, taxonomy, standing, query] = await Promise.all([getT(), getLocale(), getViewer(), getTaxonomy(), getStanding(), searchParams]);
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ avatar?: string; social?: string }> }) {
+  const [t, locale, viewer, taxonomy, standing, query, socials, rules] = await Promise.all([
+    getT(), getLocale(), getViewer(), getTaxonomy(), getStanding(), searchParams, getMySocialAccounts(), getSocialBonusRules(),
+  ]);
   if (!viewer) redirect('/auth/sign-in?next=/settings');
   const pictureResult = PICTURE_RESULTS.find((r) => r === query.avatar);
+  const socialResult = SOCIAL_RESULTS.find((r) => r === query.social);
+  const verifiable = configuredPlatforms();
 
   const supabase = await getSupabase();
   const [{ data: profile }, { data: factors }, { data: account }] = await Promise.all([
@@ -56,6 +67,49 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             ) : null}
           </div>
           <p className="xs faint mt8">{t('settings.pictureHint')}</p>
+        </section>
+
+        <section className="card card-p mb16" aria-labelledby="socials-h" id="socials">
+          <h2 id="socials-h" className="mb8">{t('socials.title')}</h2>
+          <p className="small muted mb12">
+            {t('socials.intro', { min: rules.min.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-CA'), max: rules.max })}
+          </p>
+          {socialResult ? (
+            <div className={`banner ${socialResult === 'linked' || socialResult === 'removed' ? 'ok' : 'danger'} mb12`} role="status">
+              {t(`socials.result.${socialResult}` as MessageKey)}
+            </div>
+          ) : null}
+          <ul className="site-list">
+            {SOCIAL_PLATFORMS.map((platform) => {
+              const account = socials?.accounts.find((a) => a.platform === platform);
+              return (
+                <li key={platform}>
+                  <span className="row wrap" style={{ gap: 8 }}>
+                    <b>{PLATFORM_NAMES[platform]}</b>
+                    {account ? (
+                      <>
+                        <a className="link" href={account.url} rel="nofollow ugc noopener noreferrer">{displayHandle(platform, account.handle)}</a>
+                        <span className="xs muted">{t(audienceKey(platform), { n: compactNumber(account.audience, locale) })}</span>
+                        <span className="pill green">{t('socials.verifiedOn', { date: formatDate(account.verified_at, locale) })}</span>
+                      </>
+                    ) : null}
+                  </span>
+                  {account ? (
+                    <form action={unlinkSocialAction}>
+                      <input type="hidden" name="platform" value={platform} />
+                      <SubmitButton className="btn sm">{t('socials.remove')}</SubmitButton>
+                    </form>
+                  ) : verifiable.includes(platform) ? (
+                    <a className="btn sm dark" href={`/social/${platform}/start`}>{t('socials.verify')}</a>
+                  ) : (
+                    <span className="xs faint">{t('socials.soon')}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          {socials && socials.bonus > 0 ? <p className="small mt8"><b>{t('socials.bonusNow', { n: socials.bonus })}</b></p> : null}
+          <p className="xs faint mt8">{t('socials.privacy')}</p>
         </section>
 
         <section className="card card-p mb16" aria-labelledby="profile-h">

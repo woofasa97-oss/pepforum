@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: 'Standing', robots: { index: false } 
 
 const KNOWN_REASONS = new Set([
   'post_votes', 'comment_votes', 'note_written', 'note_rating', 'note_strike', 'mod_removal',
-  'appeal_reversal', 'report_upheld', 'report_abusive', 'seed',
+  'appeal_reversal', 'report_upheld', 'report_abusive', 'seed', 'social_verified',
 ]);
 
 export default async function StandingPage() {

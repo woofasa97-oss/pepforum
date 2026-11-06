@@ -74,6 +74,10 @@ export const MEMBER_REPORT_OUTCOMES = ['actioned', 'dismissed'] as const;
 export type MemberReportOutcome = (typeof MEMBER_REPORT_OUTCOMES)[number];
 
 /** What a member writes to the team about (support_tickets.kind, …020). */
+/** Networks a member can verify an account on (social_accounts.platform, …028). */
+export const SOCIAL_PLATFORMS = ['x', 'youtube', 'instagram', 'tiktok', 'reddit'] as const;
+export type SocialPlatform = (typeof SOCIAL_PLATFORMS)[number];
+
 export const TICKET_KINDS = ['suggestion', 'report_member', 'report_content', 'bug', 'account', 'other'] as const;
 export type TicketKind = (typeof TICKET_KINDS)[number];
 
@@ -124,7 +128,7 @@ export const MOD_ACTIONS = [
   'media_removed',
   'clinician_approved', 'clinician_rejected', 'clinician_revoked',
   'advertiser_approved', 'advertiser_suspended', 'ad_approved', 'ad_rejected', 'ad_suspended',
-  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved',
+  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved', 'social_unlinked'
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 

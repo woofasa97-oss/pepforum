@@ -7,6 +7,7 @@ import { ClinicianBadge } from '@/components/clinician/ClinicianBadge';
 import { PostCard } from '@/components/post/PostCard';
 import { FollowButton } from '@/components/profile/FollowButton';
 import { ReportMemberForm } from '@/components/profile/ReportMemberForm';
+import { SocialBadges } from '@/components/profile/SocialBadges';
 import { Avatar, TierBadge } from '@/components/ui/Bits';
 import { formatDate } from '@/lib/format';
 import { type MessageKey, pick } from '@/lib/i18n';
@@ -64,6 +65,7 @@ export default async function ProfilePage({ params }: Props) {
                 </p>
               )}
               {profile.deleted ? <p className="mt8">{t('profile.deleted')}</p> : null}
+              <SocialBadges username={profile.username} socials={profile.socials ?? []} t={t} locale={locale} isAdmin={Boolean(standing?.is_admin)} />
               {profile.bio ? <p className="mt8">{profile.bio}</p> : null}
               {profile.coi ? <p className="small mt8"><b>{t('profile.coi')}:</b> {profile.coi}</p> : null}
               {profile.moderates.length ? <p className="small mt8 pill blue">{t('profile.moderates', { zones: profile.moderates.join(', ') })}</p> : null}

@@ -4,7 +4,9 @@
  * Following (…027). The database checks the member, the target and the rate
  * limit; this validates input and refreshes the profiles involved.
  */
+import { SOCIAL_PLATFORMS } from '@pepforum/database';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 import type { ActionState } from '@/lib/action-state';
 import { logUnexpected, messageForDbError } from '@/lib/errors';
@@ -27,4 +29,16 @@ export async function followAction(_prev: ActionState, form: FormData): Promise<
   revalidatePath(`/u/${parsed.data.username}`, 'layout');
   revalidatePath(`/u/${standing.username}`, 'layout');
   return { ok: true };
+}
+
+/** Remove one of your verified accounts (Settings). The bonus is recomputed by the database. */
+export async function unlinkSocialAction(form: FormData): Promise<void> {
+  const platform = SOCIAL_PLATFORMS.find((p) => p === form.get('platform'));
+  if (!platform) redirect('/settings?social=failed#socials');
+  const supabase = await getSupabase();
+  const { error } = await supabase.rpc('unlink_social_account', { p_platform: platform });
+  if (error) logUnexpected('unlink_social_account', error);
+  const standing = await getStanding();
+  if (standing) revalidatePath(`/u/${standing.username}`);
+  redirect(`/settings?social=${error ? 'failed' : 'removed'}#socials`);
 }

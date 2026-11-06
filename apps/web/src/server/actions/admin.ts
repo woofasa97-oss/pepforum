@@ -16,6 +16,7 @@ import {
   AdAdjustmentSchema,
   AdPaymentSchema,
   AdminRemoveSchema,
+  AdminUnlinkSocialSchema,
   AdvertiserDecisionSchema,
   AnnouncementSchema,
   ArchiveCategorySchema,
@@ -152,6 +153,17 @@ export async function resolveMemberReportsAction(_prev: ActionState, form: FormD
   }
   revalidatePath('/admin', 'layout');
   return { ok: true, message: t('admin.reports.closedDone', { n: Number(data) }) };
+}
+
+// ── Verified social accounts (…028) ─────────────────────────────────────────
+export async function adminUnlinkSocialAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = AdminUnlinkSocialSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const id = await memberId(parsed.data.username);
+  if (!id) return { ok: false, message: (await getT())('errors.notFound') };
+  const result = await run('admin_unlink_social', { p_user: id, p_platform: parsed.data.platform, p_reason: parsed.data.reason });
+  if (result.ok) revalidatePath(`/u/${parsed.data.username}`);
+  return result;
 }
 
 // ── Inbox (…020) ──────────────────────────────────────────────────────────
