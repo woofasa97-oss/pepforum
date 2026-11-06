@@ -22,12 +22,14 @@ interface Props {
   readonly locale: 'en' | 'fr';
   /** Why link posts are locked ("Requires Member"), or null when allowed. */
   readonly linkRequirement: string | null;
+  /** Links wait for an admin (links.require_approval). */
+  readonly linkReview: boolean;
   readonly defaults?: { zone?: string | undefined; category?: string | undefined };
   /** Present when editing an existing post. */
   readonly edit?: { postId: string; title: string; body: string; link: string | null; type: PostType };
 }
 
-export function PostForm({ labels, zones, cities, categories, locale, linkRequirement, defaults, edit }: Props) {
+export function PostForm({ labels, zones, cities, categories, locale, linkRequirement, linkReview, defaults, edit }: Props) {
   const canPostLinks = linkRequirement === null;
   const [state, action] = useActionState(edit ? editPostAction : createPostAction, initialActionState);
   const [zone, setZone] = useState(defaults?.zone ?? 'national');
@@ -97,7 +99,9 @@ export function PostForm({ labels, zones, cities, categories, locale, linkRequir
 
       <div className="field">
         <label htmlFor="pf-body">{labels['submit.body']}</label>
-        <textarea id="pf-body" name="body" className="input" maxLength={10000} defaultValue={edit?.body} aria-invalid={Boolean(errors.body)} />
+        <textarea id="pf-body" name="body" className="input" maxLength={10000} defaultValue={edit?.body} aria-invalid={Boolean(errors.body)}
+          aria-describedby={linkReview ? 'pf-body-hint' : undefined} />
+        {linkReview ? <span id="pf-body-hint" className="hint">{labels['submit.linkReview']}</span> : null}
         <FieldError message={errors.body} />
       </div>
 

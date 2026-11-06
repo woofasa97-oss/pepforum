@@ -149,11 +149,14 @@ The **sourcing shield** checks every post, comment, edit and note:
 - Moderators' own content is exempt. Notes can't be held, so any matching rule refuses them.
 - Seeded hold-phrases: dm me, telegram, whatsapp, signal me, wickr, discount code, promo code, coupon code.
 
+**Link review** (…018): a post or comment with a link (`http://`, `https://` or `www.`) is held until an admin approves the link, or its whole site, on `/admin/links`. Approved sites (and their subdomains) pass from then on; a declined item is removed with **no** karma penalty or strike, because posting a link isn't a violation in itself. Blocking a site adds it to the shield's blocked domains. Moderators and admins are exempt, and note sources aren't reviewed (only proven Contributors write notes). Shield holds (`held_reason`) and link holds (`links_pending`) are cleared separately, and content goes live only when both are. See [ADMIN.md](ADMIN.md#link-review).
+
 New settings:
 
 | Key | Default | Meaning |
 |---|---|---|
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
+| `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `site.announcement` | empty | Site-wide banner `{en, fr, tone: info\|warn, until}` |
 

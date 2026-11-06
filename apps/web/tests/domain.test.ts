@@ -2,6 +2,7 @@ import type { CommentRow } from '@pepforum/database';
 import { describe, expect, it } from 'vitest';
 
 import { describeRequirement, messageForDbError } from '@/lib/errors';
+import { removalReasonLabel } from '@/lib/format';
 import { en, fr, translator } from '@/lib/i18n';
 import { buildThread } from '@/lib/thread';
 import { CreatePostSchema, ProposeNoteSchema, RateNoteSchema, SignUpSchema, formToObject } from '@/lib/validation';
@@ -21,6 +22,13 @@ describe('error mapping', () => {
     expect(messageForDbError({ code: 'PF429', message: 'rate_limited', details: 'post_newcomer' }, t)).toBe(en['errors.rateLimitedNewcomer']);
     expect(messageForDbError({ code: 'PF422', message: 'self_vote' }, t)).toBe(en['errors.self_vote']);
     expect(messageForDbError({ code: 'PF428', message: 'mfa_required' }, t)).toBe(en['errors.mfaRequired']);
+  });
+
+  it('names why content was removed, including a declined link', () => {
+    expect(removalReasonLabel('sourcing', t)).toBe(en['report.reason.sourcing']);
+    expect(removalReasonLabel('link_declined', t)).toBe(en['post.removal.link_declined']);
+    expect(removalReasonLabel(null, t)).toBe('');
+    expect(messageForDbError({ code: 'PF409', message: 'not_pending' }, t)).toBe(en['errors.not_pending']);
   });
 
   it('never leaks unknown internal errors', () => {

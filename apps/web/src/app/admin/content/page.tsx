@@ -6,7 +6,7 @@ import { ActionForm } from '@/components/admin/ActionForm';
 import { DataUnavailable, PageHeader, StatusPill } from '@/components/admin/AdminBits';
 import { EmptyState } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
-import { formatDate } from '@/lib/format';
+import { formatDate, removalReasonLabel } from '@/lib/format';
 import type { MessageKey, Translate } from '@/lib/i18n';
 import { removeContentAction, restoreContentAction, setCommentsLockedAction, setNoteHiddenAction, setPinnedAction } from '@/server/actions/admin';
 import { adminContent } from '@/server/admin';
@@ -138,7 +138,7 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
                 <Link href={row.kind === 'note' ? `/notes/${row.id}` : `/post/${row.post_id}`}>{row.kind === 'post' ? row.title : row.excerpt}</Link>
               </h3>
               {row.kind !== 'post' ? <p className="xs faint mt8">{t('admin.content.onPost', { title: row.title })}</p> : <p className="small muted mt8 clamp">{row.excerpt}</p>}
-              {row.removal_reason ? <p className="xs mt8">{t('admin.content.removedFor', { reason: t(`report.reason.${row.removal_reason}` as MessageKey) })}</p> : null}
+              {row.removal_reason ? <p className="xs mt8">{t('admin.content.removedFor', { reason: removalReasonLabel(row.removal_reason, t) })}</p> : null}
               {row.hidden_reason ? <p className="xs mt8">{t('admin.content.hiddenFor', { reason: row.hidden_reason })}</p> : null}
               <div className="row wrap mt12" style={{ gap: 6, alignItems: 'flex-start' }}><RowActions row={row} t={t} /></div>
             </article>

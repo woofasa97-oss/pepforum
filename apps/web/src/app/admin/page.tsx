@@ -49,6 +49,10 @@ function needs(o: AdminOverview, t: Translate): Need[] {
     list.push({ tone: 'amber', icon: 'eye', href: '/admin/moderation', cta: t('admin.home.review'),
       text: t('admin.home.collapsed', { n: o.collapsed, h: o.collapsed_next_reopen ? hoursUntil(o.collapsed_next_reopen, now) : 0 }) });
   }
+  if (o.links_pending > 0) {
+    list.push({ tone: 'amber', icon: 'link', href: '/admin/links', cta: t('admin.home.review'),
+      text: t('admin.home.links', { n: o.links_pending, age: o.links_oldest ? relativeTime(o.links_oldest, t) : '' }) });
+  }
   if (o.held > 0) {
     list.push({ tone: 'amber', icon: 'shield', href: '/admin/moderation', cta: t('admin.home.review'), text: t('admin.home.held', { n: o.held }) });
   }

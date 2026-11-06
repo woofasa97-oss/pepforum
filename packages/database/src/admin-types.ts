@@ -26,6 +26,8 @@ export type AdminOverview = {
   collapsed: number;
   collapsed_next_reopen: string | null;
   held: number;
+  links_pending: number;
+  links_oldest: string | null;
   jobs: Partial<Record<JobName, { at: string; ok: boolean }>>;
   last_scoring_run: string | null;
   security_problems: number;
@@ -250,6 +252,40 @@ export type AdminShield = {
   held_now: number;
   recent_holds: Array<{ username: string | null; rule: string; rule_kind: 'domain' | 'phrase'; target_kind: 'post' | 'comment'; created_at: string }>;
 };
+
+/** A post or comment waiting for an admin to approve its links (…018). */
+export type PendingLinkItem = {
+  target_kind: 'post' | 'comment';
+  target_id: string;
+  post_id: string;
+  zone_id: string;
+  title: string;
+  body: string;
+  urls: string[];
+  hosts: string[];
+  /** Also held by the sourcing shield (the phrase), so approving the link leaves it in the moderator queue. */
+  held_reason: string | null;
+  author_username: string;
+  author_tier: number;
+  author_karma: number;
+  author_integrity: number;
+  author_joined: string;
+  waiting_since: string;
+};
+
+export type AdminLinks = {
+  enabled: boolean;
+  pending: PendingLinkItem[];
+  sites: Array<{ host: string; items: number; since: string }>;
+  approved: Array<{ domain: string; reason: string; created_by: string | null; created_at: string }>;
+  approved_30d: number;
+  declined_30d: number;
+};
+
+export const LINK_DECISIONS = ['approve', 'decline'] as const;
+export type LinkDecision = (typeof LINK_DECISIONS)[number];
+export const SITE_DECISIONS = ['approve', 'block', 'unapprove'] as const;
+export type SiteDecision = (typeof SITE_DECISIONS)[number];
 
 export type ShieldMatch = { rule_kind: 'domain' | 'phrase'; rule: string; action: ShieldAction };
 

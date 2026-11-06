@@ -14,6 +14,7 @@ import type {
   AdminConfigChange,
   AdminConfigEntry,
   AdminContentRow,
+  AdminLinks,
   AdminLogEntry,
   AdminMember,
   AdminMetrics,
@@ -25,10 +26,12 @@ import type {
   AdminTeam,
   ContentKind,
   JobName,
+  LinkDecision,
   Page,
   PeopleFilter,
   PeopleSort,
   ShieldMatch,
+  SiteDecision,
   TransparencyStats,
 } from './admin-types.ts';
 import type {
@@ -529,6 +532,9 @@ export type Database = {
       admin_shield_test: { Args: { p_text: string }; Returns: ShieldMatch[] };
       admin_shield_add: { Args: { p_kind: 'domain' | 'phrase'; p_value: string; p_action: ShieldAction | null; p_reason: string }; Returns: string };
       admin_shield_remove: { Args: { p_kind: 'domain' | 'phrase'; p_value: string; p_reason: string }; Returns: undefined };
+      admin_links: { Args: Record<string, never>; Returns: AdminLinks };
+      admin_link_decide: { Args: { p_kind: 'post' | 'comment'; p_id: string; p_decision: LinkDecision; p_reason: string }; Returns: undefined };
+      admin_link_site: { Args: { p_host: string; p_decision: SiteDecision; p_reason: string }; Returns: number };
       admin_restore_content: { Args: { p_kind: 'post' | 'comment'; p_id: string; p_reason: string }; Returns: undefined };
       admin_set_role: { Args: { p_user: string; p_admin: boolean; p_reason: string }; Returns: undefined };
       admin_end_founding: { Args: { p_user: string; p_reason: string }; Returns: undefined };

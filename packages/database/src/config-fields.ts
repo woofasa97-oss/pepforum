@@ -40,6 +40,7 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('tiers.demotion_ratio', 'access', 'decimal', 'ratio'),
   f('gates.post_text.min_tier', 'access', 'tier'),
   f('gates.post_link.min_tier', 'access', 'tier'),
+  f('links.require_approval', 'access', 'boolean'),
   f('gates.posting.min_integrity', 'access', 'integer', 'integrity'),
   f('gates.posting.cooldown_integrity', 'access', 'integer', 'integrity'),
   f('gates.rate_notes.min_tier', 'access', 'tier'),

@@ -1,4 +1,14 @@
-import type { Translate } from '@/lib/i18n';
+import { VIOLATIONS, type Violation } from '@pepforum/database';
+
+import type { MessageKey, Translate } from '@/lib/i18n';
+
+/** Why content was removed: a moderator's violation, or a declined link (…018). */
+export function removalReasonLabel(reason: string | null | undefined, t: Translate): string {
+  if (!reason) return '';
+  if (VIOLATIONS.includes(reason as Violation)) return t(`report.reason.${reason}` as MessageKey);
+  if (reason === 'link_declined') return t('post.removal.link_declined');
+  return reason;
+}
 
 export function relativeTime(iso: string, t: Translate, now: Date = new Date()): string {
   const seconds = Math.max(0, (now.getTime() - new Date(iso).getTime()) / 1000);

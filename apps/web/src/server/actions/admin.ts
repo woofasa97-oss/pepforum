@@ -22,6 +22,8 @@ import {
   ContentReasonSchema,
   FindByEmailSchema,
   FoundingSchema,
+  LinkDecisionSchema,
+  LinkSiteSchema,
   MemberReasonSchema,
   RenameMemberSchema,
   RevealEmailSchema,
@@ -225,6 +227,40 @@ export async function shieldTestAction(_prev: ActionState, form: FormData): Prom
       rules: matches.map((m) => `“${m.rule}” (${t(m.action === 'block' ? 'admin.shield.block' : 'admin.shield.hold')})`).join(', '),
     }),
   };
+}
+
+// ── Links ─────────────────────────────────────────────────────────────────
+// Approving is one click, so it carries a standard reason; declining, blocking
+// and removing an approval need the admin's own.
+export async function linkDecisionAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = LinkDecisionSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const t = await getT();
+  const { kind, id, decision, reason } = parsed.data;
+  return run('admin_link_decide', {
+    p_kind: kind, p_id: id, p_decision: decision,
+    p_reason: reason ?? (decision === 'approve' ? t('admin.links.approveReason') : ''),
+  }, t(decision === 'approve' ? 'admin.links.approvedDone' : 'admin.links.declinedDone'));
+}
+
+export async function linkSiteAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = LinkSiteSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const t = await getT();
+  const { host, decision, reason } = parsed.data;
+  const { data, error } = await rpc('admin_link_site', {
+    p_host: host, p_decision: decision,
+    p_reason: reason ?? (decision === 'approve' ? t('admin.links.approveSiteReason') : ''),
+  });
+  if (error) {
+    logUnexpected('admin_link_site', error);
+    return { ok: false, message: messageForDbError(error, t) };
+  }
+  revalidatePath('/admin', 'layout');
+  const n = typeof data === 'number' ? data : 0;
+  if (decision === 'approve') return { ok: true, message: t('admin.links.siteApprovedDone', { n }) };
+  if (decision === 'block') return { ok: true, message: t('admin.links.siteBlockedDone', { n }) };
+  return { ok: true, message: t('admin.done') };
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────

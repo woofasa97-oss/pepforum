@@ -85,6 +85,11 @@ join (values ('on', 'nurse_nova'), ('bc', 'bc_biohacker'), ('qc', 'dr_leclerc'))
 -- ---------------------------------------------------------------------------
 -- Posts and comments, created as their authors
 -- ---------------------------------------------------------------------------
+-- Sites the demo links to, approved as an admin would on the Links page.
+insert into public.approved_domains (domain, reason) values
+  ('canada.ca', 'Government of Canada'), ('ramq.gouv.qc.ca', 'Régie de l’assurance maladie du Québec'),
+  ('nejm.org', 'Peer-reviewed journal'), ('clinicaltrials.gov', 'Trial registry'), ('scc.ca', 'Standards Council of Canada');
+
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-4000-8000-000000000002","role":"authenticated"}', false);
 select public.create_post('national', 'weight', 'claim',
   'New study claims GLP-1 peptides cut body weight by 25% in 12 weeks',

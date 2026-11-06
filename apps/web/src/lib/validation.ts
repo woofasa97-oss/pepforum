@@ -4,6 +4,7 @@
  * members precise field errors and keeps junk off the wire.
  */
 import {
+  LINK_DECISIONS,
   LOCALES,
   NOTE_CLASSIFICATIONS,
   POST_TYPES,
@@ -12,6 +13,7 @@ import {
   REPORT_REASONS,
   SANCTION_KINDS,
   SHIELD_ACTIONS,
+  SITE_DECISIONS,
   SOURCE_KINDS,
   STAFF_NOTE_LABELS,
   VIOLATIONS,
@@ -172,6 +174,10 @@ export const ToggleSchema = z.object({ id, on: onOff, reason });
 export const ShieldAddSchema = z.object({ kind: z.enum(['domain', 'phrase']), value: trimmed(2, 253), action: z.enum(SHIELD_ACTIONS).optional(), reason });
 export const ShieldRemoveSchema = z.object({ kind: z.enum(['domain', 'phrase']), value: trimmed(2, 253), reason });
 export const ShieldTestSchema = z.object({ text: trimmed(1, 10000) });
+export const LinkDecisionSchema = z.object({
+  kind: z.enum(['post', 'comment']), id, decision: z.enum(LINK_DECISIONS), reason: reason.optional(),
+});
+export const LinkSiteSchema = z.object({ host: trimmed(3, 253), decision: z.enum(SITE_DECISIONS), reason: reason.optional() });
 /** `raw` (JSON) is used by Revert; otherwise the value is built from typed inputs. */
 export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });
 export const AnnouncementSchema = z.object({

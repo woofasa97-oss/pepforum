@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { TierBadge } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
-import { relativeTime } from '@/lib/format';
+import { relativeTime, removalReasonLabel } from '@/lib/format';
 import { type MessageKey, type Translate, pick } from '@/lib/i18n';
 import type { Taxonomy } from '@/server/queries';
 
@@ -88,7 +88,7 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
           <div className="banner warn mt8 mb8"><Icon name="alert" />{t('post.collapsed')}</div>
         ) : null}
         {post.status === 'removed' && 'removal_reason' in post ? (
-          <div className="banner danger mt8 mb8"><Icon name="shield" />{t('post.removed', { reason: post.removal_reason ?? '' })}</div>
+          <div className="banner danger mt8 mb8"><Icon name="shield" />{t('post.removed', { reason: removalReasonLabel(post.removal_reason, t) })}</div>
         ) : null}
 
         {body ? <p className={`post-x ${full ? '' : 'clamp'}`}>{body}</p> : null}

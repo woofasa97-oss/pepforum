@@ -21,7 +21,7 @@ Render cron · apps/worker (*/10 min)
 
 | Path | What | Notes |
 |---|---|---|
-| `supabase/migrations/` | Schema, RLS, grants, every business rule | Ordered, append-only. 17 files. |
+| `supabase/migrations/` | Schema, RLS, grants, every business rule | Ordered, append-only. 18 files. |
 | `supabase/seed.sql` | Local demo data (dev only) | Creates content through the real RPCs |
 | `supabase/config.toml`, `templates/` | Local Supabase + auth email templates | Only `public` exposed via the API |
 | `packages/database/` | `Database` types, domain vocabulary, PGlite test harness, schema tests | The database contract |

@@ -92,6 +92,7 @@ export const MOD_ACTIONS = [
   'hide_note', 'unhide_note', 'pin', 'unpin', 'lock_comments', 'unlock_comments',
   'shield_rule_added', 'shield_rule_removed', 'shield_hold', 'taxonomy_change',
   'lookup_email', 'reveal_email',
+  'link_hold', 'link_approved', 'link_declined', 'site_approved', 'site_unapproved',
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 

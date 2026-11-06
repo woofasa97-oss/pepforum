@@ -313,6 +313,14 @@ textarea.input { min-height: 120px; resize: vertical; }
 .act > summary { list-style: none; display: inline-flex; }
 .act > summary::-webkit-details-marker { display: none; }
 .act[open] > summary { margin-bottom: 8px; }
+.quick-act { display: inline-flex; flex-direction: column; gap: 6px; }
+.site-list { list-style: none; margin: 0; padding: 0; }
+.site-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 8px 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.site-list > li:last-child { border-bottom: 0; }
+.site-list code { overflow-wrap: anywhere; }
+.link-queue { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.link-urls { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.link-urls code { display: inline-block; max-width: 100%; overflow-wrap: anywhere; font-size: 12px; }
 .act-body { padding: 12px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); margin-bottom: 8px; }
 .act-body .field { margin-bottom: 10px; }
 .actions-panel { display: grid; gap: 14px; }

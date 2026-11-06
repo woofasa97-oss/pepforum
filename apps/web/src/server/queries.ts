@@ -101,6 +101,13 @@ export const getAnnouncement = cache(async (): Promise<SiteAnnouncement | null> 
   return value;
 });
 
+/** Whether links wait for an admin (…018). Assumes yes if the setting can't be read. */
+export const getLinkReview = cache(async (): Promise<boolean> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.from('app_config').select('value').eq('key', 'links.require_approval').maybeSingle();
+  return error || !data ? true : data.value !== false;
+});
+
 /** Public monthly transparency numbers; null if unavailable. */
 export const getTransparency = cache(async (month: string | null): Promise<TransparencyStats | null> => {
   const supabase = await getSupabase();

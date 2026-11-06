@@ -46,6 +46,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       items: [
         { href: '/admin', label: t('admin.nav.home'), icon: 'home' },
         { href: '/admin/moderation', label: t('admin.nav.moderation'), icon: 'flag', badge: o ? o.reports_open + o.appeals_open + o.held : 0 },
+        { href: '/admin/links', label: t('admin.nav.links'), icon: 'link', badge: o?.links_pending ?? 0 },
         { href: '/admin/people', label: t('admin.nav.people'), icon: 'users' },
         { href: '/admin/content', label: t('admin.nav.content'), icon: 'file' },
       ],

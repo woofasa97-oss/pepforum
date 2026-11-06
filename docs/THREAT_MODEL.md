@@ -72,7 +72,7 @@ These are covered in depth in [SELF_MODERATION.md](SELF_MODERATION.md).
 | Vote rings and sock puppets | Votes from new or low-integrity accounts don't count; 5 counted votes per voter per author every 30 days; 100 per day per author; optional phone gate for raters |
 | Report-based censorship | Collapse (never delete) needs weight from 3 established reporters; Trusted+ authors need a Steward reporter; reverts after 48 hours without review; abusive reports cost XP |
 | Rogue moderator | MFA; full audit log (admins see who acted); moderator performance shows overturned decisions; appeals to a different moderator; suspensions and bans are admin-only |
-| Vendor spam and sourcing | Sourcing shield: blocked domains are refused everywhere (posts, comments, note sources, bare mentions); watched phrases hold content out of view until reviewed. Held content never reopens on its own. Enforced by triggers, so every write path is covered |
+| Vendor spam and sourcing | Sourcing shield: blocked domains are refused everywhere (posts, comments, note sources, bare mentions); watched phrases hold content out of view until reviewed. Held content never reopens on its own. Link review: every `http(s)://` or `www.` link in a post or comment waits for an admin unless its site is approved, and nothing that publishes content (a queue keep, a restore, an appeal) can bypass a pending link. Enforced by triggers, so every write path is covered |
 
 ## Security review log
 

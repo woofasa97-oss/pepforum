@@ -46,5 +46,6 @@ export const adminConfig = cache(() => call('admin_config', {}));
 export const adminConfigHistory = (key: string) => call('admin_config_history', { p_key: key });
 export const adminSystemStatus = cache(() => call('admin_system_status', {}));
 export const adminShield = cache(() => call('admin_shield', {}));
+export const adminLinks = cache(() => call('admin_links', {}));
 export const adminQueue = cache(() => call('mod_queue', { p_zone: null }));
 export const adminAppeals = cache(() => call('open_appeals', { p_zone: null }));
