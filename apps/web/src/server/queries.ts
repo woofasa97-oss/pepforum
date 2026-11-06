@@ -148,6 +148,8 @@ export interface FeedQuery {
   readonly author?: string;
   readonly sort?: 'hot' | 'new' | 'top';
   readonly page?: number;
+  /** Only posts by people the viewer follows (…029). */
+  readonly following?: boolean;
 }
 
 export const FEED_PAGE_SIZE = 25;
@@ -164,6 +166,8 @@ export async function getFeed(query: FeedQuery): Promise<FeedRow[]> {
       p_sort: query.sort ?? 'hot',
       p_limit: FEED_PAGE_SIZE,
       p_offset: Math.max(0, (query.page ?? 0) * FEED_PAGE_SIZE),
+      // Sent only when asked for, so the ordinary feed keeps working before …029 is applied.
+      ...(query.following ? { p_following: true } : {}),
     }),
   );
 }

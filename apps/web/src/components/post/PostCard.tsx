@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import { ClinicianBadge } from '@/components/clinician/ClinicianBadge';
-import { TierBadge } from '@/components/ui/Bits';
+import { Avatar, TierBadge } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
 import { relativeTime, removalReasonLabel } from '@/lib/format';
 import { type MessageKey, type Translate, pick } from '@/lib/i18n';
@@ -69,7 +69,8 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
             </Link>
           ) : null}
           <span className="sep" />
-          <Link href={`/u/${post.author_username}`} className="bold">
+          <Link href={`/u/${post.author_username}`} className="bold author">
+            <Avatar name={post.author_username} size="sm" src={post.author_avatar ?? null} />
             {t('post.by', { user: post.author_username })}
           </Link>
           <TierBadge tier={post.author_tier} t={t} />

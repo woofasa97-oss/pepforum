@@ -348,6 +348,7 @@ textarea.input { min-height: 120px; resize: vertical; }
 .pill.social { font-size: 12px; padding: 3px 10px; color: var(--text); background: var(--surface-2); }
 .pill.social .i { color: var(--green); width: 13px; height: 13px; }
 .pill.social:hover { border-color: var(--border-strong); }
+.meta .author { display: inline-flex; align-items: center; gap: 6px; }
 .follow-counts { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .follow-counts a { color: var(--text-2); }
 .follow-counts a:hover { color: var(--text); text-decoration: underline; }

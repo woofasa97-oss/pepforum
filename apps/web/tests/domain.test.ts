@@ -126,7 +126,7 @@ describe('validation', () => {
 describe('buildThread', () => {
   const row = (id: string, parent: string | null): CommentRow => ({
     id, parent_id: parent, depth: 0, author_username: 'u', author_tier: 0, is_op: false, is_mine: false,
-    body: id, status: 'visible', score: 0, created_at: '2026-01-01T00:00:00Z', edited_at: null, my_vote: null, author_clinician: null,
+    body: id, status: 'visible', score: 0, created_at: '2026-01-01T00:00:00Z', edited_at: null, my_vote: null, author_clinician: null, author_avatar: null,
   });
 
   it('nests replies and keeps orphans visible', () => {

@@ -4,7 +4,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { TestDb, anon, service, user } from '../src/testing/index.ts';
-import { TIER } from './helpers.ts';
+import { TIER, createPost } from './helpers.ts';
 
 let db: TestDb;
 let admin: string;
@@ -145,6 +145,45 @@ describe('following', () => {
     const target = await usernameOf(await db.createUser());
     for (let i = 0; i < 60; i++) await follow(busy, target, i % 2 === 0);
     expect(await db.expectError(user(busy), `select public.set_follow($1, true)`, [target])).toMatchObject({ code: 'PF429', detail: 'follow' });
+  });
+});
+
+describe('pictures next to authors, and the Following feed (…029)', () => {
+  it('feed rows, the post and its comments carry the author’s current picture', async () => {
+    const author = await db.createUser({ karma: TIER.member });
+    const pic = await uploadAvatar(author);
+    await setAvatar(author, pic);
+    const post = await createPost(db, author, { body: 'Picture test.' });
+    await db.as(user(author), `select public.create_comment($1, 'A reply from the author.')`, [post]);
+    const name = await usernameOf(author);
+
+    const feed = await db.as<{ id: string; author_avatar: string | null }>(anon, `select id, author_avatar from public.get_feed(p_author_username => $1)`, [name]);
+    expect(feed.find((r) => r.id === post)?.author_avatar).toBe(pic);
+    expect((await db.asOne<{ a: string }>(anon, `select author_avatar as a from public.get_post($1)`, [post])).a).toBe(pic);
+    expect((await db.as<{ a: string }>(anon, `select author_avatar as a from public.get_comments($1)`, [post]))[0]?.a).toBe(pic);
+
+    await setAvatar(author, null);
+    expect((await db.asOne<{ a: string | null }>(anon, `select author_avatar as a from public.get_post($1)`, [post])).a).toBeNull();
+  });
+
+  it('shows only posts by people you follow, and nothing to anonymous visitors', async () => {
+    const reader = await db.createUser();
+    const followed = await db.createUser({ karma: TIER.member });
+    const stranger = await db.createUser({ karma: TIER.member });
+    const mine = await createPost(db, followed, { body: 'From someone I follow.' });
+    const theirs = await createPost(db, stranger, { body: 'From a stranger.' });
+
+    const following = async (actor: Actor) =>
+      (await db.as<{ id: string }>(actor, `select id from public.get_feed(p_sort => 'new', p_following => true)`)).map((r) => r.id);
+    expect(await following(user(reader))).toEqual([]);
+    await db.as(user(reader), `select public.set_follow($1, true)`, [await usernameOf(followed)]);
+    expect(await following(user(reader))).toEqual([mine]);
+    expect(await following(user(reader))).not.toContain(theirs);
+    expect(await following(anon)).toEqual([]);
+
+    // The ordinary feed is unchanged.
+    const everyone = (await db.as<{ id: string }>(user(reader), `select id from public.get_feed(p_sort => 'new')`)).map((r) => r.id);
+    expect(everyone).toEqual(expect.arrayContaining([mine, theirs]));
   });
 });
 

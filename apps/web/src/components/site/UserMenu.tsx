@@ -11,6 +11,7 @@ export interface UserMenuLabels {
   readonly karma: string;
   readonly profile: string;
   readonly progress: string;
+  readonly following: string;
   readonly contact: string;
   readonly settings: string;
   readonly mod: string;
@@ -75,6 +76,7 @@ export function UserMenu({ username, avatar, unread, isModerator, isAdmin, label
           <span className="xs muted">{labels.karma}</span>
         </div>
         <Link href={`/u/${encodeURIComponent(username)}`}><Icon name="user" />{labels.profile}</Link>
+        <Link href="/following"><Icon name="users" />{labels.following}</Link>
         <Link href="/karma"><Icon name="star" />{labels.progress}</Link>
         <Link href="/contact">
           <Icon name="inbox" />{labels.contact}

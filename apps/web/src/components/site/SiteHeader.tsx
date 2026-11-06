@@ -61,6 +61,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
                     karma: t('nav.karmaShort', { n: standing.karma.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-CA') }),
                     profile: t('nav.profile'),
                     progress: t('nav.karma'),
+                    following: t('feed.following'),
                     contact: t('nav.contact'),
                     settings: t('nav.settings'),
                     mod: t('nav.mod'),

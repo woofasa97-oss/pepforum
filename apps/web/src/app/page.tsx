@@ -10,5 +10,5 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const isLanding = (sort ?? 'hot') === 'hot' && !page;
   const hero = isLanding ? <BrandHero t={t} signedIn={Boolean(viewer)} /> : undefined;
 
-  return <FeedPage title={t('feed.national')} subtitle={t('feed.nationalSub')} basePath="/" query={{ sort, page }} hero={hero} />;
+  return <FeedPage title={t('feed.national')} subtitle={t('feed.nationalSub')} basePath="/" query={{ sort, page }} hero={hero} scope="everyone" />;
 }

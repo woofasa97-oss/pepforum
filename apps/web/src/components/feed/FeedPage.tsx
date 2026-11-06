@@ -15,12 +15,14 @@ interface Props {
   readonly basePath: string;
   readonly query: FeedQuery;
   readonly hero?: React.ReactNode;
+  /** Home and /following show "Everyone · Following" tabs to signed-in members (…029). */
+  readonly scope?: 'everyone' | 'following';
 }
 
 const SORTS = ['hot', 'new', 'top'] as const;
 
 /** Shared layout for the national, zone and category feeds. */
-export async function FeedPage({ title, subtitle, basePath, query, hero }: Props) {
+export async function FeedPage({ title, subtitle, basePath, query, hero, scope }: Props) {
   const [t, locale, standing, taxonomy, posts] = await Promise.all([getT(), getLocale(), getStanding(), getTaxonomy(), getFeed(query)]);
   // Capabilities are null when allowed, otherwise a reason key.
   const canRate = standing?.capabilities.rate_notes === null;
@@ -64,12 +66,23 @@ export async function FeedPage({ title, subtitle, basePath, query, hero }: Props
             </nav>
           </div>
 
+          {scope && standing ? (
+            <nav className="tabs" aria-label={t('feed.scope')}>
+              <Link href="/" aria-current={scope === 'everyone' ? 'page' : undefined}>{t('feed.everyone')}</Link>
+              <Link href="/following" aria-current={scope === 'following' ? 'page' : undefined}>{t('feed.following')}</Link>
+            </nav>
+          ) : null}
+
           <div className="feed">
             {posts.length === 0 ? (
               <div className="card">
-                <EmptyState title={t('feed.empty')}>
-                  {standing ? <Link className="btn dark mt12" href="/submit">{t('feed.emptyCta')}</Link> : null}
-                </EmptyState>
+                {scope === 'following' ? (
+                  <EmptyState title={t('feed.followingEmpty')}><p className="small mt8">{t('feed.followingEmptyHint')}</p></EmptyState>
+                ) : (
+                  <EmptyState title={t('feed.empty')}>
+                    {standing ? <Link className="btn dark mt12" href="/submit">{t('feed.emptyCta')}</Link> : null}
+                  </EmptyState>
+                )}
               </div>
             ) : (
               posts.map((post) => (

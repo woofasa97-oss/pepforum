@@ -267,6 +267,8 @@ export type FeedRow = {
   has_open_note: boolean;
   /** Pinned by an admin; leads its zone's feed. */
   pinned: boolean;
+  /** The author's profile picture, served at /media/<id> (…029). */
+  author_avatar: string | null;
 };
 
 export type PostDetailRow = {
@@ -296,6 +298,8 @@ export type PostDetailRow = {
   comments_locked: boolean;
   /** Profession of a currently verified clinician author (…024), else null. */
   author_clinician: ClinicianProfession | null;
+  /** The author's profile picture (…029). */
+  author_avatar: string | null;
 };
 
 export type CommentRow = {
@@ -313,6 +317,8 @@ export type CommentRow = {
   edited_at: string | null;
   my_vote: -1 | 1 | null;
   author_clinician: ClinicianProfession | null;
+  /** The author's profile picture (…029). */
+  author_avatar: string | null;
 };
 
 export type NoteView = {
@@ -600,6 +606,8 @@ export type Database = {
           p_sort?: 'hot' | 'new' | 'top';
           p_limit?: number;
           p_offset?: number;
+          /** Only posts by people the caller follows (…029). */
+          p_following?: boolean;
         };
         Returns: FeedRow[];
       };
