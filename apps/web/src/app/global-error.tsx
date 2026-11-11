@@ -11,7 +11,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
   return (
     <html lang="en-CA">
       <body>
-        <main id="main" className="page narrow">
+        <main id="main" className="page narrow" style={{ width: '100%' }}>
           <div className="card empty" role="alert">
             <b>Pepforum is temporarily unavailable · Pepforum est temporairement indisponible</b>
             {error.digest ? <p className="xs faint">Ref: {error.digest}</p> : null}

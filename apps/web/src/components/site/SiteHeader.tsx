@@ -25,13 +25,13 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           <nav className="nav" aria-label="Primary">
             <NavLink href="/" className="hide-sm">{t('nav.home')}</NavLink>
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
-            {standing?.is_moderator ? <NavLink href="/mod" className="hide-sm">{t('nav.mod')}</NavLink> : null}
-            {standing?.is_admin ? <NavLink href="/admin" className="hide-sm">{t('nav.admin')}</NavLink> : null}
+            {standing?.is_moderator ? <NavLink href="/mod" className="hide-md">{t('nav.mod')}</NavLink> : null}
+            {standing?.is_admin ? <NavLink href="/admin" className="hide-md">{t('nav.admin')}</NavLink> : null}
             <form action={setLocaleAction}>
               <input type="hidden" name="locale" value={locale === 'fr' ? 'en' : 'fr'} />
               <button type="submit" className="navbtn" lang={locale === 'fr' ? 'en' : 'fr'} aria-label={t('nav.language')}>
-                <span className="hide-sm">{t('nav.language')}</span>
-                <span className="only-sm" aria-hidden="true">{locale === 'fr' ? 'EN' : 'FR'}</span>
+                <span className="hide-md">{t('nav.language')}</span>
+                <span className="only-md" aria-hidden="true">{locale === 'fr' ? 'EN' : 'FR'}</span>
               </button>
             </form>
             <form action={setThemeAction}>
@@ -40,7 +40,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
             </form>
             {viewer && standing ? (
               <>
-                <Link href="/submit" className="btn red sm" aria-label={t('nav.submit')}><Icon name="plus" /><span className="hide-sm">{t('nav.submit')}</span></Link>
+                <Link href="/submit" className="btn red sm" aria-label={t('nav.submit')}><Icon name="plus" /><span className="hide-md">{t('nav.submit')}</span></Link>
                 <Link href="/notifications" className="icon-btn"
                   aria-label={standing.notifications_unread > 0 ? t('nav.notificationsUnread', { n: standing.notifications_unread }) : t('nav.notifications')}
                   title={t('nav.notifications')}>

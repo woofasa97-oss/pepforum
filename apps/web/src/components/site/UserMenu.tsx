@@ -67,7 +67,7 @@ export function UserMenu({ username, avatar, unread, isModerator, isAdmin, label
       <summary aria-label={labels.open}>
         {avatar}
         {unread > 0 ? <span className="unread-dot" /> : null}
-        <span className="hide-sm xs">{labels.karma}</span>
+        <span className="hide-md xs">{labels.karma}</span>
         <Icon name="chevron" className="i chev" />
       </summary>
       <div className="user-menu-body">

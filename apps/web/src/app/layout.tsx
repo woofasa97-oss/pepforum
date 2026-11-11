@@ -65,7 +65,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={websiteJsonLd()} />
         <SiteHeader theme={theme} />
-        {children}
+        {/* Grows to fill the screen, so the footer sits at the bottom even on short pages. */}
+        <div className="site-main">{children}</div>
         <SiteFooter />
       </body>
     </html>
