@@ -119,8 +119,12 @@ Every store found, worldwide, with a public-information audit under the Standard
 pnpm --filter @pepforum/prices stores:audit --cache <dir> [--stores a,b] [--verdicts <file>]   # read the stores' pages and audit them
 pnpm --filter @pepforum/prices stores:read <https url>      # a page's text and links, as the audit reads it
 pnpm --filter @pepforum/prices stores:check                 # find every quote again on its page
-pnpm --filter @pepforum/prices stores:sql ../../supabase/migrations/<timestamp>_stores_data.sql
+pnpm --filter @pepforum/prices stores:catalogue --cache <dir>       # what each store lists, and its listed prices (seed/store-listings.json)
+pnpm --filter @pepforum/prices stores:brand --cache <dir>           # each store's logo → apps/web/public/brands, apps/web/src/lib/stores/brands.json
+pnpm --filter @pepforum/prices stores:sql ../../supabase/migrations/<timestamp>_stores_<name>_data.sql [--parts stores,labs,audits,compounds,listings,documents]
 ```
+
+The audit also writes `seed/store-documents.json`: the certificate documents each store links. The listings are a dated read, shown on the store's page in its own currency and never compared or ranked. Comparisons stay with the gate-passed price runs below.
 
 The audit reads at most nine pages per store, as PepforumsBot, honouring robots.txt, one page a second per site. Possible human-use claims are written to `<dir>/human-use-candidates.json`. A reviewer judges them against the rubric in ADR-0011 (in the first audit, an AI model, with staff to confirm), and the verdicts (`[{ slug, quote, claim }]`) are passed back with `--verdicts`. A finding against a store whose words were not found again is published as "could not check".
 

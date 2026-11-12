@@ -175,3 +175,74 @@ describe('integrity', () => {
     expect(await db.sql(`select * from private.security_audit()`)).toEqual([]);
   });
 });
+
+describe('what a store sells (…037)', () => {
+  const cat = { read: '', listing: '', document: '' };
+  beforeAll(async () => {
+    const { id: compound } = await db.sqlOne<{ id: string }>(
+      `insert into prices.compounds (slug, name, type) values ('bpc-157-test', 'BPC-157 (test)', 'Single compound') returning id`);
+    const { id: read } = await db.sqlOne<{ id: string }>(
+      `insert into prices.store_catalogue_reads (vendor_id, observed_on, source, complete, products_seen)
+       values ($1, '2026-11-12', 'woo_store_api', true, 12) returning id`, [ids.listed]);
+    cat.read = read;
+    const { id: listing } = await db.sqlOne<{ id: string }>(
+      `insert into prices.store_listings (read_id, compound_id, product_name, form, mg_per_vial, vials_per_pack, total_mg, currency, price_minor, per_mg_minor_e4, availability, product_url, raw_price_text)
+       values ($1, $2, 'BPC-157 10mg', 'vial', 10, 1, 10, 'THB', 150000, 150000000, 'in_stock', 'https://thai-peptide-lab.example/product/bpc-157', '1,500.00') returning id`, [read, compound]);
+    cat.listing = listing;
+    const { id: doc } = await db.sqlOne<{ id: string }>(
+      `insert into prices.store_documents (vendor_id, url, label, compound_id, found_on)
+       values ($1, 'https://thai-peptide-lab.example/coa/bpc-157.pdf', 'BPC-157 COA', $2, '2026-11-12') returning id`, [ids.listed, compound]);
+    cat.document = doc;
+  });
+
+  it('shows the latest read and the documents, never an address', async () => {
+    const { s } = await db.asOne<{ s: { catalogue: { observed_on: string; complete: boolean; listings: Array<Record<string, unknown>> }; documents: Array<Record<string, unknown>> } }>(
+      anon, `select public.get_store('thai-peptide-lab') as s`);
+    expect(s.catalogue).toMatchObject({ observed_on: '2026-11-12', complete: true });
+    expect(s.catalogue.listings).toEqual([expect.objectContaining({ id: cat.listing, compound: 'bpc-157-test', currency: 'THB', price_minor: 150000, has_url: true })]);
+    expect(s.documents).toEqual([expect.objectContaining({ id: cat.document, label: 'BPC-157 COA', compound: 'bpc-157-test' })]);
+    expect(JSON.stringify(s)).not.toContain('https://');
+    const { d } = await db.asOne<{ d: { stores: Array<{ slug: string; listings: number; compounds: string[]; documents: number }>; compounds: Array<{ slug: string }> } }>(
+      anon, `select public.get_store_directory() as d`);
+    expect(d.stores.find((x) => x.slug === 'thai-peptide-lab')).toMatchObject({ listings: 1, compounds: ['bpc-157-test'], documents: 1 });
+    expect(d.compounds).toContainEqual(expect.objectContaining({ slug: 'bpc-157-test' }));
+  });
+
+  it('resolves product and document links, and counts a product visit', async () => {
+    const before = (await db.sqlOne<{ clicks: number }>(`select clicks from prices.click_daily_stats where vendor_id = $1`, [ids.listed])).clicks;
+    expect((await db.asOne<{ u: string }>(anon, `select public.price_link('listing', $1) as u`, [cat.listing])).u).toBe('https://thai-peptide-lab.example/product/bpc-157');
+    expect((await db.asOne<{ u: string }>(anon, `select public.price_link('document', $1) as u`, [cat.document])).u).toBe('https://thai-peptide-lab.example/coa/bpc-157.pdf');
+    expect((await db.sqlOne<{ clicks: number }>(`select clicks from prices.click_daily_stats where vendor_id = $1`, [ids.listed])).clicks).toBe(before + 1);
+    expect((await db.asOne<{ u: string | null }>(anon, `select public.price_link('listing', 'nope') as u`)).u).toBeNull();
+  });
+
+  it('keeps reads append-only and every new table closed to API roles', async () => {
+    await expect(db.sql(`update prices.store_listings set price_minor = 1 where id = $1`, [cat.listing])).rejects.toThrow();
+    await expect(db.sql(`delete from prices.store_catalogue_reads where id = $1`, [cat.read])).rejects.toThrow();
+    for (const actor of [anon, user(member), user(admin, 'aal2')]) {
+      for (const table of ['store_catalogue_reads', 'store_listings', 'store_documents']) {
+        expect((await db.expectError(actor, `select * from prices.${table}`)).code).toBe('42501');
+      }
+    }
+    expect(await db.sql(`select * from private.security_audit()`)).toEqual([]);
+  });
+});
+
+describe('the generated data migrations', () => {
+  it('load on top of the schema, and the security self-audit stays clean', async () => {
+    const full = await TestDb.create({ withData: true });
+    try {
+      const { n } = await full.sqlOne<{ n: number }>(`select count(*)::int as n from prices.vendors`);
+      expect(n).toBeGreaterThan(400);
+      const loaded = await full.sqlOne<{ listings: number; documents: number; compounds: number }>(
+        `select (select count(*)::int from prices.store_listings) as listings, (select count(*)::int from prices.store_documents) as documents,
+                (select count(*)::int from prices.compounds) as compounds`);
+      expect(loaded.listings).toBeGreaterThan(5000);
+      expect(loaded.documents).toBeGreaterThan(1000);
+      expect(loaded.compounds).toBeGreaterThan(50);
+      expect(await full.sql(`select * from private.security_audit()`)).toEqual([]);
+    } finally {
+      await full.close();
+    }
+  }, 120_000);
+});

@@ -347,3 +347,17 @@ export function pickLinks(home: string, links: Array<{ href: string; label: stri
   }
   return scored.sort((a, b) => b.score - a.score).slice(0, MAX_PAGES).map((s) => s.href);
 }
+
+/** The certificate documents a store links from the pages read: PDFs and images named as certificates, and lab report pages. */
+export function certificateLinks(pages: Page[]): Array<{ href: string; label: string }> {
+  const out = new Map<string, string>();
+  for (const p of pages) {
+    for (const l of p.links) {
+      const doc = DOC_EXT.test(l.href) && (COA_DOC.test(l.href) || COA_DOC.test(l.label));
+      const labReport = /janoshik\.com\/(?:tests|verify)\b|verify\.janoshik/i.test(l.href);
+      if ((doc || labReport) && !out.has(l.href)) out.set(l.href, l.label);
+      if (out.size >= 150) return [...out].map(([href, label]) => ({ href, label }));
+    }
+  }
+  return [...out].map(([href, label]) => ({ href, label }));
+}

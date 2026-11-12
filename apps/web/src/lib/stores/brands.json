@@ -1,0 +1,2078 @@
+{
+ "absorb-labs": {
+  "w": 360,
+  "h": 88,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "accelerate-labs": {
+  "w": 360,
+  "h": 75,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "alchemy-peptides": {
+  "w": 339,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "alpha-biomed": {
+  "w": 316,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "alpha-gen": {
+  "w": 160,
+  "h": 114,
+  "kind": "icon",
+  "bg": "dark"
+ },
+ "alpha-peptides": {
+  "w": 338,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "alpha-peptides-canada": {
+  "w": 333,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "alpha-peptidos": {
+  "w": 360,
+  "h": 80,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "alphamino-research-peptides": {
+  "w": 360,
+  "h": 65,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "ameano-peptides": {
+  "w": 272,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "americanpeptides-us": {
+  "w": 360,
+  "h": 91,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "amino-amigos": {
+  "w": 117,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "amino-club": {
+  "w": 282,
+  "h": 95,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "amino-nz": {
+  "w": 159,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "amino-pure-canada": {
+  "w": 185,
+  "h": 102,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "aminoblend": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "aminopeptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "anglo-peptides": {
+  "w": 360,
+  "h": 94,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "ankr-lab": {
+  "w": 360,
+  "h": 65,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "aotai-peptide": {
+  "w": 314,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "apex-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "apollo-peptide-sciences": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "apollopeptidesciences-com": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "arcticamino": {
+  "w": 159,
+  "h": 152,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "atlas-peptides": {
+  "w": 97,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "atomik-labz": {
+  "w": 360,
+  "h": 78,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "aura-peptides": {
+  "w": 360,
+  "h": 119,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "auravia-research": {
+  "w": 360,
+  "h": 95,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "auro-biopeptide": {
+  "w": 144,
+  "h": 144,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "aussie-peptides": {
+  "w": 360,
+  "h": 87,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "australian-peptide": {
+  "w": 145,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "australian-peptide-labs": {
+  "w": 116,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "baltic-biolabs": {
+  "w": 58,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "baohua-dongnuo-biotechnology-bhd": {
+  "w": 119,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "bergdorf-bioscience": {
+  "w": 346,
+  "h": 109,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "beyond-health-lab": {
+  "w": 291,
+  "h": 81,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biochemapi": {
+  "w": 360,
+  "h": 66,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biogenix-peptides": {
+  "w": 360,
+  "h": 68,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biohack-london": {
+  "w": 360,
+  "h": 112,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biohackr": {
+  "w": 360,
+  "h": 74,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "biolabs-mexico": {
+  "w": 360,
+  "h": 88,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biolongevity-labs": {
+  "w": 277,
+  "h": 46,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bionexis-peptides": {
+  "w": 360,
+  "h": 111,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biopepta": {
+  "w": 160,
+  "h": 68,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "biopeptidos": {
+  "w": 64,
+  "h": 57,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bioperform": {
+  "w": 172,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "biotech-peptides": {
+  "w": 106,
+  "h": 106,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "biotech-scientific-research-bsr": {
+  "w": 89,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "bizpeptide": {
+  "w": 160,
+  "h": 159,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "blessed-peptides": {
+  "w": 102,
+  "h": 114,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "blue-human-lab": {
+  "w": 146,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bluebonnet-peptides": {
+  "w": 360,
+  "h": 119,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bogota-peptides": {
+  "w": 108,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "bondi-peptides": {
+  "w": 360,
+  "h": 50,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "boruimei": {
+  "w": 173,
+  "h": 31,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bpc157-uk-longer-health": {
+  "w": 360,
+  "h": 88,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bulk-aussie-peptides": {
+  "w": 360,
+  "h": 88,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bulk-peptide-supply": {
+  "w": 360,
+  "h": 91,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "bulk-peptide-wholesale": {
+  "w": 360,
+  "h": 81,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "buydeus": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "canadapep": {
+  "w": 291,
+  "h": 98,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "canadian-peps": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "canadian-peptide-supply": {
+  "w": 211,
+  "h": 73,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "canlab-intl": {
+  "w": 229,
+  "h": 110,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "cenexalabs-com": {
+  "w": 360,
+  "h": 112,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "certapeptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "checkmate-peptides": {
+  "w": 102,
+  "h": 114,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "chimera-peptides": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "coastal-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "cocer-peptides": {
+  "w": 360,
+  "h": 77,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "core-peptides": {
+  "w": 344,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "core-peptides-canada": {
+  "w": 339,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "cx-chengxin": {
+  "w": 360,
+  "h": 62,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "dc-peptide": {
+  "w": 160,
+  "h": 112,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "dh-peps": {
+  "w": 160,
+  "h": 158,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "direct-peptides": {
+  "w": 360,
+  "h": 51,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "direct-peptides-canada": {
+  "w": 290,
+  "h": 118,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "direct-peptides-com": {
+  "w": 290,
+  "h": 118,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "dmv-research": {
+  "w": 191,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "drakon-peptides": {
+  "w": 160,
+  "h": 158,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "durham-peptides": {
+  "w": 360,
+  "h": 75,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "ehz-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "eire-peptides": {
+  "w": 360,
+  "h": 94,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "elite-research-labs": {
+  "w": 290,
+  "h": 105,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "elvbio-com": {
+  "w": 360,
+  "h": 65,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "eppix-labs-ca": {
+  "w": 218,
+  "h": 85,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "eros-peptides": {
+  "w": 360,
+  "h": 40,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "euro-peptide-x": {
+  "w": 194,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "european-biolabs": {
+  "w": 265,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "europeptide": {
+  "w": 160,
+  "h": 156,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "exolabz": {
+  "w": 360,
+  "h": 104,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "ez-peptides": {
+  "w": 284,
+  "h": 86,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "feiji": {
+  "w": 267,
+  "h": 41,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "fit-peptides": {
+  "w": 360,
+  "h": 88,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "flycn-peptide": {
+  "w": 360,
+  "h": 71,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "french-peptides": {
+  "w": 274,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "gb-peptides": {
+  "w": 118,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "genesis-peptides": {
+  "w": 360,
+  "h": 77,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "genolab": {
+  "w": 116,
+  "h": 116,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "genopept": {
+  "w": 360,
+  "h": 57,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "gh-canada": {
+  "w": 244,
+  "h": 69,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "glp-keep-body-peptide": {
+  "w": 160,
+  "h": 48,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "go-alpha-labs-peptides": {
+  "w": 123,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "golden-age-peptide": {
+  "w": 333,
+  "h": 79,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "great-basin-bio-supply": {
+  "w": 160,
+  "h": 107,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "great-northern-peptides": {
+  "w": 360,
+  "h": 96,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "guangzhou-jike-biotechnology": {
+  "w": 160,
+  "h": 110,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "hangzhou-youngpeptide-biotechnology-hyb": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "healthtide-biotech": {
+  "w": 333,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "helix-peptides": {
+  "w": 133,
+  "h": 133,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "hipeptides": {
+  "w": 360,
+  "h": 86,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "hkroids": {
+  "w": 360,
+  "h": 91,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "hong-kong-burson-polypeptide-rd-limited": {
+  "w": 173,
+  "h": 39,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "hongkong-china": {
+  "w": 155,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "ilabs": {
+  "w": 240,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "imperial-peptides-uk": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "injectify": {
+  "w": 117,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "innova-biotech-research-peptides": {
+  "w": 360,
+  "h": 58,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "integrity-peptides": {
+  "w": 145,
+  "h": 37,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "iron-labs": {
+  "w": 360,
+  "h": 87,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "jiuqing-peptide": {
+  "w": 360,
+  "h": 103,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "junli-peptide": {
+  "w": 155,
+  "h": 129,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "kensington-labs": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "kerui-peptide-hongkong": {
+  "w": 180,
+  "h": 50,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "laicuinuo-lcn": {
+  "w": 227,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "liberty-peptides": {
+  "w": 360,
+  "h": 105,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "lilipeptide": {
+  "w": 360,
+  "h": 96,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "limitless-biotech-limitless-life-nootropics": {
+  "w": 265,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "lkz-peptide-pharmaceutical": {
+  "w": 87,
+  "h": 144,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "ln-peptides": {
+  "w": 108,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "longeva-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "longevity-pros": {
+  "w": 360,
+  "h": 46,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "lorphion-labs": {
+  "w": 360,
+  "h": 85,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "luma-peptides": {
+  "w": 140,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "lumo-peptides": {
+  "w": 360,
+  "h": 77,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "lunivo-peptide": {
+  "w": 160,
+  "h": 159,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "lux-synth-aminos": {
+  "w": 160,
+  "h": 104,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "luxara-labs": {
+  "w": 360,
+  "h": 95,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "mammoth-biotech": {
+  "w": 360,
+  "h": 94,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "maple-leaf-peptides": {
+  "w": 262,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "maple-research-labs": {
+  "w": 111,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "masters-peptides": {
+  "w": 323,
+  "h": 84,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "medi-peptide": {
+  "w": 311,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "milo-lab": {
+  "w": 160,
+  "h": 89,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "mipeptidos": {
+  "w": 137,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "mt-meipept": {
+  "w": 284,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "my-peptides-uk": {
+  "w": 360,
+  "h": 45,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "my-pure-peptide": {
+  "w": 58,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "mypeptide-eu": {
+  "w": 126,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "ncrp": {
+  "w": 129,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "neopeptidos": {
+  "w": 194,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "nephiz-labs": {
+  "w": 318,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "neuropept-labs": {
+  "w": 257,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "nexa-labs": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "nexaph": {
+  "w": 360,
+  "h": 65,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "nextech-laboratories": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "nextedge-peptides": {
+  "w": 360,
+  "h": 102,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "nextgenpeps-com-au": {
+  "w": 160,
+  "h": 149,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "nootropicos-peru": {
+  "w": 360,
+  "h": 50,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "north-peptides-uk": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "northern-peptides": {
+  "w": 360,
+  "h": 112,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "nova-peptide": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "novacell-peptides": {
+  "w": 354,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "novaforge-labs": {
+  "w": 147,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "nox-peptides": {
+  "w": 131,
+  "h": 46,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "nulife-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "nupex": {
+  "w": 360,
+  "h": 119,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "nuscience-peptides": {
+  "w": 157,
+  "h": 55,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "nxir-labs": {
+  "w": 360,
+  "h": 106,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "nz-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "oasis-labs-peptides": {
+  "w": 316,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "onlypharma": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "onyx-research": {
+  "w": 326,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "orion-peptides": {
+  "w": 360,
+  "h": 80,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "oupeptide": {
+  "w": 286,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "oxpeptides": {
+  "w": 217,
+  "h": 71,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "oztidelab": {
+  "w": 360,
+  "h": 59,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pacific-peptides": {
+  "w": 360,
+  "h": 101,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "panda-peptide": {
+  "w": 266,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "paramount-peptides": {
+  "w": 360,
+  "h": 67,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "particle-peptides-canada": {
+  "w": 240,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "patriot-peptides": {
+  "w": 86,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "pen-peptide-cesko": {
+  "w": 159,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "pen-peptide-espana": {
+  "w": 160,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "pepchile": {
+  "w": 213,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "pepclub-usa": {
+  "w": 360,
+  "h": 79,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pepcore": {
+  "w": 360,
+  "h": 93,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "peplab-argentina": {
+  "w": 148,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pepspan": {
+  "w": 97,
+  "h": 129,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "peptagon": {
+  "w": 360,
+  "h": 48,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptiatlas": {
+  "w": 269,
+  "h": 95,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptibox": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "peptide-boost-labs": {
+  "w": 123,
+  "h": 123,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "peptide-bros": {
+  "w": 334,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "peptide-confidential": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptide-crafters": {
+  "w": 360,
+  "h": 68,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-gurus": {
+  "w": 113,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-haven": {
+  "w": 296,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-labs-peptidelabz-de": {
+  "w": 73,
+  "h": 60,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptide-makers": {
+  "w": 98,
+  "h": 42,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-market": {
+  "w": 169,
+  "h": 70,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-mx": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptide-partners": {
+  "w": 114,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-press-exploring-the-science-shaping-the-future-of-hu": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptide-pros": {
+  "w": 220,
+  "h": 65,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-shop": {
+  "w": 293,
+  "h": 53,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-shop-canada": {
+  "w": 360,
+  "h": 46,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-shop-deutschland": {
+  "w": 356,
+  "h": 100,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-source-ireland": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptide-supply-online": {
+  "w": 360,
+  "h": 114,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptide-warehouse-ca": {
+  "w": 333,
+  "h": 110,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptidebestellung-de": {
+  "w": 360,
+  "h": 37,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptideclassifieds": {
+  "w": 360,
+  "h": 91,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptidehaus": {
+  "w": 360,
+  "h": 79,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptidejft": {
+  "w": 349,
+  "h": 76,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptideos-slim-py": {
+  "w": 135,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "peptides-australia": {
+  "w": 160,
+  "h": 135,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptides-canada-olympus-peptide-partner": {
+  "w": 341,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptides-costa-rica": {
+  "w": 115,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptides-depot": {
+  "w": 360,
+  "h": 73,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "peptides-for-less": {
+  "w": 160,
+  "h": 149,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "peptides-for-sale": {
+  "w": 360,
+  "h": 81,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptides-lab-ireland": {
+  "w": 360,
+  "h": 118,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptides-uk": {
+  "w": 360,
+  "h": 80,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptido-mexico": {
+  "w": 46,
+  "h": 50,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "peptidology": {
+  "w": 244,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptidos-de-colombia": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptidos-en-argentina": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptigen-labs": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptilife-colombia": {
+  "w": 360,
+  "h": 95,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptinium-labs": {
+  "w": 95,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptira": {
+  "w": 121,
+  "h": 122,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "peptisell": {
+  "w": 360,
+  "h": 96,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "peptology": {
+  "w": 360,
+  "h": 67,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "peptology-italia": {
+  "w": 360,
+  "h": 67,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "pepturion": {
+  "w": 360,
+  "h": 53,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "performance-peptides-canada": {
+  "w": 314,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pharma-lab-global": {
+  "w": 360,
+  "h": 89,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pharma-lab-global-canada-storefront": {
+  "w": 360,
+  "h": 89,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pioneer-research-peptides": {
+  "w": 154,
+  "h": 149,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "platinum-peptides": {
+  "w": 208,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "polaris-peptides": {
+  "w": 360,
+  "h": 112,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "ppx": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "precision-peptide-co": {
+  "w": 164,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "prescott-bio-canada": {
+  "w": 360,
+  "h": 55,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "prime-lab-peptides": {
+  "w": 156,
+  "h": 42,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "prime-peptides": {
+  "w": 329,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "prime-peptides-argentina": {
+  "w": 160,
+  "h": 150,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "proforma-peptides-uk": {
+  "w": 339,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "pure-lab-peptides": {
+  "w": 360,
+  "h": 100,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pure-peptide-labs": {
+  "w": 198,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pure-peptides": {
+  "w": 360,
+  "h": 83,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pure-peptides-co": {
+  "w": 360,
+  "h": 83,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "pure-tested-peptides": {
+  "w": 160,
+  "h": 119,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "purely-peptides": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "purepeps": {
+  "w": 129,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "purita-peptides": {
+  "w": 116,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "purixlab": {
+  "w": 360,
+  "h": 62,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "px-peptidespremium": {
+  "w": 58,
+  "h": 88,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "qianmiao-peptide": {
+  "w": 360,
+  "h": 102,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "qingdao-vitaconin-international-trading": {
+  "w": 360,
+  "h": 116,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "rayshine-peptide-biochemicals": {
+  "w": 170,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "receptor-chem": {
+  "w": 360,
+  "h": 86,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "red-leaf-peptides": {
+  "w": 326,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "regenerative-research": {
+  "w": 143,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "rejuvatide-peptides": {
+  "w": 360,
+  "h": 67,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "remy-research": {
+  "w": 173,
+  "h": 24,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "reschem": {
+  "w": 360,
+  "h": 66,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "research-peptides-ireland": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "research-peptides-uk-researchpeptides-co-uk": {
+  "w": 160,
+  "h": 127,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "researched-peptides": {
+  "w": 360,
+  "h": 59,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "reta-peptide": {
+  "w": 273,
+  "h": 72,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "reta-research": {
+  "w": 357,
+  "h": 111,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "retaone-labs": {
+  "w": 332,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "revive-peptides-australia": {
+  "w": 360,
+  "h": 79,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "rhome-research": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "riptide-labs": {
+  "w": 160,
+  "h": 121,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "risynth-bio": {
+  "w": 359,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "ronin-peptides": {
+  "w": 316,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "royal-peptides": {
+  "w": 360,
+  "h": 69,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "saiyanmed": {
+  "w": 154,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "san-diego-peptides": {
+  "w": 64,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "sf-bay-area-peptides": {
+  "w": 158,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "shanghai-baoju-new-materials": {
+  "w": 360,
+  "h": 84,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "shanghai-chinqesen-biotechnology": {
+  "w": 147,
+  "h": 41,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "shanghai-erp-peptide-biotechnology": {
+  "w": 360,
+  "h": 73,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "shanghai-jinbei-chemical-technology-co-ltd": {
+  "w": 102,
+  "h": 89,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "shanghai-leader-peptide-biotechnology": {
+  "w": 177,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "shanghai-wibson-biotechnology-wbs": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "shenzhen-loga-tech-lg-loga": {
+  "w": 145,
+  "h": 55,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "shilai-peptide-technologies": {
+  "w": 160,
+  "h": 159,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "shop-peptides-online": {
+  "w": 305,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "sigma-peptides": {
+  "w": 340,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "simple-peptide": {
+  "w": 272,
+  "h": 108,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "simply-richards": {
+  "w": 77,
+  "h": 30,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "smart-peptides": {
+  "w": 360,
+  "h": 91,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "solira": {
+  "w": 158,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "sp-research": {
+  "w": 160,
+  "h": 53,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "sports-technology-labs": {
+  "w": 235,
+  "h": 63,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "steady-meds": {
+  "w": 175,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "stream-lab-peptides": {
+  "w": 298,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "suaway-lab-research": {
+  "w": 360,
+  "h": 93,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "sulan-pharma": {
+  "w": 111,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "summit-peptides-ca": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "sunrise-bioresearch": {
+  "w": 360,
+  "h": 95,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "super-peptides": {
+  "w": 331,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "sveapeptider": {
+  "w": 150,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "sverigepeptider": {
+  "w": 360,
+  "h": 63,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "swisschems": {
+  "w": 360,
+  "h": 55,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "the-naughty-needle": {
+  "w": 149,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "the-peptide-company": {
+  "w": 111,
+  "h": 144,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "thepeptide": {
+  "w": 141,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "tidetron-peptide": {
+  "w": 120,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "titan-peptides": {
+  "w": 70,
+  "h": 80,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "top-peptide": {
+  "w": 96,
+  "h": 61,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "trulab-peptides": {
+  "w": 360,
+  "h": 92,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "trusted-peptide": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "light"
+ },
+ "tydes": {
+  "w": 269,
+  "h": 120,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "ultima-life-formerly-ultima-labs": {
+  "w": 145,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "uther": {
+  "w": 360,
+  "h": 51,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "uwa-elite-peptides": {
+  "w": 111,
+  "h": 61,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "vector-labs-medellin": {
+  "w": 360,
+  "h": 94,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "veloryn-biolabs": {
+  "w": 360,
+  "h": 107,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "veltis-peptides": {
+  "w": 108,
+  "h": 97,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "verified-peptides": {
+  "w": 360,
+  "h": 40,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "verified-peptides-co": {
+  "w": 360,
+  "h": 35,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "vialcrest": {
+  "w": 360,
+  "h": 112,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "vistara-labs": {
+  "w": 154,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "vorilabs": {
+  "w": 160,
+  "h": 160,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "vpeptide": {
+  "w": 273,
+  "h": 68,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "wanshun-peptide": {
+  "w": 360,
+  "h": 98,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "warrior-makers": {
+  "w": 115,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "wolverine-peptides": {
+  "w": 360,
+  "h": 59,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "xingruida-xdr": {
+  "w": 290,
+  "h": 54,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "xingtai-biotechnology": {
+  "w": 360,
+  "h": 88,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "xl-peptides": {
+  "w": 302,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "yh-peptide": {
+  "w": 325,
+  "h": 76,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "yidan-biotech": {
+  "w": 360,
+  "h": 62,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "yiwu-aozuo-trading-co": {
+  "w": 360,
+  "h": 97,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "yuansense-tech": {
+  "w": 155,
+  "h": 120,
+  "kind": "logo",
+  "bg": "image"
+ },
+ "zelara-mexico": {
+  "w": 79,
+  "h": 98,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "zen-peptides": {
+  "w": 155,
+  "h": 155,
+  "kind": "icon",
+  "bg": "image"
+ },
+ "zentra-labs": {
+  "w": 357,
+  "h": 95,
+  "kind": "logo",
+  "bg": "dark"
+ },
+ "zhengzhou-lan-yun-cosmetic-trading": {
+  "w": 360,
+  "h": 109,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "zhengzhou-strong-peptide": {
+  "w": 360,
+  "h": 77,
+  "kind": "logo",
+  "bg": "light"
+ },
+ "zztai-peptide": {
+  "w": 91,
+  "h": 120,
+  "kind": "logo",
+  "bg": "light"
+ }
+}

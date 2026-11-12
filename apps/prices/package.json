@@ -14,7 +14,9 @@
     "stores:check": "node src/stores/directory-cli.ts check",
     "stores:sql": "node src/stores/directory-cli.ts sql",
     "stores:read": "node src/stores/read-cli.ts",
-    "stores:audit": "node --env-file-if-exists=.env.local src/stores/audit-cli.ts"
+    "stores:audit": "node --env-file-if-exists=.env.local src/stores/audit-cli.ts",
+    "stores:catalogue": "node --env-file-if-exists=.env.local src/stores/catalogue-cli.ts",
+    "stores:brand": "node --env-file-if-exists=.env.local src/stores/brand-cli.ts"
   },
   "dependencies": {
     "@pepforum/database": "workspace:*",
@@ -23,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "22.20.5",
+    "sharp": "0.35.5",
     "typescript": "6.0.3",
     "vitest": "5.1.0"
   }

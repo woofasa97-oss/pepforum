@@ -23,6 +23,23 @@ Two constraints shape it:
 - **Laboratories.** A public list of the labs named on certificates, with their tier under §3. A tier is "accredited" only with the accreditation body and certificate number; until established it is "not yet established".
 - **Off until counsel signs off.** `features.stores` gates every read. While it is off, admins see the directory as a preview, with a banner saying so. Store, evidence and lab addresses are never rendered; links go through `/prices/go/<s|e|l>-<id>`, as for prices.
 
+### What each store sells, its logo and its certificates (…037, …038)
+
+- **Listings.**
+  - `stores:catalogue` reads each store's own product feed (WooCommerce Store API, Shopify `products.json`). If that is shut, it reads the store's product pages found through its sitemap.
+  - It uses the price pipeline's ladder and offer rules: the price must appear in the store's raw text, the currency must be stated, and the product address must be on the store's own brand.
+  - Each read is dated and append-only, and the latest is shown, in the store's own currency.
+  - Listings are **never compared or ranked**. Comparisons ("lowest", per-mg across stores) remain the Prices section's, from gate-passed runs only (ADR-0008, docs/PRICES.md).
+- **Logos.**
+  - `stores:brand` takes the store's own header logo or site icon, never a social banner (`og:image`), which can carry marketing claims.
+  - Each image is decoded and re-encoded as WebP by sharp, so no store file is served as-is and an SVG becomes pixels.
+  - The logos are served from our own origin (`/brands/<slug>.webp`, `img-src 'self'`).
+  - A store without a usable logo gets its initials.
+- **Certificate documents.**
+  - These are the PDFs and images a store links as certificates on the pages the audit read.
+  - They are shown as the store's own documents, not checked by Pepforums, and linked through `/prices/go/d-<id>`.
+- **Generated data migrations** are named `<timestamp>_stores_<name>_data.sql`. The test harness skips them, except one test that loads them all and checks the security audit (`stores.test.ts`).
+
 ### Rubric for human-use claims
 
 A candidate phrase is a claim when the store's own page:

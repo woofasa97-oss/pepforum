@@ -3,6 +3,7 @@ import { STORE_AUDIT_CRITERIA, type StoreAuditCriterion } from "@pepforum/databa
 import { TestDb, anon } from "@pepforum/database/testing";
 import { afterAll, describe, expect, it } from "vitest";
 import { type AuditSeed, type CheckSeed, type LabSeed, type StoreSeed, directorySql, domainOf, publishable, slugify, validateAudits, validateLabs, validateStores } from "./directory.ts";
+import { catalogueSql, documentLabel, validateDocuments, validateListings } from "./catalogue.ts";
 
 const store = (over: Partial<StoreSeed> = {}): StoreSeed => ({
   slug: "bangkok-peptides", name: "Bangkok Peptides", website_url: "https://www.bangkokpeptides.example", canonical_domain: "bangkokpeptides.example",
@@ -98,10 +99,43 @@ describe("the generated migration", () => {
   });
 });
 
+describe("the catalogue migration", () => {
+  let db: TestDb;
+  afterAll(async () => {
+    await db?.close();
+  });
+
+  it("loads compounds, a dated read with its listings, and documents, idempotently", async () => {
+    db = await TestDb.create();
+    await db.exec(directorySql([store()], [], [], "-- stores"));
+    const compounds = [{ slug: "bpc-157-x", name: "BPC-157 (x)", type: "Single compound" as const, aliases: ["Body Protection Compound"], known_sizes_mg: [5, 10] }];
+    const reads = [{ slug: "bangkok-peptides", observed_on: "2026-11-12", source: "woo_store_api", complete: true, products_seen: 3, listings: [
+      { compound: "bpc-157-x", product_name: "BPC-157 O'Neil 10mg", variant_label: null, form: "vial", mg_per_vial: 10, vials_per_pack: 1, total_mg: 10, is_blend: false,
+        currency: "THB", price_minor: 150000, list_price_minor: null, on_sale: false, per_mg_minor_e4: 150000000, availability: "in_stock",
+        product_url: "https://www.bangkokpeptides.example/p/bpc", raw_price_text: "1,500.00" },
+    ] }];
+    const docs = [{ slug: "bangkok-peptides", url: "https://www.bangkokpeptides.example/coa/bpc.pdf", label: "BPC-157 COA", compound: "bpc-157-x", found_on: "2026-11-12" }];
+    const sql = catalogueSql(compounds, reads, docs);
+    await db.exec(sql);
+    await db.exec(sql);
+    expect(await db.sqlOne(`select count(*)::int as reads from prices.store_catalogue_reads`)).toEqual({ reads: 1 });
+    expect(await db.sqlOne(`select product_name, price_minor::int as price, mg_per_vial::float as mg from prices.store_listings`)).toEqual({ product_name: "BPC-157 O'Neil 10mg", price: 150000, mg: 10 });
+    expect(await db.sqlOne(`select label from prices.store_documents`)).toEqual({ label: "BPC-157 COA" });
+  });
+
+  it("labels a certificate link by its words, or by its file name", () => {
+    expect(documentLabel("https://x.example/coa/BPC-157_10mg-COA.pdf", "View")).toBe("BPC 157 10mg COA");
+    expect(documentLabel("https://x.example/a.pdf", "Retatrutide 10mg certificate")).toBe("Retatrutide 10mg certificate");
+  });
+});
+
 describe("the files in seed/", () => {
   it("are valid", () => {
     const stores = validateStores(JSON.parse(readFileSync("seed/stores.json", "utf8")));
     validateLabs(JSON.parse(readFileSync("seed/labs.json", "utf8")));
     validateAudits(JSON.parse(readFileSync("seed/store-audits.json", "utf8")), stores);
+    const compounds = new Set((JSON.parse(readFileSync("seed/compounds.json", "utf8")) as Array<{ slug: string }>).map((c) => c.slug));
+    validateListings(JSON.parse(readFileSync("seed/store-listings.json", "utf8")), stores, compounds);
+    validateDocuments(JSON.parse(readFileSync("seed/store-documents.json", "utf8")), stores, compounds);
   });
 });

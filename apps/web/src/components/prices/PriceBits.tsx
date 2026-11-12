@@ -16,9 +16,9 @@ type Locale = 'en' | 'fr';
  * nofollow but not "sponsored".
  */
 export function GoLink({ kind, id, className = 'link', children, label }: {
-  kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab'; id: string; className?: string; children: ReactNode; label?: string;
+  kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab' | 'listing' | 'document'; id: string; className?: string; children: ReactNode; label?: string;
 }) {
-  const prefix = { offer: 'o', vendor: 'v', coa: 'c', store: 's', evidence: 'e', lab: 'l' }[kind];
+  const prefix = { offer: 'o', vendor: 'v', coa: 'c', store: 's', evidence: 'e', lab: 'l', listing: 'p', document: 'd' }[kind];
   return (
     <a className={className} href={`/prices/go/${prefix}-${id}`} target="_blank" rel="nofollow noopener noreferrer" aria-label={label}>
       {children}

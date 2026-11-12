@@ -16,7 +16,10 @@ import { STORE_AUDIT_CRITERIA } from "@pepforum/database";
 import { createFetcher } from "../fetch/http.ts";
 import { realSleep } from "../fetch/pacing.ts";
 import { visibleText } from "../vendors/quote-check.ts";
-import { type Page, auditPages, pickLinks, reviewHumanUse } from "./audit.ts";
+import { type Page, auditPages, certificateLinks, pickLinks, reviewHumanUse } from "./audit.ts";
+import { type DocumentSeed, documentLabel, validateDocuments } from "./catalogue.ts";
+import type { CompoundSeed } from "../seed/types.ts";
+import { buildProductIndex, resolveProduct } from "../units/blend-match.ts";
 import { type AuditSeed, type StoreSeed, validateAudits, validateLabs, validateStores } from "./directory.ts";
 
 const say = (line: string) => process.stdout.write(`${line}\n`);
@@ -81,6 +84,9 @@ async function main(): Promise<void> {
     return page;
   };
 
+  const compoundSeeds = JSON.parse(readFileSync("seed/compounds.json", "utf8")) as CompoundSeed[];
+  const productIndex = buildProductIndex(compoundSeeds.map((c) => ({ id: c.slug, slug: c.slug, name: c.name, aliases: c.aliases, type: c.type, blend_components: c.blend_components ?? null })));
+  const documents: DocumentSeed[] = [];
   const todo = stores.filter((s) => !only || only.includes(s.slug));
   const candidates: Array<{ slug: string; url: string; quote: string; term: string }> = [];
   const results = new Map<string, { audit: AuditSeed; store: Partial<StoreSeed> }>();
@@ -96,6 +102,11 @@ async function main(): Promise<void> {
           const p = await read(href);
           if (p.ok) pages.push(p);
         }
+      }
+      for (const l of certificateLinks(pages)) {
+        if (!/^https:\/\/\S+$/.test(l.href) || l.href.length > 600) continue;
+        const label = documentLabel(l.href, l.label);
+        documents.push({ slug: s.slug, url: l.href, label, compound: resolveProduct({ name: label }, productIndex), found_on: day });
       }
       const hint = hints[s.slug] ?? {};
       const independent = hint.independent ? await read(hint.independent) : null;
@@ -143,6 +154,10 @@ async function main(): Promise<void> {
   writeFileSync("seed/stores.json", `${JSON.stringify(updated, null, 2)}\n`);
   writeFileSync("seed/store-audits.json", `${JSON.stringify(next, null, 2)}\n`);
   writeFileSync(path.join(cacheDir, "human-use-candidates.json"), `${JSON.stringify(candidates, null, 2)}\n`);
+  // Certificate documents: this run's, replacing earlier ones of the stores it read.
+  const previousDocs: DocumentSeed[] = existsSync("seed/store-documents.json") ? JSON.parse(readFileSync("seed/store-documents.json", "utf8")) : [];
+  const docs = [...previousDocs.filter((d) => !results.has(d.slug)), ...documents].sort((a, b) => a.slug.localeCompare(b.slug) || a.label.localeCompare(b.label));
+  writeFileSync("seed/store-documents.json", `${JSON.stringify(validateDocuments(docs, updated, new Set(compoundSeeds.map((c) => c.slug))), null, 1)}\n`);
 
   const unread = [...results.values()].filter((r) => !r.audit.reachable).length;
   const tally = Object.fromEntries(STORE_AUDIT_CRITERIA.map((c) => [c, [...results.values()].filter((r) => r.audit.checks[c].result === "met" || r.audit.checks[c].result === "partly").length]));

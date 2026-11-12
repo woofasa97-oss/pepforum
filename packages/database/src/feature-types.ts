@@ -316,6 +316,12 @@ type StoreBase = {
   has_prices: boolean;
 };
 export type StoreListItem = StoreBase & {
+  /** Listings in its latest catalogue read (…037). */
+  listings: number;
+  /** Compound slugs in its latest catalogue read. */
+  compounds: string[];
+  /** Certificate documents it links. */
+  documents: number;
   audit: {
     audited_on: string;
     standard_version: string;
@@ -337,7 +343,7 @@ export type LabListItem = {
   checked_on: string;
 };
 /** get_store_directory(): null unless features.stores is on or the caller is an admin (then `preview`). */
-export type StoreDirectory = { preview: boolean; stores: StoreListItem[]; labs: LabListItem[] };
+export type StoreDirectory = { preview: boolean; stores: StoreListItem[]; labs: LabListItem[]; compounds: Array<{ slug: string; name: string }> };
 export type StoreAuditCheck = {
   id: string;
   criterion: StoreAuditCriterion;
@@ -348,10 +354,35 @@ export type StoreAuditCheck = {
   quote_verified_on: string | null;
 };
 /** get_store(slug): one listed store and its latest audit. */
+export type StoreListing = {
+  id: string;
+  compound: string;
+  compound_name: string;
+  product_name: string;
+  variant_label: string | null;
+  form: string;
+  mg_per_vial: number | null;
+  vials_per_pack: number | null;
+  total_mg: number | null;
+  is_blend: boolean;
+  currency: string;
+  /** Integer minor units of `currency`. */
+  price_minor: number;
+  list_price_minor: number | null;
+  on_sale: boolean;
+  /** Minor units per mg × 10^4. */
+  per_mg_minor_e4: number | null;
+  availability: PriceAvailability;
+  has_url: boolean;
+};
+export type StoreDocument = { id: string; label: string; compound: string | null; compound_name: string | null; found_on: string };
+/** get_store(slug): one listed store, its latest audit, catalogue read and certificate documents. */
 export type StoreDetail = StoreBase & {
   preview: boolean;
   audits: number;
   audit: { audited_on: string; standard_version: string; method: 'public_pages'; reachable: boolean; checks: StoreAuditCheck[] } | null;
+  catalogue: { observed_on: string; source: string; complete: boolean; products_seen: number; listings: StoreListing[] } | null;
+  documents: StoreDocument[];
 };
 
 export type AdminPriceVendor = {

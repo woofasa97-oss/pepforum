@@ -174,10 +174,10 @@ export function publishable(check: CheckSeed): CheckSeed {
 
 // ── SQL ────────────────────────────────────────────────────────────────────
 // Postgres text cannot hold NUL; drop it before quoting.
-const lit = (v: string | null | undefined): string => (v === null || v === undefined ? "null" : `'${v.split(String.fromCharCode(0)).join("").replace(/'/g, "''")}'`);
-const day = (v: string | null): string => (v === null ? "null" : `${lit(v)}::date`);
-const arr = (v: string[]): string => (v.length === 0 ? "'{}'::text[]" : `array[${v.map(lit).join(", ")}]::text[]`);
-const bool = (v: boolean): string => (v ? "true" : "false");
+export const lit = (v: string | null | undefined): string => (v === null || v === undefined ? "null" : `'${v.split(String.fromCharCode(0)).join("").replace(/'/g, "''")}'`);
+export const day = (v: string | null): string => (v === null ? "null" : `${lit(v)}::date`);
+export const arr = (v: string[]): string => (v.length === 0 ? "'{}'::text[]" : `array[${v.map(lit).join(", ")}]::text[]`);
+export const bool = (v: boolean): string => (v ? "true" : "false");
 
 /**
  * A migration that loads the three files. Idempotent: a store already listed keeps what an admin or the
