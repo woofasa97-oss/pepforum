@@ -5,13 +5,14 @@ import { resolvePriceLink } from '@/server/queries';
 
 export const dynamic = 'force-dynamic';
 
-const KINDS = { o: 'offer', v: 'vendor', c: 'coa', s: 'store', e: 'evidence', l: 'lab' } as const;
+const KINDS = { o: 'offer', v: 'vendor', c: 'coa', s: 'store', e: 'evidence', l: 'lab', p: 'listing', d: 'document' } as const;
 const BY_SLUG = new Set(['vendor', 'store', 'lab']);
 
 /**
  * Click-through from a price page (…032): `o-<offer id>`, `v-<vendor slug>`
  * or `c-<certificate id>`; from the Stores directory (…035): `s-<store slug>`,
- * `e-<audit check id>` (the page a finding quotes) or `l-<lab slug>`. The database says where it goes (the store's own
+ * `e-<audit check id>` (the page a finding quotes), `l-<lab slug>`, `p-<listing id>`
+ * (a product page) or `d-<document id>` (a certificate the store links). The database says where it goes (the store's own
  * page; plain links only, ADR-0009) and counts the click per vendor per day. No store address is ever rendered in a page, and no
  * referrer is sent.
  */

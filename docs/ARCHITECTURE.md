@@ -135,7 +135,9 @@ Every store found selling research peptides online, worldwide, with a public-inf
 | Stores | `prices.vendors` (any ISO country or null, any ISO currency, `kind`, `ships_worldwide`); read API `get_store_directory`, `get_store` | `/stores`, `/stores/[slug]`, header link, filters in `lib/stores.ts` | `seed/stores.json` |
 | Audits | `prices.store_audits`, `prices.store_audit_checks` (append-only, latest shown) | check list on `/stores/[slug]` | `stores:audit` (rules in `src/stores/audit.ts`), `stores:check` (quotes found again), `stores:sql` (writes a data migration) |
 | Laboratories | `prices.labs` (tier under §3) | `/stores/labs` | `seed/labs.json`, `seed/lab-aliases.json` |
-| Links | `price_link('store' \| 'evidence' \| 'lab', …)` | `/prices/go/[s\|e\|l]-<id>` | — |
+| Listings, documents (…037) | `prices.store_catalogue_reads` → `store_listings` (append-only), `prices.store_documents`; in `get_store` and `get_store_directory` | store page tabs: Peptides & prices, Standards & certificates | `stores:catalogue`; documents from `stores:audit` |
+| Logos | — (static files) | `/brands/<slug>.webp`, `lib/stores/brands.json`, `BrandTile` | `stores:brand` (sharp re-encodes) |
+| Links | `price_link('store' \| 'evidence' \| 'lab' \| 'listing' \| 'document', …)` | `/prices/go/[s\|e\|l\|p\|d]-<id>` | — |
 
 The data reaches production as a generated migration, so it is applied with the code on merge.
 

@@ -469,7 +469,7 @@ export async function getPriceHistory(compound: string, days = 90): Promise<Pric
 }
 
 /** Where a link on a price page goes (and counts the click). Null when it leads nowhere we publish. */
-export async function resolvePriceLink(kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab', id: string): Promise<string | null> {
+export async function resolvePriceLink(kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab' | 'listing' | 'document', id: string): Promise<string | null> {
   const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('price_link', { p_kind: kind, p_id: id });
   if (error) {

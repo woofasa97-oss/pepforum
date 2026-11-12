@@ -739,7 +739,7 @@ export type Database = {
       // Price tracking (…031–…033)
       get_price_catalog: { Args: Record<string, never>; Returns: PriceCatalog | null };
       get_price_history: { Args: { p_compound: string; p_days?: number }; Returns: PriceHistoryPoint[] | null };
-      price_link: { Args: { p_kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab'; p_id: string }; Returns: string | null };
+      price_link: { Args: { p_kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab' | 'listing' | 'document'; p_id: string }; Returns: string | null };
       // Stores directory (…035)
       get_store_directory: { Args: Record<string, never>; Returns: StoreDirectory | null };
       get_store: { Args: { p_slug: string }; Returns: StoreDetail | null };
