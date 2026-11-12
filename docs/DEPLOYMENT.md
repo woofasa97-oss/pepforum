@@ -81,6 +81,10 @@ Members verify an X, YouTube, Instagram, TikTok or Reddit account from **Setting
    | Reddit | reddit.com/prefs/apps → *web app* | `identity` | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Audience = the profile's followers. |
 3. **The bonus** is tuned in Rules & settings (`socials.bonus_*`, docs/SELF_MODERATION.md).
 
+### Price tracking (optional)
+
+Migrations …030–…033 create the `prices` schema and a login for the pipeline, `pepforum_prices`, with no password. To run the pipeline, set one out of band (`alter role pepforum_prices password '…';`), store that login's session-pooler connection string as the GitHub secret `PRICES_DB_URL`, and follow "Going live" in [PRICES.md](PRICES.md). Nothing is shown to visitors until an admin switches on "Show the Prices section". The pipeline runs on GitHub Actions, not Render, and needs no other secret.
+
 ## 2. Render (web and worker)
 
 1. **New Blueprint**, pointing at this repo. `render.yaml` creates:

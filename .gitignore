@@ -26,3 +26,7 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 packages/database/src/generated.types.ts
+
+# price pipeline: raw vendor captures and run summaries
+apps/prices/.raw-capture/
+apps/prices/prices-out/

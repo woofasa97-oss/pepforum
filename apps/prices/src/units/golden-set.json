@@ -1,0 +1,569 @@
+{
+  "_comment": "GUARD GOLDEN-SET \u2014 the regression gate for the four pricing guards. Every fixture is a real or historically-observed input with its expected verdict. CI fails on ANY verdict change (lib/pricing/guard-golden-set.test.ts). The blend detector was patched three times in one week (Kimera/SNAP-8 wrong-product 2026-07-04, dual-dose XMG/YMG 2026-07-05, digits-in-token slash 2026-07-05) \u2014 this set is what stops patch #4 from being a silent regression. ADD a fixture with every guard change; NEVER weaken an expectation without an audit-doc entry.",
+  "fixtures": [
+    {
+      "id": "blend-glow-ingredient-list",
+      "guard": "blend",
+      "input": "GLOW 50: GHK-cu 35mg, TB-500 10mg, BPC-157 5mg Blend",
+      "expect": true
+    },
+    {
+      "id": "blend-klow",
+      "guard": "blend",
+      "input": "BPC157, TB500, GHKCu, KPV (Klow Blend) 80mg",
+      "expect": true
+    },
+    {
+      "id": "blend-word",
+      "guard": "blend",
+      "input": "GHK-Cu 50mg KPV 10mg Blend",
+      "expect": true
+    },
+    {
+      "id": "blend-stack",
+      "guard": "blend",
+      "input": "Skin & Aesthetics Glow Stack \u2014 GHK-Cu + BPC-157/TB-500",
+      "expect": true
+    },
+    {
+      "id": "blend-fit-stack",
+      "guard": "blend",
+      "input": "CJC-1295 No DAC 10mg + Ipamorelin 10mg (FIT Stack 20mg)",
+      "expect": true
+    },
+    {
+      "id": "blend-ESCAPE-2-dual-dose",
+      "guard": "blend",
+      "input": "Tesamorelin/Ipamorelin 8MG/2MG",
+      "expect": true,
+      "note": "escape #2 (2026-07-05): names joined first, doses joined after \u2014 Modern Aminos"
+    },
+    {
+      "id": "blend-spaced-plus",
+      "guard": "blend",
+      "input": "CJC-1295 + Ipamorelin",
+      "expect": true
+    },
+    {
+      "id": "blend-slash-names",
+      "guard": "blend",
+      "input": "Tesamorelin/Ipamorelin",
+      "expect": true
+    },
+    {
+      "id": "blend-ESCAPE-3-digits-in-token-slash",
+      "guard": "blend",
+      "input": "(2-Pack) CJC-1295 / IPAMORELIN \u2014 10mg",
+      "expect": true,
+      "note": "escape #3 (2026-07-05): 'CJC-1295' ends in digits, evaded the alpha-run slash regex \u2014 Blank Peptides"
+    },
+    {
+      "id": "blend-NOT-nad-plus",
+      "guard": "blend",
+      "input": "NAD+ 500mg Buffered",
+      "expect": false,
+      "note": "the '+' is part of the peptide name \u2014 no space before it"
+    },
+    {
+      "id": "blend-NOT-concentration",
+      "guard": "blend",
+      "input": "Semaglutide 5mg/ml",
+      "expect": false
+    },
+    {
+      "id": "blend-NOT-fragment-code",
+      "guard": "blend",
+      "input": "IGF-1/LR3 1mg",
+      "expect": false,
+      "note": "one peptide; 2-letter side of the slash"
+    },
+    {
+      "id": "blend-NOT-plain",
+      "guard": "blend",
+      "input": "BPC-157 10mg",
+      "expect": false
+    },
+    {
+      "id": "blend-NOT-marketing-glow",
+      "guard": "blend",
+      "input": "Glutathione Glow Shot 200mg",
+      "expect": false,
+      "note": "'glow' alone is marketing, not auto-blend"
+    },
+    {
+      "id": "cu-plain-vial",
+      "guard": "canonical-unit",
+      "input": "BPC-157 10mg",
+      "expect": {
+        "mg": 10,
+        "totalMg": 10,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-decimal-mg",
+      "guard": "canonical-unit",
+      "input": "Peptide (Lyophilized) 2.5mg",
+      "expect": {
+        "mg": 2.5,
+        "totalMg": 2.5,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-mcg",
+      "guard": "canonical-unit",
+      "input": "Epithalon 500mcg",
+      "expect": {
+        "mg": 0.5,
+        "totalMg": 0.5,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-ESCAPE-1-bulk-powder",
+      "guard": "canonical-unit",
+      "input": "Powder: 1000MG",
+      "expect": {
+        "mg": null,
+        "reason": "non_vial_form"
+      },
+      "note": "the GHK-Cu incident unit \u2014 bulk powder chosen as $/mg comparator"
+    },
+    {
+      "id": "cu-bulk-over-max",
+      "guard": "canonical-unit",
+      "input": "GHK-Cu 500mg",
+      "expect": {
+        "mg": null,
+        "reason": "bulk_over_max"
+      }
+    },
+    {
+      "id": "cu-capsule",
+      "guard": "canonical-unit",
+      "input": "NAD+ 250mg capsules",
+      "expect": {
+        "mg": null,
+        "reason": "non_vial_form"
+      }
+    },
+    {
+      "id": "cu-blend-reason",
+      "guard": "canonical-unit",
+      "input": "Tesamorelin/Ipamorelin 8MG/2MG",
+      "expect": {
+        "mg": null,
+        "reason": "blend"
+      }
+    },
+    {
+      "id": "cu-no-mg",
+      "guard": "canonical-unit",
+      "input": "BPC-157 research peptide",
+      "expect": {
+        "mg": null,
+        "reason": "no_mg"
+      }
+    },
+    {
+      "id": "cu-empty",
+      "guard": "canonical-unit",
+      "input": "",
+      "expect": {
+        "mg": null,
+        "reason": "no_mg"
+      }
+    },
+    {
+      "id": "cu-PACK-2pack",
+      "guard": "canonical-unit",
+      "input": "(2-Pack) CJC-1295 NO DAC 5mg",
+      "expect": {
+        "mg": 5,
+        "packCount": 2,
+        "totalMg": 10,
+        "reason": null
+      },
+      "note": "the Blank Peptides held row \u2014 pack price against one vial's mg inflated $/mg ~2\u00d7"
+    },
+    {
+      "id": "cu-PACK-pack-of-3",
+      "guard": "canonical-unit",
+      "input": "BPC-157 5mg pack of 3",
+      "expect": {
+        "mg": 5,
+        "packCount": 3,
+        "totalMg": 15,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-PACK-n-vials",
+      "guard": "canonical-unit",
+      "input": "Semaglutide 5mg (10 vials)",
+      "expect": {
+        "mg": 5,
+        "packCount": 10,
+        "totalMg": 50,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-PACK-n-x-mg",
+      "guard": "canonical-unit",
+      "input": "Ipamorelin 2 x 5mg",
+      "expect": {
+        "mg": 5,
+        "packCount": 2,
+        "totalMg": 10,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-PACK-x-n-suffix",
+      "guard": "canonical-unit",
+      "input": "TB-500 10mg vial x2",
+      "expect": {
+        "mg": 10,
+        "packCount": 2,
+        "totalMg": 20,
+        "reason": null
+      }
+    },
+    {
+      "id": "cu-PACK-AMBIGUOUS-value-pack",
+      "guard": "canonical-unit",
+      "input": "BPC-157 5mg Value Pack",
+      "expect": {
+        "mg": null,
+        "reason": "pack_ambiguous"
+      },
+      "note": "pack wording, no countable number \u2014 fail-safe to excluded, never guess"
+    },
+    {
+      "id": "cu-PACK-AMBIGUOUS-kit",
+      "guard": "canonical-unit",
+      "input": "CJC-1295 Starter Kit 5mg",
+      "expect": {
+        "mg": null,
+        "reason": "pack_ambiguous"
+      }
+    },
+    {
+      "id": "cls-ok-clean-row",
+      "guard": "classify",
+      "input": {
+        "row": {
+          "product_name": "BPC-157 10mg",
+          "price_usd": 64,
+          "raw_price_text": "$64.00",
+          "mg_per_vial": 10,
+          "price_per_mg_usd": 6.4
+        },
+        "ref": {
+          "modalMgPerVial": 10,
+          "nPriced": 30,
+          "p5": 2.0
+        }
+      },
+      "expect": {
+        "ok": true,
+        "reason": null
+      }
+    },
+    {
+      "id": "cls-blend-product",
+      "guard": "classify",
+      "input": {
+        "row": {
+          "product_name": "GHK-Cu 50mg KPV 10mg Blend",
+          "price_usd": 90,
+          "raw_price_text": "$90.00",
+          "mg_per_vial": 60,
+          "price_per_mg_usd": 1.5
+        },
+        "ref": {}
+      },
+      "expect": {
+        "ok": false,
+        "reason": "blend_product"
+      }
+    },
+    {
+      "id": "cls-sale-price-capture",
+      "guard": "classify",
+      "input": {
+        "row": {
+          "product_name": "TB-500 10mg",
+          "price_usd": 45,
+          "raw_price_text": "$89.99",
+          "mg_per_vial": 10,
+          "price_per_mg_usd": 4.5
+        },
+        "ref": {}
+      },
+      "expect": {
+        "ok": false,
+        "reason": "price_ne_raw"
+      },
+      "note": "RC3 \u2014 stored price disagrees with the displayed amount"
+    },
+    {
+      "id": "cls-ESCAPE-1-seeded-1000mg",
+      "guard": "classify",
+      "input": {
+        "row": {
+          "product_name": "GHK-Cu",
+          "price_usd": 300,
+          "raw_price_text": "$300.00",
+          "mg_per_vial": 1000,
+          "price_per_mg_usd": 0.3
+        },
+        "ref": {
+          "modalMgPerVial": 50,
+          "nPriced": 25,
+          "p5": 1.5
+        }
+      },
+      "expect": {
+        "ok": false,
+        "reason": "mg_per_vial_implausible"
+      },
+      "note": "the #265 root cause \u2014 LLM prompt seeded a '1000mg' example"
+    },
+    {
+      "id": "cls-below-robust-floor",
+      "guard": "classify",
+      "input": {
+        "row": {
+          "product_name": "Semaglutide 5mg",
+          "price_usd": 1,
+          "raw_price_text": "$1.00",
+          "mg_per_vial": 5,
+          "price_per_mg_usd": 0.2
+        },
+        "ref": {
+          "modalMgPerVial": 5,
+          "nPriced": 40,
+          "p5": 3.0
+        }
+      },
+      "expect": {
+        "ok": false,
+        "reason": "per_mg_below_floor"
+      }
+    },
+    {
+      "id": "pm-ESCAPE-1-kimera-snap8-absent",
+      "guard": "product-match",
+      "input": {
+        "product": {
+          "name": "SNAP-8 Anti-Wrinkle Peptide 10mg",
+          "slug": "snap-8-10mg"
+        },
+        "target": {
+          "slug": "bpc-157",
+          "name": "BPC-157",
+          "aliases": []
+        },
+        "others": [
+          {
+            "slug": "snap-8",
+            "name": "SNAP-8",
+            "aliases": []
+          }
+        ]
+      },
+      "expect": {
+        "ok": false,
+        "reason": "target_absent"
+      },
+      "note": "the #268 Kimera error \u2014 keyword search surfaced a SNAP-8 page for a BPC-157 query"
+    },
+    {
+      "id": "pm-wrong-product-primary",
+      "guard": "product-match",
+      "input": {
+        "product": {
+          "name": "SNAP-8 serum enhanced with BPC-157",
+          "slug": ""
+        },
+        "target": {
+          "slug": "bpc-157",
+          "name": "BPC-157",
+          "aliases": []
+        },
+        "others": [
+          {
+            "slug": "snap-8",
+            "name": "SNAP-8",
+            "aliases": []
+          }
+        ]
+      },
+      "expect": {
+        "ok": false,
+        "reason": "wrong_product_primary"
+      },
+      "note": "target only name-dropped; another peptide leads"
+    },
+    {
+      "id": "pm-ok-exact",
+      "guard": "product-match",
+      "input": {
+        "product": {
+          "name": "BPC-157 10mg",
+          "slug": "bpc-157-10mg"
+        },
+        "target": {
+          "slug": "bpc-157",
+          "name": "BPC-157",
+          "aliases": []
+        },
+        "others": [
+          {
+            "slug": "snap-8",
+            "name": "SNAP-8",
+            "aliases": []
+          }
+        ]
+      },
+      "expect": {
+        "ok": true,
+        "reason": null
+      }
+    },
+    {
+      "id": "pm-ok-via-alias",
+      "guard": "product-match",
+      "input": {
+        "product": {
+          "name": "Bremelanotide 10mg",
+          "slug": "bremelanotide"
+        },
+        "target": {
+          "slug": "pt-141",
+          "name": "PT-141",
+          "aliases": [
+            "Bremelanotide"
+          ]
+        },
+        "others": []
+      },
+      "expect": {
+        "ok": true,
+        "reason": null
+      }
+    },
+    {
+      "id": "pm-blend-rejected",
+      "guard": "product-match",
+      "input": {
+        "product": {
+          "name": "Tesamorelin/Ipamorelin 8MG/2MG",
+          "slug": ""
+        },
+        "target": {
+          "slug": "tesamorelin",
+          "name": "Tesamorelin",
+          "aliases": []
+        },
+        "others": [
+          {
+            "slug": "ipamorelin",
+            "name": "Ipamorelin",
+            "aliases": []
+          }
+        ]
+      },
+      "expect": {
+        "ok": false,
+        "reason": "blend"
+      },
+      "note": "escape #2 \u2014 target listed FIRST so primary-subject alone passes it; the blend check must catch it"
+    },
+    {
+      "id": "pm-target-absent-generic",
+      "guard": "product-match",
+      "input": {
+        "product": {
+          "name": "Research Peptide Sample Pack",
+          "slug": "sample"
+        },
+        "target": {
+          "slug": "bpc-157",
+          "name": "BPC-157",
+          "aliases": []
+        },
+        "others": []
+      },
+      "expect": {
+        "ok": false,
+        "reason": "target_absent"
+      }
+    },
+    {
+      "id": "cls-ESCAPE-4-market-band-above-ceiling",
+      "guard": "classify",
+      "input": {
+        "row": { "product_name": "GIP/GLP-1 (TZ) 5mg", "price_usd": 399.95, "raw_price_text": "$399.95", "mg_per_vial": 5, "price_per_mg_usd": 79.99 },
+        "ref": { "medianPerMg": 4.9, "nPriced": 175, "p5": 1.5, "modalMgPerVial": 5 }
+      },
+      "expect": { "ok": false, "reason": "per_mg_above_ceiling" },
+      "note": "escape #4 (2026-07-06): a $79.99/mg row mis-attributed to semaglutide (median ~$4.9) passed every structural guard; the market band (median x10 = $49) rejects it."
+    },
+    {
+      "id": "cls-market-band-below-floor-misparse",
+      "guard": "classify",
+      "input": {
+        "row": { "product_name": "Cagrilintide 10mg", "price_usd": 10, "raw_price_text": "$10.00", "mg_per_vial": 10, "price_per_mg_usd": 1.0 },
+        "ref": { "medianPerMg": 10.62, "nPriced": 44, "p5": 0.8, "modalMgPerVial": 10 }
+      },
+      "expect": { "ok": false, "reason": "per_mg_below_floor" },
+      "note": "the $1/mg cagrilintide mis-parse: p5 floor was polluted low; the median band (median/10 = $1.06) catches it."
+    },
+    {
+      "id": "cls-market-band-keeps-small-vial-premium",
+      "guard": "classify",
+      "input": {
+        "row": { "product_name": "Semaglutide 5mg", "price_usd": 80, "raw_price_text": "$80.00", "mg_per_vial": 5, "price_per_mg_usd": 16.0 },
+        "ref": { "medianPerMg": 4.9, "nPriced": 175, "p5": 1.5, "modalMgPerVial": 5 }
+      },
+      "expect": { "ok": true, "reason": null },
+      "note": "legitimate small-vial premium ($16/mg < median x10 = $49) must NOT be rejected — proves the band doesn't over-reject."
+    },
+    {
+      "id": "cls-market-band-thin-data-abs-ceiling",
+      "guard": "classify",
+      "input": {
+        "row": { "product_name": "RarePeptide 5mg", "price_usd": 6000, "raw_price_text": "$6000.00", "mg_per_vial": 5, "price_per_mg_usd": 1200 },
+        "ref": { "nPriced": 2 }
+      },
+      "expect": { "ok": false, "reason": "per_mg_above_ceiling" },
+      "note": "thin-data peptide (nPriced<5, no median): the absolute backstop ceiling ($1000/mg) still catches an absurd $1200/mg."
+    },
+    {
+      "id": "pm-ESCAPE-4-generic-glp1-alias",
+      "guard": "product-match",
+      "input": {
+        "product": { "name": "GIP/GLP-1 (TZ) 5mg", "slug": "" },
+        "target": { "slug": "semaglutide", "name": "Semaglutide", "aliases": ["Ozempic", "Wegovy", "Rybelsus", "GLP-1"] },
+        "others": [ { "slug": "tirzepatide", "name": "Tirzepatide", "aliases": ["Mounjaro", "Zepbound", "Dual GLP-1", "GLP-1/GIP"] } ]
+      },
+      "expect": { "ok": false, "reason": "target_absent" },
+      "note": "escape #4 root: 'GIP/GLP-1 (TZ)' resolved to semaglutide via the generic 'GLP-1' alias. Generic class tokens (glp1/gip) are now excluded from surfaceForms, so semaglutide is target_absent here."
+    },
+    {
+      "id": "pm-generic-alias-keeps-specific-match",
+      "guard": "product-match",
+      "input": {
+        "product": { "name": "Semaglutide (GLP-1) 5mg", "slug": "semaglutide-5mg" },
+        "target": { "slug": "semaglutide", "name": "Semaglutide", "aliases": ["Ozempic", "Wegovy", "Rybelsus", "GLP-1"] },
+        "others": [ { "slug": "tirzepatide", "name": "Tirzepatide", "aliases": ["Mounjaro", "GLP-1/GIP"] } ]
+      },
+      "expect": { "ok": true, "reason": null },
+      "note": "dropping the generic 'GLP-1' token must NOT break a real semaglutide match — the specific 'semaglutide' token still resolves it."
+    }
+  ]
+}

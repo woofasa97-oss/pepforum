@@ -1,0 +1,116 @@
+[
+  {
+    "slug": "eppix-labs-ca",
+    "based_in": "CA",
+    "basis": "governing law",
+    "source": "https://www.eppixlabs.ca/terms",
+    "quote": "These Terms of Service are governed by and construed in accordance with the laws of the Province of Alberta and the laws of Canada applicable therein. … Location Alberta, Canada",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "No street address published. Same page lists Contact Location: Alberta, Canada.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "great-northern-peptides",
+    "based_in": "CA",
+    "basis": "company statement",
+    "source": "https://greatnorthernpeptides.com",
+    "quote": "We’re proud to be a Canadian company serving Canadians",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "ships_from": "CA",
+    "notes": "Homepage also says 'shipping all of our products directly from within Canada'. No street address or governing-law clause found (terms page has none; /about timed out once, later read; contact page has email only).",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "maple-research-labs",
+    "based_in": "CA",
+    "basis": "company statement",
+    "source": "https://www.mapleresearchlabs.com",
+    "quote": "Canadian supplier of high-purity research compounds for laboratory and scientific applications. BC FACILITY · BRITISH COLUMBIA, CANADA",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "ships_from": "CA",
+    "notes": "FAQ: 'All orders ship from our facility in British Columbia, Canada.' No street address; terms governing-law clause only says 'the laws of Canada and the province in which Maple Research Labs operates'. Site has CA/USA selector (not evidence).",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "ncrp",
+    "based_in": "CA",
+    "basis": "company statement",
+    "source": "https://ncrpcanada.com",
+    "quote": "NCRP is a Canadian based distributor of the highest grade research peptides available.",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "ships_from": "CA",
+    "notes": "Page also says 'Every product is manufactured, packaged and shipped from Canada.' Single-page site; no address, terms or contact page found (/contact 404). Province not stated.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "nextedge-peptides",
+    "based_in": "CA",
+    "basis": "business address",
+    "source": "https://nextedgepeptides.com/contact-us",
+    "quote": "Mississauga Location: 3465 Platinum Drive Unit 238. Mississauga, ON, Canada L5M 2S1",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "A second location is listed: Cambridge Location: 1075 King St E Cambridge, ON N3H 3P6. Terms page has no governing-law clause.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "peptide-bros",
+    "based_in": "CA",
+    "basis": "company statement",
+    "source": "https://peptidebros.ca/about/",
+    "quote": "Peptide Bros is a Canadian supplier of research-use-only peptides and laboratory handling supplies.",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "ships_from": "CA",
+    "notes": "Same page: 'Orders ship from Canada.' Privacy policy says: 'We have not published a street address or a numbered legal entity on this site.' No governing law found.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "peptide-confidential",
+    "based_in": "CA",
+    "basis": "governing law",
+    "source": "https://peptideconfidential.com/terms",
+    "quote": "These terms and every order are governed by the laws of the Province of Alberta and the laws of Canada that apply there.",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "No street address on /contact (read). Terms section 6 mentions 'Orders shipped outside Canada', so it may ship abroad (shipping not in scope this batch).",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "performance-peptides-canada",
+    "based_in": "CA",
+    "basis": "legal entity",
+    "source": "https://performancepeptidescanada.co/terms-of-use/",
+    "quote": "1565783 B.C. LTD., operating as Performance Peptides Canada, is incorporated in British Columbia.",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "Terms governing law: Province of British Columbia. About page (https://performancepeptidescanada.co/about-us/): 'Every order placed with Performance Peptides Canada ships from within Canadian borders.' (ships_from CA). No street address on contact page.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "summit-peptides-ca",
+    "based_in": "CA",
+    "basis": "governing law",
+    "source": "https://summitpeptides.ca/terms-and-conditions/",
+    "quote": "These Terms and any dispute arising out of or in connection with them shall be governed by and construed in accordance with the laws of the Province of Ontario and the federal laws of Canada applicable therein",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "No street address on contact-us. About page says peptides are 'sourced exclusively from Canadian and American sources' (supply, not base).",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "vpeptide",
+    "based_in": "CA",
+    "basis": "governing law",
+    "source": "https://vpeptide.com/terms-of-service/",
+    "quote": "Governing law: Alberta, Canada",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "Operator is 'VPeptide Inc.' (jurisdiction of incorporation not stated). Contact page lists only 'Canada' and an email. Home page mentions a partner lab (Peptide Test Canada, Mississauga) - not the business.",
+    "reviewed": "owner 2026-10-08"
+  }
+]

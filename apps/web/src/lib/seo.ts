@@ -13,7 +13,8 @@ export function absoluteUrl(path: string): string {
 }
 
 /** Public routes that aren't in the database (zones and categories are added by the caller). */
-export const STATIC_PATHS = ['/', '/notes', '/transparency', '/advertise', '/legal/terms', '/legal/privacy', '/legal/community-guidelines'] as const;
+export const STATIC_PATHS = ['/', '/notes', '/transparency', '/advertise', '/legal/terms', '/legal/privacy', '/legal/community-guidelines',
+  '/legal/price-methodology', '/legal/affiliate-disclosure'] as const;
 
 const escapeXml = (value: string): string =>
   value.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c] ?? c);

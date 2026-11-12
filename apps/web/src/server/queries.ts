@@ -22,6 +22,8 @@ import type {
   NotificationSettings,
   PendingImage,
   PostImage,
+  PriceCatalog,
+  PriceHistoryPoint,
   RedirectTarget,
   ServedAd,
   SitemapCounts,
@@ -434,3 +436,43 @@ export const getSocialBonusRules = cache(async (): Promise<{ min: number; step: 
   };
   return { min: get('socials.bonus_min_audience', 1000), step: get('socials.bonus_step_karma', 25), max: get('socials.bonus_max_karma', 100) };
 });
+
+// ── Price tracking (…030–…033) ──────────────────────────────────────────────
+/** Whether the Prices section is switched on (features.prices). Off if the setting can't be read. */
+export const getPricesEnabled = cache(async (): Promise<boolean> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.from('app_config').select('value').eq('key', 'features.prices').maybeSingle();
+  return !error && data?.value === true;
+});
+
+/** Everything the Prices section shows: published offers of active vendors. Null while the section is off or unreadable. */
+export const getPriceCatalog = cache(async (): Promise<PriceCatalog | null> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_price_catalog');
+  if (error) {
+    logUnexpected('get_price_catalog', error);
+    return null;
+  }
+  return data;
+});
+
+export async function getPriceHistory(compound: string, days = 90): Promise<PriceHistoryPoint[]> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_price_history', { p_compound: compound, p_days: days });
+  if (error) {
+    logUnexpected('get_price_history', error);
+    return [];
+  }
+  return data ?? [];
+}
+
+/** Where a link on a price page goes (and counts the click). Null when it leads nowhere we publish. */
+export async function resolvePriceLink(kind: 'offer' | 'vendor' | 'coa', id: string): Promise<string | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('price_link', { p_kind: kind, p_id: id });
+  if (error) {
+    logUnexpected('price_link', error);
+    return null;
+  }
+  return data;
+}

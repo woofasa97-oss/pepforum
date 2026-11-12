@@ -62,6 +62,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         { href: '/admin/shield', label: t('admin.nav.shield'), icon: 'shield', badge: o?.held ?? 0 },
         { href: '/admin/media', label: t('admin.nav.media'), icon: 'image' },
         { href: '/admin/seo', label: t('admin.nav.seo'), icon: 'search' },
+        { href: '/admin/prices', label: t('admin.nav.prices'), icon: 'scale' },
       ],
     },
     {

@@ -163,6 +163,9 @@ New settings:
 |---|---|---|
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
 | `features.regions` | false | Show provinces and cities to members: zone bar, region pickers, region pages (…026). Off: everything posts to the national feed |
+| `features.prices` | false | Show the Prices section (…030). Off: the pages, the header link and the price read functions return nothing; the pipeline may keep running |
+| `prices.stale_hours` | 48 | A published price not rechecked within this many hours is marked and no longer ranked (12–720) |
+| `prices.lead_vials` | 10 | The order size a price comparison opens on: 1, 3, 5 or 10 |
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |

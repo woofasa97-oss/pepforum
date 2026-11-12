@@ -1,0 +1,24 @@
+{
+  "name": "@pepforum/prices",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Price pipeline: reads vendors' own product feeds, matches products to compounds, gates each run and publishes checked prices to the prices schema. Ported from PepSpotter.",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env.local src/cli.ts",
+    "vendors:shipping": "node --env-file-if-exists=.env.local src/vendors/shipping-cli.ts",
+    "vendors:discounts": "node --env-file-if-exists=.env.local src/vendors/discounts-cli.ts",
+    "vendors:quote-check": "node src/vendors/quote-check-cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "postgres": "3.4.9",
+    "tldts": "7.4.16"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

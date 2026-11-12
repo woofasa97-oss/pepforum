@@ -153,6 +153,17 @@ Pepforum sells one reviewed sponsored card per feed. The money and policy rules 
 
 Members can verify an X, YouTube, Instagram, TikTok or Reddit account from Settings; badges show on their profile, and a verified audience earns a one-time karma bonus capped at Member (see docs/SELF_MODERATION.md). On a member's public profile, admins see **Remove** next to each badge: use it for vendor or sourcing accounts and for accounts that aren't theirs. It takes the bonus back and is logged as *Verified account removed*. Setup: docs/DEPLOYMENT.md, "Verified social accounts".
 
+## Prices
+
+`/admin/prices` (migrations …031–…032; full guide in [PRICES.md](PRICES.md)). Prices themselves are never edited here: they come only from the pipeline.
+
+- **Vendors.** Add a store (it starts Pending), then set it Active after a clean dry run. Paused keeps its data without reading or showing it; Delisted hides it at once, which is what to do when a vendor asks to be removed. Tick "refuses our reader" for a store that answers 401/403 so it stops holding runs.
+- **Certificates of analysis.** Links the pipeline found wait under "To check". Open the document, record exactly what it states, then publish. The site always presents it as the vendor's own document.
+- **Affiliate terms.** Record them only once agreed with the vendor, with the evidence. The vendor is then labelled Affiliate everywhere; nothing about its prices or ranking changes.
+- **Recent runs.** A held run published nothing; the site is still showing the last checked prices.
+
+Every change needs MFA and a reason and is written to the moderation log (`price_vendor_*`, `price_coa_*`, `price_link_*`).
+
 ## Where the code lives
 
 | Concern | Location |

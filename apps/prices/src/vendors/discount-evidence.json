@@ -1,0 +1,108 @@
+[
+  {
+    "slug": "eppix-labs-ca",
+    "tiers": [
+      {
+        "vials": 3,
+        "percent": 5
+      },
+      {
+        "vials": 5,
+        "percent": 10
+      },
+      {
+        "vials": 10,
+        "percent": 20
+      }
+    ],
+    "blends": true,
+    "any_product": true,
+    "mechanism": "cart",
+    "source": "https://www.eppixlabs.ca/",
+    "quote": "Save 5% on 3+ vials, 10% on 5+ vials and 20% on 10+ vials across any products, and up to 25% when paying by Interac e-Transfer.",
+    "checked": "2026-10-06",
+    "notes": "FAQ https://www.eppixlabs.ca/faq: 'Mix and match vials across the catalogue for a volume discount applied automatically in the cart from three vials, rising to 20% at ten — they do not have to be the same compound'. Product pages (BPC-157, Wolverine blend) show a 'Mix & Match' widget '10% at 5 vials, 20% at 10 vials', so blends true. The extra 5% e-Transfer discount is payment-based and ignored (it stacks). BPC-157 page also has variants 'Single Vial / 5-Pack / 10-Pack' (multi-pack variants, FAQ says price difference is only the volume discount), so those prices are already in listings."
+  },
+  {
+    "slug": "great-northern-peptides",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "none found — Read home, FAQ, shipping policy, BPC-157 page: no multi-vial discount or tier variants."
+  },
+  {
+    "slug": "maple-research-labs",
+    "tiers": [
+      {
+        "vials": 10,
+        "percent": 10
+      }
+    ],
+    "blends": false,
+    "any_product": false,
+    "mechanism": "cart",
+    "source": "https://mapleresearchlabs.com/faq/",
+    "quote": "Do you offer bulk discounts? Yes. Orders of 10 or more units of the same product automatically receive a 10% discount at checkout. No coupon code is required. The discount is applied per qualifying product line item in your cart.",
+    "checked": "2026-10-06",
+    "notes": "Single tier, same product only (per line item). BPC-157 product page has variants 'Single vial' and '10-pack Save 10%' in its own options, so that tier is likely already in listing prices. Also 15% off first order (code, not recorded)."
+  },
+  {
+    "slug": "ncrp",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "none found — Home and a product page read; no discount, bulk or tier text; single price per product."
+  },
+  {
+    "slug": "nextedge-peptides",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "none found — Read home, FAQ (only 'subscribe to newsletter' for deals), shipping policy, BPC-157 page (5mg/10mg strengths only)."
+  },
+  {
+    "slug": "peptide-bros",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "not recorded — code-only — Only payment-method codes shown ('25% off all other payments: peptidebros25', '40% off crypto payments: crypto40'). No automatic multipack tiers on home, FAQ, BPC-157 page or bundles category. Bundles are fixed multi-product kits. — 25% off: peptidebros25"
+  },
+  {
+    "slug": "peptide-confidential",
+    "tiers": [
+      {
+        "vials": 3,
+        "percent": 10
+      },
+      {
+        "vials": 5,
+        "percent": 20
+      },
+      {
+        "vials": 10,
+        "percent": 30
+      }
+    ],
+    "blends": true,
+    "any_product": true,
+    "mechanism": "pack page",
+    "source": "https://peptideconfidential.com/products/multi-pack",
+    "quote": "Choose a target, then add vials from any compounds. Target 3 vials −10% 5 vials −20% 10 vials −30%",
+    "checked": "2026-10-06",
+    "notes": "Confirmed. Home page (https://peptideconfidential.com/) adds: 'Mix and match products. Every vial in your order counts toward one rate, and the lower per-vial price is applied automatically when your order is placed. No code needed.' and '10 vials 30 % off each per vial, across the order'. Pack builder includes blends (BPC-157 + TB-500 Blend, Klow Blend). Rate set by vials in the whole order, whatever the products. Note the minus sign in the quote is U+2212."
+  },
+  {
+    "slug": "performance-peptides-canada",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "none found — Read home, terms, BPC-157 page: no multi-vial discount; free shipping over $150 only."
+  },
+  {
+    "slug": "summit-peptides-ca",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "none found — Home, shipping policy and TB500 page checked; only a first-order code (FIRST10, 10% off first order). TB500 page has a 'Pack Size' variant including '5mg / 10 Pack' (tier-priced pack variant, already in listing prices)."
+  },
+  {
+    "slug": "vpeptide",
+    "tiers": [],
+    "checked": "2026-10-06",
+    "notes": "not recorded — code-only — Banner on every page: 'PREMIUM PEPTIDES. 10% OFF. USE VP10'. No vial-count tiers found on BPC-157 page, home or refund-shipping policy. — 10% OFF. USE VP10"
+  }
+]

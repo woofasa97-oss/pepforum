@@ -1,0 +1,350 @@
+[
+  {
+    "id": 5046,
+    "name": "Pancragen",
+    "slug": "pancragen",
+    "parent": 0,
+    "type": "simple",
+    "variation": "",
+    "permalink": "https://blankpeptides.com/product/pancragen/",
+    "sku": "PANC",
+    "on_sale": false,
+    "prices": {
+      "price": "0",
+      "regular_price": "0",
+      "sale_price": "0",
+      "price_range": null,
+      "currency_code": "USD",
+      "currency_symbol": "$",
+      "currency_minor_unit": 2,
+      "currency_decimal_separator": ".",
+      "currency_thousand_separator": ",",
+      "currency_prefix": "$",
+      "currency_suffix": ""
+    },
+    "attributes": [
+      {
+        "id": 0,
+        "name": "Chemical Name",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "Lys-Glu-Asp-Trp (KEDW)",
+            "slug": "Lys-Glu-Asp-Trp (KEDW)"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Molecular Weight",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "576.61 g/mol",
+            "slug": "576.61 g/mol"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Sequence",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "KEDW",
+            "slug": "KEDW"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Appearance",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "White Lyophilized Powder",
+            "slug": "White Lyophilized Powder"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "BP-2026-Q3",
+            "slug": "BP-2026-Q3"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch Purity",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": ">99.0% HPLC",
+            "slug": ">99.0% HPLC"
+          }
+        ]
+      }
+    ],
+    "variations": [],
+    "grouped_products": [],
+    "has_options": false,
+    "is_purchasable": false,
+    "is_in_stock": false,
+    "is_on_backorder": false,
+    "low_stock_remaining": null,
+    "stock_availability": {
+      "text": "Out of stock",
+      "class": "out-of-stock"
+    },
+    "sold_individually": false
+  },
+  {
+    "id": 5045,
+    "name": "Crystagen",
+    "slug": "crystagen",
+    "parent": 0,
+    "type": "simple",
+    "variation": "",
+    "permalink": "https://blankpeptides.com/product/crystagen/",
+    "sku": "CRYS",
+    "on_sale": false,
+    "prices": {
+      "price": "0",
+      "regular_price": "0",
+      "sale_price": "0",
+      "price_range": null,
+      "currency_code": "USD",
+      "currency_symbol": "$",
+      "currency_minor_unit": 2,
+      "currency_decimal_separator": ".",
+      "currency_thousand_separator": ",",
+      "currency_prefix": "$",
+      "currency_suffix": ""
+    },
+    "attributes": [
+      {
+        "id": 0,
+        "name": "Chemical Name",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "Glu-Asp-Pro (EDP)",
+            "slug": "Glu-Asp-Pro (EDP)"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Molecular Weight",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "359.34 g/mol",
+            "slug": "359.34 g/mol"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Sequence",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "EDP",
+            "slug": "EDP"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Appearance",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "White Lyophilized Powder",
+            "slug": "White Lyophilized Powder"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "BP-2026-Q3",
+            "slug": "BP-2026-Q3"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch Purity",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": ">99.0% HPLC",
+            "slug": ">99.0% HPLC"
+          }
+        ]
+      }
+    ],
+    "variations": [],
+    "grouped_products": [],
+    "has_options": false,
+    "is_purchasable": false,
+    "is_in_stock": false,
+    "is_on_backorder": false,
+    "low_stock_remaining": null,
+    "stock_availability": {
+      "text": "Out of stock",
+      "class": "out-of-stock"
+    },
+    "sold_individually": false
+  },
+  {
+    "id": 5044,
+    "name": "Cartalax",
+    "slug": "cartalax",
+    "parent": 0,
+    "type": "simple",
+    "variation": "",
+    "permalink": "https://blankpeptides.com/product/cartalax/",
+    "sku": "CTLX",
+    "on_sale": false,
+    "prices": {
+      "price": "0",
+      "regular_price": "0",
+      "sale_price": "0",
+      "price_range": null,
+      "currency_code": "USD",
+      "currency_symbol": "$",
+      "currency_minor_unit": 2,
+      "currency_decimal_separator": ".",
+      "currency_thousand_separator": ",",
+      "currency_prefix": "$",
+      "currency_suffix": ""
+    },
+    "attributes": [
+      {
+        "id": 0,
+        "name": "Chemical Name",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "Ala-Glu-Asp (AED)",
+            "slug": "Ala-Glu-Asp (AED)"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Molecular Weight",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "333.30 g/mol",
+            "slug": "333.30 g/mol"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Sequence",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "AED",
+            "slug": "AED"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Appearance",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "White Lyophilized Powder",
+            "slug": "White Lyophilized Powder"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "BP-2026-Q3",
+            "slug": "BP-2026-Q3"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch Purity",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": ">99.0% HPLC",
+            "slug": ">99.0% HPLC"
+          }
+        ]
+      }
+    ],
+    "variations": [],
+    "grouped_products": [],
+    "has_options": false,
+    "is_purchasable": false,
+    "is_in_stock": false,
+    "is_on_backorder": false,
+    "low_stock_remaining": null,
+    "stock_availability": {
+      "text": "Out of stock",
+      "class": "out-of-stock"
+    },
+    "sold_individually": false
+  }
+]

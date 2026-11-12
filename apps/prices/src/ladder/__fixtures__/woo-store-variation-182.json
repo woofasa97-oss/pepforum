@@ -1,0 +1,37 @@
+{
+  "id": 182,
+  "name": "RETATRUTIDE",
+  "slug": "tirzepatide-10mg-12",
+  "parent": 181,
+  "type": "variation",
+  "variation": "Size: 10mg",
+  "permalink": "https://blankpeptides.com/product/retatrutide/?attribute_size=10mg",
+  "sku": "RETA-10",
+  "on_sale": false,
+  "prices": {
+    "price": "10500",
+    "regular_price": "10500",
+    "sale_price": "10500",
+    "price_range": null,
+    "currency_code": "USD",
+    "currency_symbol": "$",
+    "currency_minor_unit": 2,
+    "currency_decimal_separator": ".",
+    "currency_thousand_separator": ",",
+    "currency_prefix": "$",
+    "currency_suffix": ""
+  },
+  "attributes": [],
+  "variations": [],
+  "grouped_products": [],
+  "has_options": false,
+  "is_purchasable": true,
+  "is_in_stock": true,
+  "is_on_backorder": false,
+  "low_stock_remaining": null,
+  "stock_availability": {
+    "text": "",
+    "class": "in-stock"
+  },
+  "sold_individually": false
+}

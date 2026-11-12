@@ -128,7 +128,8 @@ export const MOD_ACTIONS = [
   'media_removed',
   'clinician_approved', 'clinician_rejected', 'clinician_revoked',
   'advertiser_approved', 'advertiser_suspended', 'ad_approved', 'ad_rejected', 'ad_suspended',
-  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved', 'social_unlinked'
+  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved', 'social_unlinked',
+  'price_vendor_saved', 'price_vendor_status', 'price_coa_saved', 'price_coa_status', 'price_link_saved', 'price_link_removed'
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 
@@ -209,3 +210,32 @@ export function inferSourceKind(url: string): SourceKind {
   if (/(^|\.)(cbc\.ca|radio-canada\.ca|theglobeandmail\.com|ctvnews\.ca|lapresse\.ca|nationalpost\.com)$/.test(host)) return 'news';
   return 'other';
 }
+
+// ── Price tracking (…030–…033) ──────────────────────────────────────────────
+/** prices.vendors.status: only `active` vendors are read live and shown. */
+export const PRICE_VENDOR_STATUSES = ['pending', 'active', 'paused', 'delisted'] as const;
+export type PriceVendorStatus = (typeof PRICE_VENDOR_STATUSES)[number];
+
+/** Where a vendor is based (prices.vendors.origin_country). */
+export const PRICE_ORIGINS = ['US', 'CA', 'GB', 'AU', 'NZ', 'EU', 'OTHER'] as const;
+export type PriceOrigin = (typeof PRICE_ORIGINS)[number];
+
+export const PRICE_CURRENCIES = ['USD', 'CAD', 'GBP', 'AUD', 'NZD', 'EUR'] as const;
+export type PriceCurrency = (typeof PRICE_CURRENCIES)[number];
+
+export const PRICE_AVAILABILITIES = ['in_stock', 'out_of_stock', 'backorder', 'preorder', 'discontinued', 'unknown'] as const;
+export type PriceAvailability = (typeof PRICE_AVAILABILITIES)[number];
+
+export const PRICE_COMPOUND_TYPES = ['Single compound', 'Copper complex', 'Blend'] as const;
+export type PriceCompoundType = (typeof PRICE_COMPOUND_TYPES)[number];
+
+/** What a certificate of analysis covers (prices.coa_documents.scope). */
+export const COA_SCOPES = ['vendor', 'product', 'batch'] as const;
+export type CoaScope = (typeof COA_SCOPES)[number];
+
+/** The method a certificate names (prices.coa_documents.method). */
+export const COA_METHODS = ['hplc', 'ms', 'hplc_ms', 'other'] as const;
+export type CoaMethod = (typeof COA_METHODS)[number];
+
+export const COA_STATUSES = ['candidate', 'published', 'withdrawn'] as const;
+export type CoaStatus = (typeof COA_STATUSES)[number];

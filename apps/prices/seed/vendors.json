@@ -1,0 +1,146 @@
+[
+  {
+    "slug": "maple-research-labs",
+    "name": "Maple Research Labs",
+    "website_url": "https://www.mapleresearchlabs.com",
+    "canonical_domain": "mapleresearchlabs.com",
+    "origin_country": "CA",
+    "detected_platform": "woocommerce",
+    "status": "pending"
+  },
+  {
+    "slug": "ncrp",
+    "name": "NCRP",
+    "website_url": "https://ncrpcanada.com",
+    "canonical_domain": "ncrpcanada.com",
+    "origin_country": "CA",
+    "detected_platform": "woocommerce",
+    "status": "pending"
+  },
+  {
+    "slug": "peptide-bros",
+    "name": "Peptide Bros",
+    "website_url": "https://peptidebros.ca",
+    "canonical_domain": "peptidebros.ca",
+    "origin_country": "CA",
+    "detected_platform": "woocommerce",
+    "status": "pending"
+  },
+  {
+    "slug": "performance-peptides-canada",
+    "name": "Performance Peptides Canada",
+    "website_url": "https://performancepeptidescanada.co",
+    "canonical_domain": "performancepeptidescanada.co",
+    "origin_country": "CA",
+    "detected_platform": "woocommerce",
+    "status": "pending"
+  },
+  {
+    "slug": "vialcrest",
+    "name": "Vialcrest",
+    "website_url": "https://vialcrest.ca",
+    "canonical_domain": "vialcrest.ca",
+    "origin_country": "CA",
+    "detected_platform": "woocommerce",
+    "status": "pending"
+  },
+  {
+    "slug": "vpeptide",
+    "name": "VPeptide",
+    "website_url": "https://www.vpeptide.com",
+    "canonical_domain": "vpeptide.com",
+    "origin_country": "CA",
+    "detected_platform": "woocommerce",
+    "status": "pending"
+  },
+  {
+    "slug": "peptide-confidential",
+    "name": "Peptide Confidential",
+    "website_url": "https://peptideconfidential.com",
+    "canonical_domain": "peptideconfidential.com",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "growth-guys",
+    "name": "The Growth Guys",
+    "website_url": "https://growthguys.com",
+    "canonical_domain": "growthguys.com",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "peptide-warehouse-ca",
+    "name": "Peptide Warehouse (Canada)",
+    "website_url": "https://www.peptidewarehouse.ca",
+    "canonical_domain": "peptidewarehouse.ca",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "great-northern-peptides",
+    "name": "Great Northern Peptides",
+    "website_url": "https://greatnorthernpeptides.com",
+    "canonical_domain": "greatnorthernpeptides.com",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "polar-peptides",
+    "name": "Polar Peptides",
+    "website_url": "https://polarpeptides.ca",
+    "canonical_domain": "polarpeptides.ca",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "nextedge-peptides",
+    "name": "NextEdge Peptides",
+    "website_url": "https://nextedgepeptides.com",
+    "canonical_domain": "nextedgepeptides.com",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "red-leaf-peptides",
+    "name": "Red Leaf Peptides",
+    "website_url": "https://redleafpeptides.com",
+    "canonical_domain": "redleafpeptides.com",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "summit-peptides-ca",
+    "name": "Summit Peptides Canada",
+    "website_url": "https://summitpeptides.ca",
+    "canonical_domain": "summitpeptides.ca",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "nexpept",
+    "name": "NexPept",
+    "website_url": "https://nexpept.ca",
+    "canonical_domain": "nexpept.ca",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  },
+  {
+    "slug": "eppix-labs-ca",
+    "name": "Eppix Labs (Canada)",
+    "website_url": "https://www.eppixlabs.ca",
+    "canonical_domain": "eppixlabs.ca",
+    "origin_country": "CA",
+    "detected_platform": null,
+    "status": "pending"
+  }
+]
