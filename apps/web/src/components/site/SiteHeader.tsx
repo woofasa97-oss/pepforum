@@ -23,7 +23,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
     <>
       <header className="hdr">
         <div className="hdr-in">
-          <Logo tag={t('app.brandTag')} preload />
+          <Logo tag={t('app.brandTag')} />
           <nav className="nav" aria-label="Primary">
             <NavLink href="/" className="hide-sm">{t('nav.home')}</NavLink>
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
