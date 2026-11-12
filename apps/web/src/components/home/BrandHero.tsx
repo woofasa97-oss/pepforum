@@ -1,9 +1,7 @@
 import Link from 'next/link';
 
-import { Icon, Leaf } from '@/components/ui/Icon';
+import { Icon } from '@/components/ui/Icon';
 import type { Translate } from '@/lib/i18n';
-
-import { Leaf3D } from './Leaf3D';
 
 // Pine silhouettes along the near ridge (deterministic, as in the prototype).
 const TREES = Array.from({ length: 60 }, (_, i) => {
@@ -62,9 +60,7 @@ export function BrandHero({ t, signedIn }: { t: Translate; signedIn: boolean }) 
     <>
       <section className="bhero" aria-label={t('home.hero.label')}>
         <Scene />
-        <Leaf className="leaf" />
         <div className="in">
-          <Leaf3D />
           <h1>{t('home.hero.line1')}<br />{t('home.hero.line2')}<br />{t('home.hero.line3')}</h1>
           <p>{t('home.hero.sub')}</p>
           <div className="cta">

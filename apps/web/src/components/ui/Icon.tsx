@@ -54,20 +54,3 @@ export function Icon({ name, className = 'i' }: { name: IconName; className?: st
   );
 }
 
-/** The maple leaf from the prototype (a single polygon in a 100×100 box). */
-export const LEAF_PATH =
-  'M50 0 54.6 11.7 61.3 8.2 59.7 20.4 68.9 17.9 66.4 27.6 83.3 24.5 81.1 33.2 97.6 42 92 48.7 100 60.5 80.6 61.3 82.6 71.2 61.2 66 62.7 77.9 52.8 73.7 52.8 100 47.2 100 47.2 73.7 37.3 77.9 38.8 66 17.4 71.2 19.4 61.3 0 60.5 8 48.7 2.4 42 18.9 33.2 16.7 24.5 33.6 27.6 31.1 17.9 40.3 20.4 38.7 8.2 45.4 11.7Z';
-
-/** LEAF_PATH's vertices, for extruding the 3D hero leaf. */
-export const LEAF_POINTS: readonly (readonly [number, number])[] = Array.from(
-  LEAF_PATH.matchAll(/(-?[\d.]+) (-?[\d.]+)/g),
-  (m) => [Number(m[1]), Number(m[2])] as const,
-);
-
-export function Leaf({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      <path d={LEAF_PATH} />
-    </svg>
-  );
-}
