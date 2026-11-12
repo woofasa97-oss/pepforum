@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { sitemapIndexXml } from '@/lib/seo';
-import { getPricesEnabled, getSitemapCounts } from '@/server/queries';
+import { getPricesEnabled, getSitemapCounts, getStoresEnabled } from '@/server/queries';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,8 +10,8 @@ export const dynamic = 'force-dynamic';
  * notes and public profiles (sitemap_counts, migration …021).
  */
 export async function GET() {
-  const [counts, prices] = await Promise.all([getSitemapCounts(), getPricesEnabled()]);
-  const paths = ['/sitemaps/pages', ...(prices ? ['/sitemaps/prices'] : [])];
+  const [counts, prices, stores] = await Promise.all([getSitemapCounts(), getPricesEnabled(), getStoresEnabled()]);
+  const paths = ['/sitemaps/pages', ...(prices ? ['/sitemaps/prices'] : []), ...(stores ? ['/sitemaps/stores'] : [])];
   for (const kind of ['posts', 'notes', 'profiles'] as const) {
     const pages = counts ? Math.max(1, Math.ceil(counts[kind] / counts.page_size)) : 1;
     for (let page = 0; page < pages; page += 1) paths.push(`/sitemaps/${kind}${page ? `?page=${page}` : ''}`);

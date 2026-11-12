@@ -18,6 +18,7 @@ Until then, no grade is published.
 7. [Extra requirements by category](#7-extra-requirements-by-category)
 8. [How evidence is weighed and graded](#8-how-evidence-is-weighed-and-graded)
 9. [Store levels and the Verified listing](#9-store-levels-and-the-verified-listing)
+   - [9.1 The public-information audit](#91-the-public-information-audit)
 10. [Failures, notices and appeals](#10-failures-notices-and-appeals)
 11. [Labelling, storage and records](#11-labelling-storage-and-records)
 12. [Governance and changes](#12-governance-and-changes)
@@ -185,6 +186,31 @@ Each grade states the **Standard version** it was computed under and the date. P
 
 Verified status **lapses by itself** when evidence ages out (requirements 2–4). The store returns to Claimed until it is current again.
 
+### 9.1 The public-information audit
+
+Before a store claims its listing, Pepforums can only check what the store publishes. Every listed store gets a dated audit of these fourteen checks, read from its own public pages (home, about, contact, shipping, FAQ, terms, privacy and certificates):
+
+| Group | Check | Met when its pages… | From |
+|---|---|---|---|
+| Who the store is | Legal or trading name | name the business that sells (a legal form such as Ltd, LLC, GmbH) | §9 req. 1 |
+| | Country of operation | say where the business operates from | §9 req. 1 |
+| | Contact address | give a postal address (a P.O. box alone: partly) | §9 req. 1 |
+| | Where it ships | say which countries it ships to | §9 req. 1 |
+| Certificates | Publishes certificates | publish certificates for each lot (each product or store-wide: partly) | §4, §9 req. 2 |
+| | Laboratory named | name the testing laboratory | §4.1 |
+| | Laboratory accepted | name an accredited lab (a recognised lab: partly; a lab tied to the store: not met) | §3 |
+| | Reports can be checked | give a key, code or link that checks a report on the lab's own site | §4.8 |
+| | Identity by mass spectrometry | show identity confirmed by mass spectrometry | §5 |
+| | Endotoxin tested | show an endotoxin result | §5 |
+| | Recent certificate | show a certificate less than 12 months old | §9 req. 2 |
+| Independent testing | Independent results | (or an independent tester's pages) show results from samples the store did not choose | §8.1, §9 req. 3 |
+| Conduct | No human-use claims | carry no doses, protocols, dosing calculators, health claims (such as "weight loss") or "for human use" claims | §9 req. 6 |
+| | Lot notices and recalls | say how it notifies buyers of a failed lot and stops selling it | §9 req. 7 |
+
+A check is **met**, **partly met**, **not met**, **not found** (the pages were read and nothing met it) or **could not check** (the pages could not be read). Every finding names its page and quotes the store's words. A finding against a store is published only once Pepforums' own reader has found those words on the page again, and a possible human-use claim is judged by a reviewer against a written rubric before it counts.
+
+The audit is **not a grade** (§8.3) and not a test of any product. It is repeated, and each audit is kept as a dated record.
+
 ## 10. Failures, notices and appeals
 
 | Event | Consequence |
@@ -231,6 +257,7 @@ Diluents containing benzyl alcohol carry "not for use in newborns".
 | Version | Date | Change |
 |---|---|---|
 | 0.9 | 2026-11-12 | First draft, for expert and legal review. |
+| 0.9 | 2026-11-12 | Added §9.1, the public-information audit of every listed store (ADR-0011). |
 
 ## 13. References
 

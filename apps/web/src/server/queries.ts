@@ -22,6 +22,8 @@ import type {
   PendingImage,
   PostImage,
   PriceCatalog,
+  StoreDetail,
+  StoreDirectory,
   PriceHistoryPoint,
   RedirectTarget,
   ServedAd,
@@ -416,6 +418,35 @@ export const getPricesEnabled = cache(async (): Promise<boolean> => {
   return !error && data?.value === true;
 });
 
+/** Is the Stores directory switched on for everyone (…035)? Admins also see it while off, as a preview. */
+export const getStoresEnabled = cache(async (): Promise<boolean> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.from('app_config').select('value').eq('key', 'features.stores').maybeSingle();
+  return !error && data?.value === true;
+});
+
+/** Every listed store with its latest audit's results, and the labs. Null when not visible to this viewer. */
+export const getStoreDirectory = cache(async (): Promise<StoreDirectory | null> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_store_directory');
+  if (error) {
+    logUnexpected('get_store_directory', error);
+    return null;
+  }
+  return data;
+});
+
+/** One listed store and its latest audit, check by check. Null when not visible or not listed. */
+export const getStore = cache(async (slug: string): Promise<StoreDetail | null> => {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_store', { p_slug: slug });
+  if (error) {
+    logUnexpected('get_store', error);
+    return null;
+  }
+  return data;
+});
+
 /** Everything the Prices section shows: published offers of active vendors. Null while the section is off or unreadable. */
 export const getPriceCatalog = cache(async (): Promise<PriceCatalog | null> => {
   const supabase = await getSupabase();
@@ -438,7 +469,7 @@ export async function getPriceHistory(compound: string, days = 90): Promise<Pric
 }
 
 /** Where a link on a price page goes (and counts the click). Null when it leads nowhere we publish. */
-export async function resolvePriceLink(kind: 'offer' | 'vendor' | 'coa', id: string): Promise<string | null> {
+export async function resolvePriceLink(kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab', id: string): Promise<string | null> {
   const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('price_link', { p_kind: kind, p_id: id });
   if (error) {

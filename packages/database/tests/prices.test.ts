@@ -208,7 +208,7 @@ describe('admin: vendors', () => {
     for (const [args, message] of [
       [`'Bad Slug', 'x', 'https://x.ca', 'CA'`, 'invalid_vendor_slug'],
       [`'ok', 'x', 'http://x.ca', 'CA'`, 'invalid_vendor_url'],
-      [`'ok', 'x', 'https://x.ca', 'ZZ'`, 'invalid_vendor_country'],
+      [`'ok', 'x', 'https://x.ca', 'CAN'`, 'invalid_vendor_country'],
     ] as const) {
       const error = await db.expectError(user(admin, 'aal2'), `select public.admin_price_vendor_save(${args}, null, 'Testing input')`);
       expect(error.message).toBe(message);

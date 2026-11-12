@@ -19,6 +19,10 @@ import {
   POST_TYPES,
   PRICE_AVAILABILITIES,
   PRICE_VENDOR_STATUSES,
+  LAB_TIERS,
+  STORE_AUDIT_CRITERIA,
+  STORE_AUDIT_RESULTS,
+  STORE_KINDS,
   RATER_STATUSES,
   RATING_REASONS,
   RATING_VALUES,
@@ -82,6 +86,10 @@ describe('domain vocabulary matches the schema', () => {
     ['coa_documents', 'status', COA_STATUSES],
     ['vendors', 'status', PRICE_VENDOR_STATUSES],
     ['offers', 'availability', PRICE_AVAILABILITIES],
+    ['vendors', 'kind', STORE_KINDS],
+    ['labs', 'tier', LAB_TIERS],
+    ['store_audit_checks', 'criterion', STORE_AUDIT_CRITERIA],
+    ['store_audit_checks', 'result', STORE_AUDIT_RESULTS],
   ])('%s.%s', async (table, column, values) => {
     expect(await checkValues(table, column)).toEqual([...values].sort());
   });

@@ -91,6 +91,11 @@ export class TestDb {
     }
   }
 
+  /** Runs a multi-statement script as the owner, as a migration file is run. */
+  async exec(script: string): Promise<void> {
+    await this.pg.exec(script);
+  }
+
   /** Applies supabase/seed.sql (the local-development demo data). */
   async applySeed(): Promise<void> {
     await this.pg.exec(await readFile(SEED_PATH, 'utf8'));

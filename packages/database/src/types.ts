@@ -44,6 +44,8 @@ import type {
   AdminPriceLinks,
   AdminPriceOverview,
   PriceCatalog,
+  StoreDetail,
+  StoreDirectory,
   PriceHistoryPoint,
   AdminClinicians,
   AdminMedia,
@@ -737,7 +739,10 @@ export type Database = {
       // Price tracking (…031–…033)
       get_price_catalog: { Args: Record<string, never>; Returns: PriceCatalog | null };
       get_price_history: { Args: { p_compound: string; p_days?: number }; Returns: PriceHistoryPoint[] | null };
-      price_link: { Args: { p_kind: 'offer' | 'vendor' | 'coa'; p_id: string }; Returns: string | null };
+      price_link: { Args: { p_kind: 'offer' | 'vendor' | 'coa' | 'store' | 'evidence' | 'lab'; p_id: string }; Returns: string | null };
+      // Stores directory (…035)
+      get_store_directory: { Args: Record<string, never>; Returns: StoreDirectory | null };
+      get_store: { Args: { p_slug: string }; Returns: StoreDetail | null };
       admin_price_overview: { Args: Record<string, never>; Returns: AdminPriceOverview };
       admin_price_vendor_save: {
         Args: { p_slug: string; p_name: string; p_website_url: string; p_origin_country: PriceOrigin; p_origin_source: string | null; p_reason: string };

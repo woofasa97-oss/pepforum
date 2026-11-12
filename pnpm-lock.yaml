@@ -32,6 +32,9 @@ importers:
 
   apps/prices:
     dependencies:
+      '@pepforum/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       postgres:
         specifier: 3.4.9
         version: 3.4.9
