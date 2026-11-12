@@ -79,11 +79,11 @@ otp_length = 6
 otp_expiry = 3600
 
 [auth.email.template.confirmation]
-subject = "Confirm your Pepforum account · Confirmez votre compte Pepforum"
+subject = "Confirm your Pepforums account · Confirmez votre compte Pepforums"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Reset your Pepforum password · Réinitialisez votre mot de passe"
+subject = "Reset your Pepforums password · Réinitialisez votre mot de passe"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.email.template.email_change]
@@ -91,7 +91,7 @@ subject = "Confirm your new email · Confirmez votre nouveau courriel"
 content_path = "./supabase/templates/email_change.html"
 
 [auth.email.template.magic_link]
-subject = "Your Pepforum sign-in link · Votre lien de connexion Pepforum"
+subject = "Your Pepforums sign-in link · Votre lien de connexion Pepforums"
 content_path = "./supabase/templates/magic_link.html"
 
 # Social sign-in. Every provider Supabase offers works the same way; the web

@@ -2,7 +2,7 @@
   "name": "@pepforum/database",
   "version": "0.1.0",
   "private": true,
-  "description": "Database contract for Pepforum: generated-shape types plus the PGlite harness that tests the Supabase migrations (RLS, ledger, notes settlement, moderation).",
+  "description": "Database contract for Pepforums: generated-shape types plus the PGlite harness that tests the Supabase migrations (RLS, ledger, notes settlement, moderation).",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

@@ -1,11 +1,11 @@
 ---
 name: new-migration
-description: Use for ANY change to the Pepforum database — new table, column, RPC, policy, grant, trigger or config default in supabase/migrations. Walks through the security checklist (RLS, grants, definer functions, rate limits, ledger rules), the tests to add, and the TypeScript types to update.
+description: Use for ANY change to the Pepforums database — new table, column, RPC, policy, grant, trigger or config default in supabase/migrations. Walks through the security checklist (RLS, grants, definer functions, rate limits, ledger rules), the tests to add, and the TypeScript types to update.
 ---
 
 # Adding or changing a Supabase migration
 
-Pepforum enforces every permission in Postgres (docs/adr/0001). A migration that skips a step below can expose data or let members mint karma. Follow the steps in order.
+Pepforums enforces every permission in Postgres (docs/adr/0001). A migration that skips a step below can expose data or let members mint karma. Follow the steps in order.
 
 ## 1. Create the file
 

@@ -15,7 +15,7 @@ export async function SiteFooter() {
           <p className="xs mt8" style={{ color: 'rgba(255,255,255,.65)' }}>{t('app.disclaimer')}</p>
         </div>
         <div>
-          <h2>Pepforum</h2>
+          <h2>Pepforums</h2>
           <Link href="/notes">{t('nav.notes')}</Link>
           <Link href="/legal/community-notes">{t('footer.howNotes')}</Link>
           <Link href="/transparency">{t('footer.transparency')}</Link>

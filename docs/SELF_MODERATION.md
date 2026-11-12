@@ -1,6 +1,6 @@
 # Self-moderation system
 
-Pepforum's moderation is done mostly by members. Reddit-style karma measures community standing; X-style Community Notes add context to misleading posts; a progression system rewards members who moderate *accurately*. This document is the specification. Every number here is a default in `app_config` (migration `…011_reference_data.sql`) and can be changed in production with `admin_set_config()`, which is logged.
+Pepforums' moderation is done mostly by members. Reddit-style karma measures community standing; X-style Community Notes add context to misleading posts; a progression system rewards members who moderate *accurately*. This document is the specification. Every number here is a default in `app_config` (migration `…011_reference_data.sql`) and can be changed in production with `admin_set_config()`, which is logged.
 
 ## Design principles
 

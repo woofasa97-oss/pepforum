@@ -103,7 +103,7 @@ describe('verifying an account', () => {
     }
   });
 
-  it('one network account backs one Pepforum account', async () => {
+  it('one network account backs one Pepforums account', async () => {
     const first = await db.createUser();
     const second = await db.createUser();
     const a: Account = { platform: 'x', externalId: 'x-shared', handle: 'shared', audience: 10_000 };

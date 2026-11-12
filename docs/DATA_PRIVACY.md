@@ -41,7 +41,7 @@
 | Right | Implementation |
 |---|---|
 | Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports (including member reports you filed), your tickets to the team, notifications and preferences, push browsers, uploads, clinician verification requests, advertiser account and ledger, ad reports you filed, ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
-| Correction | Profile fields are editable; anything else via privacy@pepforum.ca |
+| Correction | Profile fields are editable; anything else via privacy@pepforums.com |
 | Deletion | Settings → Delete account. The member re-enters their password or, for social-only accounts, must have signed in within the last 10 minutes. `request_account_deletion()` tombstones the profile immediately and the worker deletes the auth user within about 10 minutes. Optionally erases authored content. |
 | Information about automated decisions (Loi 25 s. 12.1) | Note status, karma and tiers are automated. The rules are published (`/legal/community-notes`), every change is listed in the member's ledger, and human review is available via appeals or the privacy officer. |
 | Withdrawal of consent | No optional processing exists in v1. Add toggles here if analytics are ever introduced. |
@@ -59,4 +59,4 @@ Deleting a member's ledger rows would silently change *other* members' standing.
 - [ ] Enable Supabase PITR backups; document the retention period
 - [ ] Sign a DPA with Supabase and Render
 - [ ] Limit the admin role to people who need it; review **Admin → Moderation → Log** for `reveal_email` / `lookup_email` entries monthly
-- [ ] For each social provider you enable, list it in the privacy policy and point its consent screen at `/legal/privacy` (the provider learns that the member uses Pepforum)
+- [ ] For each social provider you enable, list it in the privacy policy and point its consent screen at `/legal/privacy` (the provider learns that the member uses Pepforums)

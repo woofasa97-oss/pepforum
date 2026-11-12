@@ -8,7 +8,7 @@ import { redirectWithinSite } from '@/lib/safe-redirect';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
- * Google's redirect back to pepforum.ca (lib/google-oauth.ts). Checks the
+ * Google's redirect back to pepforums.com (lib/google-oauth.ts). Checks the
  * state against the cookie set when the flow started (so a code minted for
  * someone else can't be planted here), swaps the code for Google's ID token
  * with the PKCE verifier and our client secret, and lets Supabase sign the

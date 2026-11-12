@@ -83,4 +83,4 @@ services:
       - key: VAPID_PRIVATE_KEY  # optional: web push; worker only
         sync: false
       - key: VAPID_SUBJECT
-        value: "mailto:privacy@pepforum.ca"
+        value: "mailto:privacy@pepforums.com"

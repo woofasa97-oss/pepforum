@@ -1,6 +1,6 @@
-# Pepforum
+# Pepforums
 
-Canada's bilingual peptide-discussion forum: no vendors, no sales, just context. Moderation is done mostly by the community. **Karma** measures standing, **community notes** add context that raters across perspectives agree on, and a **progression system** rewards members who moderate accurately.
+The bilingual peptide-discussion forum for the whole world, at pepforums.com (formerly pepforum.ca): no sales, just context. Moderation is done mostly by the community. **Karma** measures standing, **community notes** add context that raters across perspectives agree on, and a **progression system** rewards members who moderate accurately.
 
 - **Stack:** Supabase (Postgres, Auth · `ca-central-1`) · Render (Next.js 16 web service + Node cron worker) · TypeScript · pnpm workspaces
 - **Status:** foundation plus the features ported from the prototype build (SEO, notifications and web push, images, clinician verification, advertising). See [roadmap](#roadmap).

@@ -181,7 +181,7 @@ export async function startMfaEnrollmentAction(): Promise<MfaEnrollment | { erro
     if (factor.status === 'unverified') await supabase.auth.mfa.unenroll({ factorId: factor.id });
   }
 
-  const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Pepforum ${Date.now()}` });
+  const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Pepforums ${Date.now()}` });
   if (error || !data) return { error: t('errors.unexpected') };
   return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
 }

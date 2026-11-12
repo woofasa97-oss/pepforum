@@ -1,6 +1,6 @@
-# Pepforum — guidance for AI coding agents
+# Pepforums — guidance for AI coding agents
 
-A Canadian, bilingual (EN/FR) peptide-discussion forum whose core product is **self-moderation**: karma, community notes, a progression system. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SELF_MODERATION.md](docs/SELF_MODERATION.md) before changing behaviour.
+A global, bilingual (EN/FR) peptide-discussion forum at pepforums.com (formerly pepforum.ca; operated from Canada) whose core product is **self-moderation**: karma, community notes, a progression system. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SELF_MODERATION.md](docs/SELF_MODERATION.md) before changing behaviour. The store catalogue and its quality rules are being built: see [docs/QUALITY_ASSURANCE.md](docs/QUALITY_ASSURANCE.md) (draft) and the plan's legal gate — every catalogue section stays behind a `features.*` switch until counsel signs off.
 
 ## Commands
 

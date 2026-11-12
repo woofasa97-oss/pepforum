@@ -1,6 +1,6 @@
 # Admin console guide (`/admin`)
 
-The console is where admins look after Pepforum without touching SQL. Everything here is enforced by the database (migrations `…015_admin_console`, `…016_sourcing_shield`, `…018_link_review`, `…019_member_reports_and_owner` and `…020_support_tickets`): the web pages only display what the admin RPCs return and send changes back to them.
+The console is where admins look after Pepforums without touching SQL. Everything here is enforced by the database (migrations `…015_admin_console`, `…016_sourcing_shield`, `…018_link_review`, `…019_member_reports_and_owner` and `…020_support_tickets`): the web pages only display what the admin RPCs return and send changes back to them.
 
 ## Getting in
 
@@ -122,7 +122,7 @@ Members write to the team from **Contact the team** (`/contact`, linked in the f
 | **Waiting for the member** | An admin replied. If the member answers, it comes back to *Waiting for us*. |
 | **Closed** | Read-only for the member, who can open a new ticket. You can still reply (which reopens it) or **Reopen** it. |
 
-- **Replying.** Your reply shows to the member as "Pepforum team"; only admins see which admin wrote it. Tick *Close the ticket after sending* for a final answer (e.g. thanking someone for a suggestion). Replies are plain text, can't be edited, and count towards `rate_limit.admin_action`.
+- **Replying.** Your reply shows to the member as "Pepforums team"; only admins see which admin wrote it. Tick *Close the ticket after sending* for a final answer (e.g. thanking someone for a suggestion). Replies are plain text, can't be edited, and count towards `rate_limit.admin_action`.
 - **Telling the member.** Until they open the ticket, the member sees a green notice at the top of every page and a dot on the header's inbox icon. There's no email notification.
 - **Reports.** A ticket about a member links to their page in **People**, where you act (warn, freeze, suspend, ban). Replying or closing a ticket never sanctions anyone. Post-and-comment reports from a post's own Report button still go to the moderation queue; tickets are for when someone needs to explain more.
 - **Your own tickets.** If an admin writes in, another admin has to answer or close it.
@@ -140,7 +140,7 @@ A licensed health professional can carry a **verified <profession>** badge on th
 
 ## Ads
 
-Pepforum sells one reviewed sponsored card per feed. The money and policy rules are in [ADR-0007](adr/0007-advertising.md); the short version:
+Pepforums sells one reviewed sponsored card per feed. The money and policy rules are in [ADR-0007](adr/0007-advertising.md); the short version:
 
 - **No vendors, no sales.** An advertiser whose website, or a campaign whose landing page or copy, matches a blocked sourcing-shield domain or phrase is refused by the database before you see it. Everything else you check by hand: open the landing page, read both languages, look for prices, before/after imagery, health claims.
 - **Accounts first.** An organisation starts *pending*; approve it after checking the business and website. Suspending it stops every campaign.

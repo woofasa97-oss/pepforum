@@ -89,7 +89,7 @@ export function BrandHero({ t, signedIn, regions }: { t: Translate; signedIn: bo
         <Link href="/?sort=new"><Icon name="comment" />{t('home.strip.discuss')}<small>{t('home.strip.discussSub')}</small></Link>
         <Link href="/category/research"><Icon name="flask" />{t('home.strip.research')}<small>{t('home.strip.researchSub')}</small></Link>
         <Link href="/notes"><Icon name="shield" />{t('home.strip.notes')}<small>{t('home.strip.notesSub')}</small></Link>
-        <Link href="#zones"><Icon name="globe" />{t('home.strip.canada')}<small>{t('home.strip.canadaSub')}</small></Link>
+        <Link href="/transparency"><Icon name="globe" />{t('home.strip.canada')}<small>{t('home.strip.canadaSub')}</small></Link>
       </nav>
     </>
   );

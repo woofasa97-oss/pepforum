@@ -135,7 +135,7 @@ describe('push delivery (…022)', () => {
 
   it('words the payload in the member’s language', () => {
     const item = { id: 'x', kind: 'team_reply' as const, locale: 'fr' as const, post_title: null, url: '/contact/abc', subscriptions: [] };
-    expect(JSON.parse(pushPayload(item, 'https://pepforum.test'))).toMatchObject({ title: 'L’équipe Pepforum a répondu', url: 'https://pepforum.test/contact/abc' });
+    expect(JSON.parse(pushPayload(item, 'https://pepforum.test'))).toMatchObject({ title: 'L’équipe Pepforums a répondu', url: 'https://pepforum.test/contact/abc' });
   });
 });
 
