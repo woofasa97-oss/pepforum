@@ -10,7 +10,8 @@
 // Human-use claims are judged by a person: candidates go to <dir>/human-use-candidates.json, and a file of
 // verdicts ([{ slug, quote, claim }]) passed with --verdicts decides them.
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readIfPresent, readJsonIfPresent } from "./files.ts";
 import path from "node:path";
 import { STORE_AUDIT_CRITERIA } from "@pepforum/database";
 import { createFetcher } from "../fetch/http.ts";
@@ -65,8 +66,8 @@ async function main(): Promise<void> {
 
   const stores = validateStores(JSON.parse(readFileSync("seed/stores.json", "utf8")));
   const labs = validateLabs(JSON.parse(readFileSync("seed/labs.json", "utf8")));
-  const labAliases = existsSync("seed/lab-aliases.json") ? (JSON.parse(readFileSync("seed/lab-aliases.json", "utf8")) as Record<string, string[]>) : {};
-  const hints: Hints = existsSync("seed/store-hints.json") ? JSON.parse(readFileSync("seed/store-hints.json", "utf8")) : {};
+  const labAliases = readJsonIfPresent<Record<string, string[]>>("seed/lab-aliases.json", {});
+  const hints = readJsonIfPresent<Hints>("seed/store-hints.json", {});
   const audits = validateAudits(JSON.parse(readFileSync("seed/store-audits.json", "utf8")), stores);
   const verdicts: Array<{ slug: string; quote: string; claim: boolean }> = opt("verdicts") ? JSON.parse(readFileSync(opt("verdicts") as string, "utf8")) : [];
 
@@ -74,7 +75,8 @@ async function main(): Promise<void> {
   const fileOf = (url: string) => path.join(cacheDir, `${createHash("sha1").update(url).digest("hex")}.json`);
   const read = async (url: string): Promise<Cached> => {
     const file = fileOf(url);
-    if (!refresh && existsSync(file)) return JSON.parse(readFileSync(file, "utf8")) as Cached;
+    const cached = refresh ? null : readIfPresent(file);
+    if (cached !== null) return JSON.parse(cached) as Cached;
     const r = await fetchText(url, { accept: "text/html, application/xhtml+xml;q=0.9, */*;q=0.5" });
     const page: Cached = r.state === "hit" && r.body !== null
       ? { url, ok: true, text: visibleText(r.body), links: linksOf(r.body, url) }
@@ -155,7 +157,7 @@ async function main(): Promise<void> {
   writeFileSync("seed/store-audits.json", `${JSON.stringify(next, null, 2)}\n`);
   writeFileSync(path.join(cacheDir, "human-use-candidates.json"), `${JSON.stringify(candidates, null, 2)}\n`);
   // Certificate documents: this run's, replacing earlier ones of the stores it read.
-  const previousDocs: DocumentSeed[] = existsSync("seed/store-documents.json") ? JSON.parse(readFileSync("seed/store-documents.json", "utf8")) : [];
+  const previousDocs = readJsonIfPresent<DocumentSeed[]>("seed/store-documents.json", []);
   const docs = [...previousDocs.filter((d) => !results.has(d.slug)), ...documents].sort((a, b) => a.slug.localeCompare(b.slug) || a.label.localeCompare(b.label));
   writeFileSync("seed/store-documents.json", `${JSON.stringify(validateDocuments(docs, updated, new Set(compoundSeeds.map((c) => c.slug))), null, 1)}\n`);
 

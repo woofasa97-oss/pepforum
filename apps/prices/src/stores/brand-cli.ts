@@ -5,7 +5,8 @@
 // becomes pixels), trimmed and sized, and written to apps/web/public/brands/<slug>.webp, served from our
 // own origin (img-src 'self'). apps/web/src/lib/stores/brands.json records each logo's size and whether it
 // needs a light or a dark tile.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readIfPresent, readJsonIfPresent } from "./files.ts";
 import path from "node:path";
 import sharp from "sharp";
 import { createFetcher } from "../fetch/http.ts";
@@ -66,7 +67,7 @@ async function main(): Promise<void> {
   const refresh = args.includes("--refresh");
 
   const stores = validateStores(JSON.parse(readFileSync("seed/stores.json", "utf8")));
-  const manifest: Record<string, Brand> = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, "utf8")) : {};
+  const manifest = readJsonIfPresent<Record<string, Brand>>(MANIFEST, {});
   const fetchText = createFetcher();
   const queue = stores.filter((s) => (!only || only.includes(s.slug)) && (refresh || !manifest[s.slug]));
   let found = 0;
@@ -75,8 +76,8 @@ async function main(): Promise<void> {
     for (let s = queue.shift(); s; s = queue.shift()) {
       const file = path.join(htmlDir, `${s.slug}.html`);
       let html: string | null = null;
-      if (!refresh && existsSync(file)) html = readFileSync(file, "utf8");
-      else {
+      html = refresh ? null : readIfPresent(file);
+      if (html === null) {
         const r = await fetchText(s.website_url, { accept: "text/html, application/xhtml+xml;q=0.9, */*;q=0.5" });
         await realSleep(1000);
         if (r.state === "hit" && r.body) {

@@ -7,7 +7,8 @@
 //
 // This is the Stores directory's listing (ADR-0011): dated, in the store's currency, never compared or
 // ranked. The Prices section's comparisons still come only from gate-passed runs (docs/PRICES.md).
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readIfPresent } from "./files.ts";
 import path from "node:path";
 import { createFetcher } from "../fetch/http.ts";
 import { realSleep } from "../fetch/pacing.ts";
@@ -54,8 +55,9 @@ async function main(): Promise<void> {
     for (let s = queue.shift(); s; s = queue.shift()) {
       const file = path.join(dir, `${s.slug}.json`);
       let read: ListingRead;
-      if (!refresh && existsSync(file)) {
-        read = JSON.parse(readFileSync(file, "utf8")) as ListingRead;
+      const cached = refresh ? null : readIfPresent(file);
+      if (cached !== null) {
+        read = JSON.parse(cached) as ListingRead;
       } else {
         const vendor = { id: s.slug, slug: s.slug, name: s.name, website_url: s.website_url, canonical_domain: s.canonical_domain } as unknown as VendorRow;
         // The feed first; a shop whose feed is shut or absent is read from its product pages, found through its sitemap.
