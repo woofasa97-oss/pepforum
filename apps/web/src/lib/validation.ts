@@ -7,12 +7,17 @@ import {
   AD_PACKAGES,
   AD_REPORT_REASONS,
   CLINICIAN_PROFESSIONS,
+  COA_METHODS,
+  COA_SCOPES,
+  COA_STATUSES,
   LINK_DECISIONS,
   LOCALES,
   MEMBER_REPORT_OUTCOMES,
   MEMBER_REPORT_REASONS,
   NOTE_CLASSIFICATIONS,
   POST_TYPES,
+  PRICE_ORIGINS,
+  PRICE_VENDOR_STATUSES,
   PROVINCES,
   RATING_REASONS,
   RATING_VALUES,
@@ -263,6 +268,30 @@ export const CampaignDecisionSchema = z.object({ id, decision: z.enum(['approve'
 export const AdPaymentSchema = z.object({ advertiserId: id, amountCad: z.coerce.number().positive().max(1_000_000), reference: trimmed(3, 120), reason });
 export const AdAdjustmentSchema = z.object({ advertiserId: id, amountCad: z.coerce.number().max(1_000_000).min(-1_000_000).refine((n) => n !== 0, 'nonzero'), reference: trimmed(3, 120), reason });
 export const IdReasonSchema = z.object({ id, reason });
+
+// Price tracking (…031, …032)
+const priceSlug = z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(60);
+const httpsUrl = (max: number) => z.string().trim().max(max).regex(/^https:\/\/\S+$/);
+const blankToNull = <T extends z.ZodType>(schema: T) => z.preprocess((v) => (typeof v === 'string' && v.trim() === '' ? null : v), schema.nullable());
+export const PriceVendorSchema = z.object({
+  slug: priceSlug, name: trimmed(1, 120), websiteUrl: httpsUrl(300), originCountry: z.enum(PRICE_ORIGINS),
+  originSource: blankToNull(trimmed(1, 500)), reason,
+});
+export const PriceVendorStatusSchema = z.object({ slug: priceSlug, status: z.enum(PRICE_VENDOR_STATUSES), unreadable: z.literal('on').optional(), reason });
+export const PriceCoaSchema = z.object({
+  id: blankToNull(id), vendor: priceSlug, compound: blankToNull(priceSlug), url: httpsUrl(1000), scope: z.enum(COA_SCOPES),
+  batch: blankToNull(trimmed(1, 80)), lab: blankToNull(trimmed(2, 120)), labAccreditation: blankToNull(trimmed(2, 120)),
+  method: blankToNull(z.enum(COA_METHODS)), testDate: blankToNull(isoDate),
+  purity: blankToNull(z.coerce.number().gt(0).max(100)), quote: blankToNull(trimmed(1, 500)), reason,
+});
+export const PriceCoaStatusSchema = z.object({ id, status: z.enum(COA_STATUSES), reason });
+export const PriceLinkSchema = z.object({
+  vendor: priceSlug, affiliateUrl: blankToNull(httpsUrl(1000)),
+  productParam: blankToNull(z.string().trim().regex(/^[?&]?[A-Za-z0-9_.~-]+=[A-Za-z0-9_.~-]+(&[A-Za-z0-9_.~-]+=[A-Za-z0-9_.~-]+)*$/).max(200)),
+  code: blankToNull(z.string().trim().regex(/^[A-Za-z0-9_-]{2,40}$/)), codeTerms: blankToNull(trimmed(1, 200)),
+  evidence: trimmed(3, 500), expiresAt: blankToNull(isoDate), reason,
+});
+export const PriceLinkRemoveSchema = z.object({ vendor: priceSlug, reason });
 
 export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });
 export const AnnouncementSchema = z.object({

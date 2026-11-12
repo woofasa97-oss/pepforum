@@ -1,0 +1,118 @@
+[
+  {
+    "slug": "eppix-labs-ca",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://www.eppixlabs.ca/faq",
+    "quote": "Where do you ship? Across Canada only, to every province and territory Canada Post serves. ... Researchers in the United States are served by our US store.",
+    "checked": "2026-10-06",
+    "notes": "US is explicitly NOT served from this site; separate US store. /shipping also says 'Domestic Canada only'.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "great-northern-peptides",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://greatnorthernpeptides.com/shipping-policy/",
+    "quote": "Canadian Shipping Only. For now, we ship exclusively within Canada.",
+    "checked": "2026-10-06",
+    "notes": "No US shipping.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "maple-research-labs",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://www.mapleresearchlabs.com/terms-of-service/",
+    "quote": "We offer shipping within Canada. Orders placed by 2 PM PT (Mon-Fri) ship the same business day, from BC with tracking.",
+    "checked": "2026-10-06",
+    "notes": "No US shipping statement found. Header shows a 'Canada CA / USA US' region switcher but no US shipping text was found on the pages read.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "ncrp",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://ncrpcanada.com/",
+    "quote": "All products are shipped via Canada Post Xpresspost ... FREE Shipping on orders over $350 | FLAT $20 Ontario - $30 Outside Ont.",
+    "checked": "2026-10-06",
+    "notes": "Only Ontario / outside-Ontario rates, shipped from Canada; no wording naming 'across Canada' and no US statement (home page /#shipping only).",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "nextedge-peptides",
+    "ships_to": [
+      "CA",
+      "US"
+    ],
+    "source": "https://nextedgepeptides.com/shipping-policy",
+    "quote": "We proudly ship Canada-wide using both Purolator Express and Canada Post Xpresspost. ... USA: All USA orders are shipped with either FEDEX Ground, FEDEX International, or USPS/Canada Post.",
+    "checked": "2026-10-06",
+    "notes": "Both explicit.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "peptide-bros",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://peptidebros.ca/shipping-policy/",
+    "quote": "Shipping area Canada only. No international orders.",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "Page also says 'Peptide Bros ships research materials within Canada.' No affirmative US delivery. FAQ: 'Because shipments do not cross international borders…'",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "peptide-confidential",
+    "ships_to": [
+      "CA",
+      "US"
+    ],
+    "source": "https://peptideconfidential.com/shipping",
+    "quote": "We ship research peptides to approved destinations in Canada and abroad. ... The countries we serve are the ones offered in the country list at checkout.",
+    "checked": "2026-10-10",
+    "restrictions": "Duties, taxes, and customs or brokerage fees charged at the destination are yours to pay.",
+    "read_by": "owner (founder's message); claude (pages)",
+    "notes": "USA confirmed by Peptide Confidential's founder in a message to the PepSpotter owner (2026-10-10): ships to the USA, Europe, Canada, Mexico, Brazil and the UK. Their own pages (re-read 2026-10-10: /shipping, /faq, /terms, home) say 'Canada and abroad' and list countries only at checkout. Recorded on the owner's instruction (2026-10-10); restrictions quote from /terms.",
+    "reviewed": "owner 2026-10-10"
+  },
+  {
+    "slug": "performance-peptides-canada",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://performancepeptidescanada.co/",
+    "quote": "FREE Canada Wide Shipping with spend over $150",
+    "checked": "2026-10-06",
+    "notes": "Home page only; no shipping-policy/FAQ page found (/shipping-policy, /faq, /shipping returned 404); /terms-of-use had no shipping-destination text. No US statement.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "summit-peptides-ca",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://summitpeptides.ca/shipping-policy/",
+    "quote": "We currently ship across Canada only. At this time, international shipping may be limited or unavailable depending on local regulations and carrier restrictions.",
+    "checked": "2026-10-06",
+    "notes": "US not offered.",
+    "reviewed": "owner 2026-10-08"
+  },
+  {
+    "slug": "vpeptide",
+    "ships_to": [
+      "CA"
+    ],
+    "source": "https://vpeptide.com/refund-shipping-policy/",
+    "quote": "SHIPPED WITHIN CANADA / EXPRESS. DISCREET.",
+    "checked": "2026-10-08",
+    "read_by": "claude",
+    "notes": "Policy body only says 'International customers are responsible for customs clearance, duties, and compliance.' - not an affirmative US delivery statement, so CA only. Home page: 'Shipped within Canada - No Customs delays'.",
+    "reviewed": "owner 2026-10-08"
+  }
+]

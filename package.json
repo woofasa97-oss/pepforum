@@ -15,6 +15,8 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "db:test": "pnpm --filter @pepforum/database test",
     "worker:dry-run": "pnpm --filter @pepforum/worker dry-run",
+    "prices": "pnpm --filter @pepforum/prices start",
+    "prices:test": "pnpm --filter @pepforum/prices test",
     "db:types": "supabase gen types typescript --linked --schema public > packages/database/src/generated.types.ts"
   },
   "devDependencies": {

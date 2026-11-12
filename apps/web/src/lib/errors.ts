@@ -33,6 +33,9 @@ const SPECIFIC_MESSAGES = new Set<string>([
   'already_removed', 'already_pending', 'already_verified', 'invalid_profession', 'invalid_province', 'already_advertiser', 'advertiser_suspended',
   'advertiser_not_approved', 'budget_below_minimum', 'french_required', 'insufficient_credit', 'campaign_locked', 'duplicate_reference',
   'invalid_amount', 'reference_required', 'invalid_creative', 'invalid_decision',
+  // Price tracking (…031, …032)
+  'invalid_vendor_slug', 'invalid_vendor_url', 'vendor_not_found', 'compound_not_found', 'coa_exists', 'coa_incomplete',
+  'coa_batch_required', 'invalid_coa_purity', 'invalid_coa_date', 'invalid_link_param', 'link_empty', 'link_evidence_required',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

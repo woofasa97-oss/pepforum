@@ -1,0 +1,154 @@
+# Price refresh, twice a day (apps/prices; docs/PRICES.md).
+#
+# A DRY RUN unless the repository variable LIVE_REFRESH is "true" (scheduled runs) or the manual
+# input live is "true". Does nothing at all until the PRICES_DB_URL secret exists. That secret is
+# the connection string of the restricted `pepforum_prices` login, never the Supabase secret key.
+name: refresh-prices
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode: { description: "feeds | pages", default: "feeds" }
+      vendors: { description: "comma-separated slugs (empty = all active)", default: "" }
+      live: { description: "true to write; anything else is a dry run", default: "false" }
+  schedule:
+    # GitHub often starts scheduled runs late; two a day keep every price well under the 48-hour
+    # staleness limit. Both runs read product feeds, then the shops that only have product pages.
+    - cron: "10 6 * * *" # 06:10 UTC
+    - cron: "10 18 * * *" # 18:10 UTC
+
+concurrency: { group: pepforum-price-refresh, cancel-in-progress: false }
+
+permissions:
+  contents: read
+
+# An explicit shell is what turns on `pipefail`. Without it GitHub runs `bash -e {0}`, and a step
+# written `prices … | tee file` takes tee's exit code: a HOLD or an error would show green.
+defaults:
+  run:
+    shell: bash
+    working-directory: apps/prices
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PIPELINE_ALLOW_LIVE: ${{ ((github.event_name == 'workflow_dispatch' && github.event.inputs.live == 'true') || (github.event_name == 'schedule' && vars.LIVE_REFRESH == 'true')) && '1' || '' }}
+      # A run label is used once; a re-run of the same workflow run gets its own.
+      RUN_LABEL: run-${{ github.run_id }}-${{ github.run_attempt }}
+      # Inputs reach the shell as environment variables, never as script text.
+      MODE: ${{ github.event.inputs.mode || 'feeds' }}
+      VENDORS: ${{ github.event.inputs.vendors }}
+    # The secret is given to the steps that use it and to nothing else: not to `pnpm install`,
+    # and not to third-party actions.
+    steps:
+      - name: configured?
+        id: cfg
+        working-directory: .
+        env:
+          HAS_DB_URL: ${{ secrets.PRICES_DB_URL != '' }}
+        run: |
+          if [ "$HAS_DB_URL" != "true" ]; then
+            echo "::notice::PRICES_DB_URL is not set - nothing to do until the repository secret is added (docs/PRICES.md)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v5
+        if: steps.cfg.outputs.ready == 'true'
+      - uses: pnpm/action-setup@v4
+        if: steps.cfg.outputs.ready == 'true'
+      - uses: actions/setup-node@v5
+        if: steps.cfg.outputs.ready == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: install
+        if: steps.cfg.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile --filter @pepforum/prices... && mkdir -p prices-out
+      - name: exchange rates
+        if: steps.cfg.outputs.ready == 'true'
+        # A missed day of rates must not cost a day of prices: the site reads the latest dated rate.
+        continue-on-error: true
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts fx | tee prices-out/fx.json
+      - name: refresh
+        # Reads vendors' responses, holding only the restricted database login.
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: |
+          flag=--dry-run; [ -n "$PIPELINE_ALLOW_LIVE" ] && flag=--live
+          node src/cli.ts refresh --mode "$MODE" --vendors "$VENDORS" $flag --label "$RUN_LABEL" | tee prices-out/refresh.json
+      - name: gate
+        id: gate
+        # Runs even when the refresh reported vendor errors: the gate's quarantine still protects
+        # readers, and it holds such a run itself. Exit 10 = hold, 11 = hold with no baseline yet;
+        # either fails this step, so a hold is a red run.
+        if: ${{ !cancelled() && steps.cfg.outputs.ready == 'true' && env.PIPELINE_ALLOW_LIVE == '1' }}
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts gate --run "$RUN_LABEL" | tee prices-out/gate.json
+      - name: prune
+        # Only after a clean refresh AND a gate PASS.
+        if: ${{ success() && steps.cfg.outputs.ready == 'true' && env.PIPELINE_ALLOW_LIVE == '1' }}
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts prune --run "$RUN_LABEL" --live | tee prices-out/prune.json
+      - name: publish
+        # The site reads only what this step copies. It runs after a gate PASS, whether or not the
+        # prune succeeded, and never after a hold: a held run leaves the last checked prices up.
+        if: ${{ !cancelled() && steps.cfg.outputs.ready == 'true' && env.PIPELINE_ALLOW_LIVE == '1' && steps.gate.outcome == 'success' }}
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts publish --run "$RUN_LABEL" --live | tee prices-out/publish.json
+      - name: pages refresh
+        # Custom-built shops have no product feed: a second, separate run reads their product pages
+        # (found in their sitemap). Scheduled runs only, and only after the feeds run passed its
+        # gate. With no active page-platform vendor it reads nothing and the next two steps skip.
+        id: pages
+        if: ${{ !cancelled() && steps.cfg.outputs.ready == 'true' && github.event_name == 'schedule' && env.PIPELINE_ALLOW_LIVE == '1' && steps.gate.outcome == 'success' }}
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: |
+          node src/cli.ts refresh --mode pages --live --label "$RUN_LABEL-pages" | tee prices-out/pages-refresh.json
+          echo "vendors=$(jq -r '.vendors // 0' prices-out/pages-refresh.json)" >> "$GITHUB_OUTPUT"
+      - name: pages gate
+        # Measured against the last passed pages run, as the feeds run is against its own.
+        id: pagesgate
+        if: ${{ !cancelled() && steps.pages.outcome == 'success' && steps.pages.outputs.vendors != '0' }}
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts gate --run "$RUN_LABEL-pages" | tee prices-out/pages-gate.json
+      - name: pages publish
+        if: ${{ !cancelled() && steps.pagesgate.outcome == 'success' }}
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts publish --run "$RUN_LABEL-pages" --live | tee prices-out/pages-publish.json
+      - name: certificate links
+        # Files links that look like certificates of analysis as candidates for an admin to check.
+        # Never publishes anything; its failure never costs the prices.
+        if: ${{ !cancelled() && steps.cfg.outputs.ready == 'true' && env.PIPELINE_ALLOW_LIVE == '1' && steps.gate.outcome == 'success' }}
+        continue-on-error: true
+        env:
+          PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
+        run: node src/cli.ts coa-scan --run "$RUN_LABEL" --live | tee prices-out/coa-scan.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && steps.cfg.outputs.ready == 'true' }}
+        with:
+          name: refresh-${{ github.run_id }}-${{ github.run_attempt }}
+          path: apps/prices/prices-out/
+          retention-days: 90
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        # The raw captures: every response exactly as the vendor sent it, the audit trail behind
+        # each stored price. Kept as a private artifact of this (private) repository.
+        if: ${{ always() && steps.cfg.outputs.ready == 'true' }}
+        with:
+          name: raw-capture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: apps/prices/.raw-capture/
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: ignore

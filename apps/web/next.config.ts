@@ -32,7 +32,14 @@ const config: NextConfig = {
     },
   },
   async headers() {
-    return [{ source: '/:path*', headers: securityHeaders }];
+    // Click-throughs to stores (…032) tell the store nothing about where the visitor came from, so
+    // that one route gets the same headers with a stricter Referrer-Policy. The two rules never
+    // overlap: when two rules set the same header on one path, the stricter value is not guaranteed to win.
+    const noReferrer = securityHeaders.map((h) => (h.key === 'Referrer-Policy' ? { ...h, value: 'no-referrer' } : h));
+    return [
+      { source: '/((?!prices/go/).*)', headers: securityHeaders },
+      { source: '/prices/go/:id', headers: noReferrer },
+    ];
   },
 };
 

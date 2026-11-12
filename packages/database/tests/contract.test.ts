@@ -7,6 +7,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
   APPEAL_STATUSES,
+  COA_METHODS,
+  COA_SCOPES,
+  COA_STATUSES,
   CONTENT_STATUSES,
   MEMBER_REPORT_OUTCOMES,
   MEMBER_REPORT_REASONS,
@@ -14,6 +17,8 @@ import {
   NOTE_CLASSIFICATIONS,
   NOTE_STATUSES,
   POST_TYPES,
+  PRICE_AVAILABILITIES,
+  PRICE_VENDOR_STATUSES,
   RATER_STATUSES,
   RATING_REASONS,
   RATING_VALUES,
@@ -72,6 +77,11 @@ describe('domain vocabulary matches the schema', () => {
     ['member_reports', 'status', ['open', ...MEMBER_REPORT_OUTCOMES]],
     ['support_tickets', 'kind', TICKET_KINDS],
     ['support_tickets', 'status', TICKET_STATUSES],
+    ['coa_documents', 'scope', COA_SCOPES],
+    ['coa_documents', 'method', COA_METHODS],
+    ['coa_documents', 'status', COA_STATUSES],
+    ['vendors', 'status', PRICE_VENDOR_STATUSES],
+    ['offers', 'availability', PRICE_AVAILABILITIES],
   ])('%s.%s', async (table, column, values) => {
     expect(await checkValues(table, column)).toEqual([...values].sort());
   });

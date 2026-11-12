@@ -9,6 +9,7 @@ pnpm check                 # lint + typecheck + every test suite — run before 
 pnpm db:test               # schema/RLS/settlement tests only (PGlite, no Docker)
 pnpm --filter @pepforum/web build   # needs SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SITE_URL (placeholders OK)
 pnpm worker:dry-run        # score the demo seed locally
+pnpm prices <command>      # price pipeline CLI (docs/PRICES.md); dry run unless --live
 ```
 
 ## Non-negotiable invariants
@@ -42,6 +43,7 @@ pnpm worker:dry-run        # score the demo seed locally
 | Admin console | `admin_*` RPCs in `…015`/`…016`/`…018`/`…019`/`…020`, `apps/web/src/app/admin/**`, `server/admin.ts`, `server/actions/admin.ts`; see docs/ADMIN.md. Admins never edit karma or note status (ADR-0006); only the site owner adds or removes admins. |
 | A new `app_config` key | Migration insert (+ `bounds` if numeric), `packages/database/src/config-fields.ts`, `admin.cfg.*`/`admin.cfgHelp.*` strings; the DB test fails until all three exist |
 | SEO, notifications, images, clinicians, ads (…021–…025) | Migrations `…021`–`…025`, types in `packages/database/src/feature-types.ts`, reads in `server/queries.ts`, member actions in `server/actions/features.ts`, admin actions in `server/actions/admin.ts`, routes under `app/{notifications,settings/*,advertise,advertiser,admin/{seo,media,clinicians,ads}}`, `app/api/upload`, `app/media/[id]`, `app/ads/go/[id]`; worker jobs `push`, `purge-media`, `settle-ads`. See docs/ARCHITECTURE.md "Ported features" |
+| Price tracking (…030–…033) | Schema `prices` (closed to API roles; `security_audit()` checks it), pipeline in `apps/prices` (own login `pepforum_prices`, never the secret key), read API `get_price_catalog`/`get_price_history`/`price_link`, pricing rules in `apps/web/src/lib/prices/model.ts`, routes `app/prices/**`, `app/admin/prices`, types in `feature-types.ts`. Rules that must hold: only gate-passed runs are published; no store URL is rendered (links go through `/prices/go/<id>`); codes, shipping and affiliate terms never change a price or a ranking; certificates are shown as the vendor's claim. See docs/PRICES.md, ADR-0008 |
 
 ## Project skills
 

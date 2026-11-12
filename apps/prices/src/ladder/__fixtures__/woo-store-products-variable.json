@@ -1,0 +1,329 @@
+[
+  {
+    "id": 181,
+    "name": "RETATRUTIDE",
+    "slug": "retatrutide",
+    "parent": 0,
+    "type": "variable",
+    "variation": "",
+    "permalink": "https://blankpeptides.com/product/retatrutide/",
+    "sku": "RETA",
+    "on_sale": false,
+    "prices": {
+      "price": "10500",
+      "regular_price": "10500",
+      "sale_price": "10500",
+      "price_range": {
+        "min_amount": "10500",
+        "max_amount": "23900"
+      },
+      "currency_code": "USD",
+      "currency_symbol": "$",
+      "currency_minor_unit": 2,
+      "currency_decimal_separator": ".",
+      "currency_thousand_separator": ",",
+      "currency_prefix": "$",
+      "currency_suffix": ""
+    },
+    "attributes": [
+      {
+        "id": 0,
+        "name": "Size",
+        "taxonomy": null,
+        "has_variations": true,
+        "terms": [
+          {
+            "id": 0,
+            "name": "10mg",
+            "slug": "10mg",
+            "default": true
+          },
+          {
+            "id": 0,
+            "name": "15mg",
+            "slug": "15mg",
+            "default": false
+          },
+          {
+            "id": 0,
+            "name": "20mg",
+            "slug": "20mg",
+            "default": false
+          },
+          {
+            "id": 0,
+            "name": "30mg",
+            "slug": "30mg",
+            "default": false
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "DPS-7922284",
+            "slug": "DPS-7922284"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch Purity",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "99.63%",
+            "slug": "99.63%"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Chemical Name",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "Retatrutide (LY3437943)",
+            "slug": "Retatrutide (LY3437943)"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Molecular Weight",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "4875.42 g/mol",
+            "slug": "4875.42 g/mol"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Sequence",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "39-amino acid synthetic peptide with GIP, GLP-1, and glucagon receptor activation domains",
+            "slug": "39-amino acid synthetic peptide with GIP, GLP-1, and glucagon receptor activation domains"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Appearance",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "White Lyophilized Powder",
+            "slug": "White Lyophilized Powder"
+          }
+        ]
+      }
+    ],
+    "variations": [
+      {
+        "id": 182,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "10mg"
+          }
+        ]
+      },
+      {
+        "id": 4649,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "15mg"
+          }
+        ]
+      },
+      {
+        "id": 1179,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "20mg"
+          }
+        ]
+      },
+      {
+        "id": 1979,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "30mg"
+          }
+        ]
+      }
+    ],
+    "grouped_products": [],
+    "has_options": true,
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "is_on_backorder": false,
+    "low_stock_remaining": null,
+    "stock_availability": {
+      "text": "",
+      "class": "in-stock"
+    },
+    "sold_individually": false
+  },
+  {
+    "id": 286,
+    "name": "GLOW",
+    "slug": "glow",
+    "parent": 0,
+    "type": "variable",
+    "variation": "",
+    "permalink": "https://blankpeptides.com/product/glow/",
+    "sku": "GLOW",
+    "on_sale": false,
+    "prices": {
+      "price": "12500",
+      "regular_price": "12500",
+      "sale_price": "12500",
+      "price_range": null,
+      "currency_code": "USD",
+      "currency_symbol": "$",
+      "currency_minor_unit": 2,
+      "currency_decimal_separator": ".",
+      "currency_thousand_separator": ",",
+      "currency_prefix": "$",
+      "currency_suffix": ""
+    },
+    "attributes": [
+      {
+        "id": 0,
+        "name": "Size",
+        "taxonomy": null,
+        "has_variations": true,
+        "terms": [
+          {
+            "id": 0,
+            "name": "70mg",
+            "slug": "70mg"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "DPS-7777201",
+            "slug": "DPS-7777201"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Batch Purity",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "99.28%",
+            "slug": "99.28%"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Chemical Name",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "Proprietary Peptide Blend",
+            "slug": "Proprietary Peptide Blend"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Molecular Weight",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "N/A (Blend)",
+            "slug": "N/A (Blend)"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Sequence",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "Proprietary combination of collagen-stimulating and angiogenic peptides optimized for dermal research applications",
+            "slug": "Proprietary combination of collagen-stimulating and angiogenic peptides optimized for dermal research applications"
+          }
+        ]
+      },
+      {
+        "id": 0,
+        "name": "Appearance",
+        "taxonomy": null,
+        "has_variations": false,
+        "terms": [
+          {
+            "id": 0,
+            "name": "White Lyophilized Powder",
+            "slug": "White Lyophilized Powder"
+          }
+        ]
+      }
+    ],
+    "variations": [
+      {
+        "id": 287,
+        "attributes": [
+          {
+            "name": "Size",
+            "value": "70mg"
+          }
+        ]
+      }
+    ],
+    "grouped_products": [],
+    "has_options": true,
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "is_on_backorder": false,
+    "low_stock_remaining": null,
+    "stock_availability": {
+      "text": "",
+      "class": "in-stock"
+    },
+    "sold_individually": false
+  }
+]

@@ -40,6 +40,11 @@ import type {
 import type {
   AdRateCard,
   AdminAds,
+  AdminPriceCoa,
+  AdminPriceLinks,
+  AdminPriceOverview,
+  PriceCatalog,
+  PriceHistoryPoint,
   AdminClinicians,
   AdminMedia,
   AdminRedirect,
@@ -80,6 +85,11 @@ import type {
   ShieldAction,
   SourceKind,
   SocialPlatform,
+  CoaMethod,
+  CoaScope,
+  CoaStatus,
+  PriceOrigin,
+  PriceVendorStatus,
   StaffNoteLabel,
   TicketKind,
   TicketStatus,
@@ -769,6 +779,35 @@ export type Database = {
       withdraw_campaign: { Args: { p_id: string }; Returns: undefined };
       get_ad: { Args: { p_package: AdPackage; p_target: string | null; p_visitor: string; p_locale?: Locale }; Returns: ServedAd | null };
       ad_click: { Args: { p_id: string }; Returns: string | null };
+      // Price tracking (…031–…033)
+      get_price_catalog: { Args: Record<string, never>; Returns: PriceCatalog | null };
+      get_price_history: { Args: { p_compound: string; p_days?: number }; Returns: PriceHistoryPoint[] | null };
+      price_link: { Args: { p_kind: 'offer' | 'vendor' | 'coa'; p_id: string }; Returns: string | null };
+      admin_price_overview: { Args: Record<string, never>; Returns: AdminPriceOverview };
+      admin_price_vendor_save: {
+        Args: { p_slug: string; p_name: string; p_website_url: string; p_origin_country: PriceOrigin; p_origin_source: string | null; p_reason: string };
+        Returns: string;
+      };
+      admin_price_vendor_set_status: { Args: { p_slug: string; p_status: PriceVendorStatus; p_unreadable: boolean | null; p_reason: string }; Returns: undefined };
+      admin_price_coas: { Args: { p_status?: CoaStatus | null }; Returns: AdminPriceCoa[] };
+      admin_price_coa_save: {
+        Args: {
+          p_id: string | null; p_vendor: string; p_compound: string | null; p_url: string; p_scope: CoaScope; p_batch: string | null;
+          p_lab: string | null; p_lab_accreditation: string | null; p_method: CoaMethod | null; p_test_date: string | null;
+          p_stated_purity_pct: number | null; p_evidence_quote: string | null; p_reason: string;
+        };
+        Returns: string;
+      };
+      admin_price_coa_set_status: { Args: { p_id: string; p_status: CoaStatus; p_reason: string }; Returns: undefined };
+      admin_price_links: { Args: Record<string, never>; Returns: AdminPriceLinks };
+      admin_price_link_save: {
+        Args: {
+          p_vendor: string; p_affiliate_url: string | null; p_product_param: string | null; p_code: string | null;
+          p_code_terms: string | null; p_evidence: string; p_expires_at: string | null; p_reason: string;
+        };
+        Returns: undefined;
+      };
+      admin_price_link_remove: { Args: { p_vendor: string; p_reason: string }; Returns: undefined };
       report_ad: { Args: { p_id: string; p_reason: AdReportReason; p_details?: string }; Returns: undefined };
       admin_ads: { Args: Record<string, never>; Returns: AdminAds };
       admin_review_advertiser: { Args: { p_id: string; p_decision: 'approve' | 'suspend'; p_reason: string }; Returns: undefined };

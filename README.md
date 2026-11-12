@@ -1,6 +1,6 @@
 # Pepforums
 
-The bilingual peptide-discussion forum for the whole world, at pepforums.com (formerly pepforum.ca): no sales, just context. Moderation is done mostly by the community. **Karma** measures standing, **community notes** add context that raters across perspectives agree on, and a **progression system** rewards members who moderate accurately.
+The bilingual peptide-discussion forum for the whole world, at pepforums.com (formerly pepforum.ca): no sales, just context. A separate, site-run **Prices** section (off by default) tracks what stores list. Moderation is done mostly by the community. **Karma** measures standing, **community notes** add context that raters across perspectives agree on, and a **progression system** rewards members who moderate accurately.
 
 - **Stack:** Supabase (Postgres, Auth · `ca-central-1`) · Render (Next.js 16 web service + Node cron worker) · TypeScript · pnpm workspaces
 - **Status:** foundation plus the features ported from the prototype build (SEO, notifications and web push, images, clinician verification, advertising). See [roadmap](#roadmap).
@@ -39,6 +39,7 @@ Demo accounts include `maple_you` (Trusted), `peptide_analyst` (founding rater),
 
 ```
 apps/web            Next.js app: server-rendered, Server Actions, CSP nonce, EN/FR
+apps/prices         Price pipeline (ported from PepSpotter): reads vendors' stores, gates each run, publishes checked prices
 apps/worker         Render cron: note scoring (Wilson bootstrap + matrix factorisation), maintenance, account deletions, web push, media purge, ad settlement
 packages/database   Supabase types, domain vocabulary, PGlite harness + schema/security tests
 supabase/           Migrations (all business rules + RLS), config, auth email templates, local seed
@@ -54,6 +55,7 @@ docs/               Architecture, self-moderation spec, threat model, privacy, d
 | [docs/SELF_MODERATION.md](docs/SELF_MODERATION.md) | Karma, tiers, notes, scoring, settlement, reports, appeals; every tunable |
 | [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) | STRIDE table, abuse cases, residual risks |
 | [docs/DATA_PRIVACY.md](docs/DATA_PRIVACY.md) | PIPEDA / Loi 25: inventory, residency, rights, pre-launch checklist |
+| [docs/PRICES.md](docs/PRICES.md) | Price tracking: pipeline rules, commands, going live, certificates, affiliate terms |
 | [docs/ADMIN.md](docs/ADMIN.md) | The `/admin` console: what each section does, the rules admins can't break, a daily routine |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) · [docs/RUNBOOK.md](docs/RUNBOOK.md) | Supabase + Render setup, smoke test, operations |
 | [docs/adr/](docs/adr) | Why things are the way they are |
