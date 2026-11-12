@@ -45,7 +45,7 @@ export function TicketForm({ kind, labels, defaultUser = '' }: {
         <div className="field">
           <label htmlFor="tf-url">{urlLabel}</label>
           <input id="tf-url" name="aboutUrl" type="url" className="input" inputMode="url" maxLength={500} pattern="https://\S+"
-            placeholder="https://pepforum.ca/…" value={values.aboutUrl} onChange={set('aboutUrl')} aria-invalid={Boolean(errors.aboutUrl)}
+            placeholder="https://pepforums.com/…" value={values.aboutUrl} onChange={set('aboutUrl')} aria-invalid={Boolean(errors.aboutUrl)}
             aria-describedby="tf-url-hint" />
           <span id="tf-url-hint" className="hint">{labels['contact.form.urlHint']}</span>
           <FieldError message={errors.aboutUrl ? labels['contact.form.urlError'] : undefined} />

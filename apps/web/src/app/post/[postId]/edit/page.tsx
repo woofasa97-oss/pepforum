@@ -29,8 +29,6 @@ export default async function EditPostPage({ params }: { params: Promise<{ postI
           locale={locale}
           linkReview={linkReview && !standing.is_moderator}
           linkRequirement={standing.capabilities.post_link ? describeRequirement(standing.capabilities.post_link, t) : null}
-          zones={[]}
-          cities={[]}
           categories={[]}
           edit={{ postId: post.id, title: post.title, body: post.body, link: post.link_url, type: post.post_type, images: images.map((i) => ({ id: i.id, alt: i.alt })) }}
           uploadRequirement={standing.capabilities.upload_image === null ? null : images.length > 0 ? null : describeRequirement(standing.capabilities.upload_image, t)}

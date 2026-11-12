@@ -11,7 +11,6 @@ import type { MessageKey, Translate } from '@/lib/i18n';
 import { removeContentAction, restoreContentAction, setCommentsLockedAction, setNoteHiddenAction, setPinnedAction } from '@/server/actions/admin';
 import { adminContent } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Content' };
 
@@ -65,20 +64,15 @@ function RowActions({ row, t }: { row: AdminContentRow; t: Translate }) {
   );
 }
 
-export default async function AdminContentPage({ searchParams }: { searchParams: Promise<{ kind?: string; q?: string; status?: string; zone?: string; page?: string }> }) {
-  const [t, locale, params, taxonomy] = await Promise.all([getT(), getLocale(), searchParams, getTaxonomy()]);
+export default async function AdminContentPage({ searchParams }: { searchParams: Promise<{ kind?: string; q?: string; status?: string; page?: string }> }) {
+  const [t, locale, params] = await Promise.all([getT(), getLocale(), searchParams]);
   const kind: ContentKind = CONTENT_KINDS.includes(params.kind as ContentKind) ? (params.kind as ContentKind) : 'post';
   const status = STATUSES[kind].includes(params.status ?? '') ? (params.status as string) : null;
-  const zone = taxonomy.zones.some((z) => z.id === params.zone) ? (params.zone as string) : null;
   const q = (params.q ?? '').trim().slice(0, 100);
   const page = Math.min(Math.max(Number.parseInt(params.page ?? '0', 10) || 0, 0), 200);
-  const result = await adminContent({ p_kind: kind, p_query: q || null, p_status: status, p_zone: zone, p_page: page });
-  const zoneName = (id: string) => {
-    const z = taxonomy.zones.find((x) => x.id === id);
-    return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
-  };
+  const result = await adminContent({ p_kind: kind, p_query: q || null, p_status: status, p_page: page });
   const href = (next: Record<string, string | number | null>) => {
-    const search = new URLSearchParams({ kind, ...(q ? { q } : {}), ...(status ? { status } : {}), ...(zone ? { zone } : {}) });
+    const search = new URLSearchParams({ kind, ...(q ? { q } : {}), ...(status ? { status } : {}) });
     for (const [k, v] of Object.entries(next)) {
       if (v === null) search.delete(k);
       else search.set(k, String(v));
@@ -101,11 +95,6 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
         {status ? <input type="hidden" name="status" value={status} /> : null}
         <label className="vh" htmlFor="content-q">{t('admin.content.search')}</label>
         <input id="content-q" name="q" className="input" placeholder={t('admin.content.search')} defaultValue={q} maxLength={100} />
-        <label className="vh" htmlFor="content-zone">{t('admin.zone')}</label>
-        <select id="content-zone" name="zone" className="input" defaultValue={zone ?? ''} style={{ maxWidth: 200 }}>
-          <option value="">{t('admin.log.anyZone')}</option>
-          {taxonomy.zones.map((z) => <option key={z.id} value={z.id}>{zoneName(z.id)}</option>)}
-        </select>
         <button type="submit" className="btn">{t('admin.search')}</button>
       </form>
 
@@ -125,7 +114,6 @@ export default async function AdminContentPage({ searchParams }: { searchParams:
           {result.data.rows.map((row) => (
             <article key={row.id} className="card card-p">
               <div className="meta">
-                <span className="pill zone">{zoneName(row.zone_id)}</span>
                 {row.kind === 'note' ? <span className="pill">{t(`notes.status.${row.status}` as MessageKey)}</span> : <StatusPill status={row.status} t={t} />}
                 {row.pinned ? <span className="pill blue"><Icon name="pin" />{t('admin.content.pinned')}</span> : null}
                 {row.locked && row.kind === 'post' ? <span className="pill"><Icon name="lock" />{t('admin.content.locked')}</span> : null}

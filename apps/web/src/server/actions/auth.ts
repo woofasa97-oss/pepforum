@@ -53,7 +53,7 @@ export async function signUpAction(_prev: ActionState, form: FormData): Promise<
       emailRedirectTo: `${env().SITE_URL}/auth/confirm`,
       captchaToken: captchaToken(form),
       // Read (and re-validated) by the sign-up trigger; never used for privileges.
-      data: { username: input.username, locale: input.locale, home_zone: input.homeZone || undefined },
+      data: { username: input.username, locale: input.locale },
     },
   });
   if (error) {
@@ -115,7 +115,6 @@ export async function completeOnboardingAction(_prev: ActionState, form: FormDat
 
   const { error } = await supabase.rpc('complete_onboarding', {
     p_username: input.username,
-    p_home_zone: input.homeZone || null,
     p_adult: true, // OnboardingSchema requires the checkbox
   });
   if (error && USERNAME_ERRORS.has(error.message)) return { ok: false, fieldErrors: { username: t('auth.usernameTaken') } };
@@ -181,7 +180,7 @@ export async function startMfaEnrollmentAction(): Promise<MfaEnrollment | { erro
     if (factor.status === 'unverified') await supabase.auth.mfa.unenroll({ factorId: factor.id });
   }
 
-  const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Pepforum ${Date.now()}` });
+  const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Pepforums ${Date.now()}` });
   if (error || !data) return { error: t('errors.unexpected') };
   return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
 }

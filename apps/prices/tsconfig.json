@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    // The pipeline was ported from PepSpotter, which was not written against this
+    // check (about 180 index accesses, most in tests). Everything else in the base stays on.
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["src", "vitest.config.ts"]
+}

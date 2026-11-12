@@ -7,10 +7,10 @@ import { decodeFlow, encodeFlow, googleAuthorizeUrl, newGoogleFlow, pkceChalleng
 describe('Google sign-in on our own domain', () => {
   it('asks Google for a code with state, a hashed nonce and a PKCE challenge, returning to our callback', () => {
     const flow = newGoogleFlow('/notes');
-    const url = new URL(googleAuthorizeUrl(flow, 'abc.apps.googleusercontent.com', 'https://pepforum.ca/auth/oauth/google/callback'));
+    const url = new URL(googleAuthorizeUrl(flow, 'abc.apps.googleusercontent.com', 'https://pepforums.com/auth/oauth/google/callback'));
     expect(url.origin + url.pathname).toBe('https://accounts.google.com/o/oauth2/v2/auth');
     const q = url.searchParams;
-    expect(q.get('redirect_uri')).toBe('https://pepforum.ca/auth/oauth/google/callback');
+    expect(q.get('redirect_uri')).toBe('https://pepforums.com/auth/oauth/google/callback');
     expect(q.get('response_type')).toBe('code');
     expect(q.get('scope')).toBe('openid email profile');
     expect(q.get('state')).toBe(flow.state);

@@ -1,6 +1,6 @@
 # Self-moderation system
 
-Pepforum's moderation is done mostly by members. Reddit-style karma measures community standing; X-style Community Notes add context to misleading posts; a progression system rewards members who moderate *accurately*. This document is the specification. Every number here is a default in `app_config` (migration `…011_reference_data.sql`) and can be changed in production with `admin_set_config()`, which is logged.
+Pepforums' moderation is done mostly by members. Reddit-style karma measures community standing; X-style Community Notes add context to misleading posts; a progression system rewards members who moderate *accurately*. This document is the specification. Every number here is a default in `app_config` (migration `…011_reference_data.sql`) and can be changed in production with `admin_set_config()`, which is logged.
 
 ## Design principles
 
@@ -133,12 +133,12 @@ The strike costs 15 integrity for 90 days and −10 karma, capped at −30 note-
 - **Auto-collapse:** content collapses (it is never deleted) when the open reports reach total weight ≥ 3 from at least 3 distinct reporters whose accounts are at least 14 days old.
   - Content by a Trusted+ author collapses only if a Steward is among the reporters.
   - If no moderator reviews it within 48 hours, the collapse reverts.
-- **Moderator decisions:** a moderator of that zone, in an MFA (aal2) session, removes or keeps the content.
+- **Moderator decisions:** a moderator (site-wide, ADR-0010), in an MFA (aal2) session, removes or keeps the content.
   - **Removal** costs the author 25 karma (100 for sourcing), a strike, and a 7-day freeze. Every reporter earns +3 mod XP.
   - **Keep** dismisses the reports at no cost, except reports the moderator explicitly marks *abusive*, which cost −2 mod XP.
 - **Reporter XP:** a moderator earns nothing for resolving their own report. Reporter XP is reversed if the removal is later overturned on appeal.
 - **Sanctions:**
-  - Zone moderators can warn or freeze. Only admins can suspend or ban.
+  - Moderators can warn or freeze. Only admins can suspend or ban.
   - Nobody can lift their own sanction. A moderator can only undo a warning or freeze they issued; everything else goes through an admin or an appeal.
   - Frozen members can't post or edit posts.
 - **Staff reads need MFA too.** Note authorship, other members' ledgers, sanctions, reports and pre-lock breakdowns require an aal2 session, just like staff actions.
@@ -147,11 +147,11 @@ The strike costs 15 integrity for 90 days and −10 karma, capped at −30 note-
 
 ## Admin controls and the sourcing shield
 
-Admins run the community from `/admin` ([ADMIN.md](ADMIN.md)). They can sanction, restore content, pin up to two posts per zone (`posts.pinned_at`), lock comments on a post, and hide a note that breaks the rules itself. They **can't** edit karma, XP or tiers, or set a note's status ([ADR-0006](adr/0006-admin-limits.md)): hiding an open note closes it as Needs More Ratings, which settles with no rewards and no strike.
+Admins run the community from `/admin` ([ADMIN.md](ADMIN.md)). They can sanction, restore content, pin up to two posts for the whole site (`posts.pinned_at`), lock comments on a post, and hide a note that breaks the rules itself. They **can't** edit karma, XP or tiers, or set a note's status ([ADR-0006](adr/0006-admin-limits.md)): hiding an open note closes it as Needs More Ratings, which settles with no rewards and no strike.
 
 The **sourcing shield** checks every post, comment, edit and note:
 - **Blocked domains** are refused wherever they appear.
-- **Watched phrases** either `block` the text, or `hold` it with status `held`. Held content is visible only to its author and the zone's moderators until a moderator keeps or removes it from the queue, and it never reopens on its own.
+- **Watched phrases** either `block` the text, or `hold` it with status `held`. Held content is visible only to its author and the moderators until a moderator keeps or removes it from the queue, and it never reopens on its own.
 - Moderators' own content is exempt. Notes can't be held, so any matching rule refuses them.
 - Seeded hold-phrases: dm me, telegram, whatsapp, signal me, wickr, discount code, promo code, coupon code.
 
@@ -162,7 +162,9 @@ New settings:
 | Key | Default | Meaning |
 |---|---|---|
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
-| `features.regions` | false | Show provinces and cities to members: zone bar, region pickers, region pages (…026). Off: everything posts to the national feed |
+| `features.prices` | false | Show the Prices section (…030). Off: the pages, the header link and the price read functions return nothing; the pipeline may keep running |
+| `prices.stale_hours` | 48 | A published price not rechecked within this many hours is marked and no longer ranked (12–720) |
+| `prices.lead_vials` | 10 | The order size a price comparison opens on: 1, 3, 5 or 10 |
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |
 | `rate_limit.post_newcomer` | 3 / day | Posts a Newcomer can start, on top of `rate_limit.post` (…017) |
 | `rate_limit.report_member` | 5 / day | Members one person can report to the admins (…019) |
@@ -185,7 +187,7 @@ Images, clinician badges, notifications and ads (migrations …021–…025) sit
 - A **verified clinician** badge is identity, not authority: no karma, no note weight, no moderation power. Settings: `clinician.valid_days`.
 - **Images** are a capability (`upload_image`: tier ≥ `gates.upload.min_tier`, default Trusted; integrity ≥ `gates.posting.min_integrity`), with `uploads.max_bytes` and `uploads.max_per_post`. Removing an image is a logged admin action with no karma effect.
 - **Notifications** are private and purged after `notifications.retention_days`.
-- **Ads** are prepaid and reviewed; `ads.enabled` is the switch, `ads.cpm.{zone,category,national}` and `ads.min_booking_microcad` the price list (microCAD), `ads.flight_days` the run length. Members' standing is irrelevant to advertising, and advertising buys no standing.
+- **Ads** are prepaid and reviewed; `ads.enabled` is the switch, `ads.cpm.{category,national}` and `ads.min_booking_microcad` the price list (microCAD), `ads.flight_days` the run length. Members' standing is irrelevant to advertising, and advertising buys no standing.
 - New rate limits: `rate_limit.{push_subscribe,notification_settings,upload,clinician_submit,ad_write,ad_report}`.
 
 ## Launch playbook (cold start)

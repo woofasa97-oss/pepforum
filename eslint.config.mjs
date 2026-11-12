@@ -52,6 +52,10 @@ export default defineConfig(
   // Worker: structured JSON logs go to stdout.
   { files: ['apps/worker/**/*.ts'], rules: { 'no-console': 'off' } },
 
+  // Price pipeline: a CLI. One JSON summary on stdout, logs on stderr.
+  // `x == null` (null or undefined) is the ported code's idiom for values read from vendors' feeds.
+  { files: ['apps/prices/**/*.ts'], rules: { 'no-console': 'off', eqeqeq: ['error', 'always', { null: 'ignore' }] } },
+
   // Tests may use console and loose typing for fixtures.
   { files: ['**/tests/**/*.ts'], rules: { 'no-console': 'off' } },
 );

@@ -104,7 +104,6 @@ export type AdminMember = {
   id: string;
   username: string;
   locale: 'en' | 'fr';
-  home_zone_id: string | null;
   bio: string;
   coi: string;
   karma: number;
@@ -121,7 +120,8 @@ export type AdminMember = {
   deleted_at: string | null;
   is_admin: boolean;
   is_self: boolean;
-  moderates: string[];
+  /** A site-wide moderator (…034). */
+  is_moderator: boolean;
   account: {
     email_masked: string | null;
     email_confirmed: boolean;
@@ -159,7 +159,7 @@ export type AdminMember = {
   actions: AdminLogEntry[];
   appeals: Array<{ id: string; status: AppealStatus; body: string; created_at: string; decision_note: string | null; decided_by: string | null }>;
   staff_notes: Array<{ id: string; label: StaffNoteLabel; body: string; author: string; created_at: string }>;
-  recent: Array<{ kind: 'post' | 'comment'; id: string; post_id: string; text: string; status: ContentStatus; zone_id: string | null; created_at: string }>;
+  recent: Array<{ kind: 'post' | 'comment'; id: string; post_id: string; text: string; status: ContentStatus; created_at: string }>;
   notes_written: Array<{ id: string; post_id: string; post_title: string; status: NoteStatus; locked_status: NoteStatus | null; hidden: boolean; created_at: string }>;
 };
 
@@ -173,7 +173,6 @@ export type AdminContentRow = {
   title: string;
   excerpt: string;
   status: ContentStatus | NoteStatus;
-  zone_id: string;
   category_id?: string;
   author: string;
   created_at: string;
@@ -192,7 +191,6 @@ export type AdminLogEntry = {
   target_kind: string | null;
   target_id: string | null;
   target_user?: string | null;
-  zone_id?: string | null;
   reason: string;
   metadata: Record<string, unknown>;
   actor: string | null;
@@ -204,7 +202,6 @@ export type AdminLogEntry = {
 export type AdminTeam = {
   admins: Array<{ username: string; since: string; granted_by: string | null; is_self: boolean; mfa: boolean; last_sign_in_at: string | null; actions_30d: number }>;
   moderators: Array<{
-    zone_id: string;
     username: string;
     since: string;
     mfa: boolean;
@@ -274,7 +271,6 @@ export type PendingLinkItem = {
   target_kind: 'post' | 'comment';
   target_id: string;
   post_id: string;
-  zone_id: string;
   title: string;
   body: string;
   urls: string[];

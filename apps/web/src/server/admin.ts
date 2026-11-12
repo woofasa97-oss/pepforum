@@ -50,10 +50,14 @@ export const adminLinks = cache(() => call('admin_links', {}));
 export const adminMemberReports = cache(() => call('admin_member_reports', {}));
 export const adminTickets = (args: Functions['admin_tickets']['Args']) => call('admin_tickets', args);
 export const adminTicket = cache((id: string) => call('admin_ticket', { p_ticket: id }));
-export const adminQueue = cache(() => call('mod_queue', { p_zone: null }));
-export const adminAppeals = cache(() => call('open_appeals', { p_zone: null }));
+export const adminQueue = cache(() => call('mod_queue', {}));
+export const adminAppeals = cache(() => call('open_appeals', {}));
 // Ported features (…021–…025)
 export const adminRedirects = cache(() => call('admin_redirects', {}));
 export const adminMedia = (args: Functions['admin_media']['Args']) => call('admin_media', args);
 export const adminClinicians = (args: Functions['admin_clinician_verifications']['Args']) => call('admin_clinician_verifications', args);
 export const adminAds = cache(() => call('admin_ads', {}));
+// Price tracking (…031, …032)
+export const adminPriceOverview = cache(() => call('admin_price_overview', {}));
+export const adminPriceCoas = cache(() => call('admin_price_coas', { p_status: null }));
+export const adminPriceLinks = cache(() => call('admin_price_links', {}));

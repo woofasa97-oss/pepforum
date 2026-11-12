@@ -78,8 +78,8 @@ describe('validation', () => {
     expect(OpenTicketSchema.safeParse({ ...base, kind: 'praise' }).success).toBe(false);
     expect(OpenTicketSchema.safeParse({ ...base, subject: 'Hi' }).success).toBe(false);
     expect(OpenTicketSchema.safeParse({ ...base, body: 'Too short' }).success).toBe(false);
-    expect(OpenTicketSchema.safeParse({ ...base, kind: 'bug', aboutUrl: 'http://pepforum.ca/x' }).success).toBe(false);
-    expect(OpenTicketSchema.safeParse({ ...base, kind: 'bug', aboutUrl: 'https://pepforum.ca/post/1' }).success).toBe(true);
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'bug', aboutUrl: 'http://pepforums.com/x' }).success).toBe(false);
+    expect(OpenTicketSchema.safeParse({ ...base, kind: 'bug', aboutUrl: 'https://pepforums.com/post/1' }).success).toBe(true);
     // A member report needs to say who.
     expect(OpenTicketSchema.safeParse({ ...base, kind: 'report_member', aboutUsername: '' }).success).toBe(false);
     expect(OpenTicketSchema.safeParse({ ...base, kind: 'report_member', aboutUsername: 'maple_you' }).success).toBe(true);

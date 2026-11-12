@@ -7,13 +7,18 @@ import {
   AD_PACKAGES,
   AD_REPORT_REASONS,
   CLINICIAN_PROFESSIONS,
+  COA_METHODS,
+  COA_SCOPES,
+  COA_STATUSES,
   LINK_DECISIONS,
   LOCALES,
   MEMBER_REPORT_OUTCOMES,
   MEMBER_REPORT_REASONS,
   NOTE_CLASSIFICATIONS,
   POST_TYPES,
-  PROVINCES,
+  PRICE_ORIGINS,
+  PRICE_VENDOR_STATUSES,
+  COUNTRIES,
   RATING_REASONS,
   RATING_VALUES,
   REPORT_REASONS,
@@ -43,7 +48,6 @@ export const SignUpSchema = z.object({
   password: z.string().min(12).max(128),
   username: z.string().regex(USERNAME_PATTERN),
   locale: z.enum(LOCALES),
-  homeZone: z.union([z.literal(''), z.string().regex(/^[a-z]{2,16}$/)]).optional(),
   ageAck: checkbox,
   terms: checkbox,
 });
@@ -51,7 +55,6 @@ export const SignUpSchema = z.object({
 /** Social sign-ups: the parts of SignUpSchema the identity provider can't supply. */
 export const OnboardingSchema = z.object({
   username: z.string().regex(USERNAME_PATTERN),
-  homeZone: z.union([z.literal(''), z.string().regex(/^[a-z]{2,16}$/)]).optional(),
   ageAck: checkbox,
   terms: checkbox,
   next: z.string().max(512).optional(),
@@ -75,8 +78,6 @@ const postFields = {
 
 export const CreatePostSchema = z
   .object({
-    zone: z.string().regex(/^[a-z]{2,16}$/),
-    city: z.union([z.literal(''), slug]).optional(),
     category: slug,
     type: z.enum(POST_TYPES),
     language: z.enum(LOCALES),
@@ -162,7 +163,6 @@ export const ProfileSchema = z.object({
   bio: z.string().trim().max(500),
   coi: z.string().trim().max(300),
   locale: z.enum(LOCALES),
-  homeZone: z.union([z.literal(''), z.string().regex(/^[a-z]{2,16}$/)]),
 });
 
 export const ResolveReportsSchema = z
@@ -199,7 +199,7 @@ export const SanctionSchema = z
 export const RevokeSanctionSchema = z.object({ sanctionId: id, reason });
 export const StaffNoteSchema = z.object({ userId: id, label: z.enum(STAFF_NOTE_LABELS), body: trimmed(3, 1000) });
 export const SetRoleSchema = z.object({ username, admin: onOff, reason });
-export const SetModeratorSchema = z.object({ username, zone: z.string().regex(/^[a-z]{2,16}$/), appoint: onOff, reason });
+export const SetModeratorSchema = z.object({ username, appoint: onOff, reason });
 export const FoundingSchema = z.object({ username, until: isoDate.optional(), end: z.literal('true').optional(), reason });
 export const MemberReasonSchema = z.object({ userId: id, reason });
 export const RenameMemberSchema = z.object({ userId: id, username, reason });
@@ -234,19 +234,18 @@ export const PushEndpointSchema = z.object({ endpoint: z.string().max(2048).rege
 export const MarkReadSchema = z.object({ id: id.optional() });
 
 export const ClinicianSubmitSchema = z.object({
-  profession: z.enum(CLINICIAN_PROFESSIONS), regulator: trimmed(2, 120), province: z.string().regex(/^[a-z]{2,16}$/),
+  profession: z.enum(CLINICIAN_PROFESSIONS), regulator: trimmed(2, 120), country: z.enum(COUNTRIES),
   registrationNumber: trimmed(2, 60), documentId: id, statement: z.string().trim().max(1000).optional(),
 });
 export const ClinicianDecisionSchema = z.object({ id, decision: z.enum(['approve', 'reject']), reason });
 
 export const AdvertiserSchema = z.object({
   name: trimmed(2, 80), website: z.string().trim().max(500).regex(HTTPS_URL), billingEmail: z.email().max(254),
-  billingAddress: z.string().trim().max(300), billingProvince: z.enum(PROVINCES),
+  billingAddress: z.string().trim().max(300), billingCountry: z.enum(COUNTRIES),
 });
 export const CampaignSchema = z.object({
   id: z.union([z.literal(''), id]).optional(),
   name: trimmed(2, 80), package: z.enum(AD_PACKAGES),
-  zone: z.union([z.literal(''), z.string().regex(/^[a-z]{2,16}$/)]).optional(),
   category: z.union([z.literal(''), slug]).optional(),
   /** Whole CAD; converted to microCAD by the action. */
   budgetCad: z.coerce.number().int().min(1).max(1_000_000),
@@ -264,6 +263,23 @@ export const AdPaymentSchema = z.object({ advertiserId: id, amountCad: z.coerce.
 export const AdAdjustmentSchema = z.object({ advertiserId: id, amountCad: z.coerce.number().max(1_000_000).min(-1_000_000).refine((n) => n !== 0, 'nonzero'), reference: trimmed(3, 120), reason });
 export const IdReasonSchema = z.object({ id, reason });
 
+// Price tracking (…031, …032)
+const priceSlug = z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(60);
+const httpsUrl = (max: number) => z.string().trim().max(max).regex(/^https:\/\/\S+$/);
+const blankToNull = <T extends z.ZodType>(schema: T) => z.preprocess((v) => (typeof v === 'string' && v.trim() === '' ? null : v), schema.nullable());
+export const PriceVendorSchema = z.object({
+  slug: priceSlug, name: trimmed(1, 120), websiteUrl: httpsUrl(300), originCountry: z.enum(PRICE_ORIGINS),
+  originSource: blankToNull(trimmed(1, 500)), reason,
+});
+export const PriceVendorStatusSchema = z.object({ slug: priceSlug, status: z.enum(PRICE_VENDOR_STATUSES), unreadable: z.literal('on').optional(), reason });
+export const PriceCoaSchema = z.object({
+  id: blankToNull(id), vendor: priceSlug, compound: blankToNull(priceSlug), url: httpsUrl(1000), scope: z.enum(COA_SCOPES),
+  batch: blankToNull(trimmed(1, 80)), lab: blankToNull(trimmed(2, 120)), labAccreditation: blankToNull(trimmed(2, 120)),
+  method: blankToNull(z.enum(COA_METHODS)), testDate: blankToNull(isoDate),
+  purity: blankToNull(z.coerce.number().gt(0).max(100)), quote: blankToNull(trimmed(1, 500)), reason,
+});
+export const PriceCoaStatusSchema = z.object({ id, status: z.enum(COA_STATUSES), reason });
+
 export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });
 export const AnnouncementSchema = z.object({
   en: z.string().trim().max(280), fr: z.string().trim().max(280), tone: z.enum(['info', 'warn']),
@@ -277,11 +293,6 @@ export const CategorySchema = z.object({
   sortOrder: z.coerce.number().int().min(0).max(999), reason,
 });
 export const ArchiveCategorySchema = z.object({ id: slug, archived: onOff, reason });
-export const CitySchema = z.object({ id: slug, zone: z.string().regex(/^[a-z]{2,16}$/), name: trimmed(2, 60), sortOrder: z.coerce.number().int().min(0).max(999), reason });
-export const ZoneSchema = z.object({
-  id: z.string().regex(/^[a-z]{2,16}$/), nameEn: trimmed(2, 60), nameFr: trimmed(2, 60), shortName: trimmed(2, 20),
-  descriptionEn: z.string().trim().max(500), descriptionFr: z.string().trim().max(500), reason,
-});
 
 /** FormData → plain object; repeated keys become arrays. */
 export function formToObject(form: FormData): Record<string, unknown> {

@@ -22,13 +22,11 @@ export async function createPostAction(_prev: ActionState, form: FormData): Prom
 
   const supabase = await getSupabase();
   const { data: postId, error } = await supabase.rpc('create_post', {
-    p_zone_id: p.zone,
     p_category_id: p.category,
     p_post_type: p.type,
     p_title: p.title,
     p_body: p.body,
     p_link_url: p.link || null,
-    p_city_id: p.city || null,
     p_language: p.language,
   });
   if (error) {

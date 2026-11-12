@@ -20,9 +20,9 @@ async function report(reporter: string, postId: string, reason = 'sourcing') {
   return db.asOne<{ r: { collapsed: boolean } }>(user(reporter), `select public.file_report('post', $1, $2, '') as r`, [postId, reason]);
 }
 
-async function createModerator(zone = 'on'): Promise<string> {
+async function createModerator(): Promise<string> {
   const id = await db.createUser({ karma: TIER.contributor });
-  await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ($1, $2)`, [zone, id]);
+  await db.sql(`insert into public.moderators (user_id) values ($1)`, [id]);
   return id;
 }
 
@@ -80,18 +80,16 @@ describe('community reports', () => {
 });
 
 describe('moderator decisions', () => {
-  it('require a moderator of that zone with an MFA session', async () => {
+  it('require a moderator (site-wide, …034) with an MFA session', async () => {
     const author = await db.createUser({ karma: TIER.member });
-    const post = await createPost(db, author, { zone: 'on' });
-    const onMod = await createModerator('on');
-    const bcMod = await createModerator('bc');
+    const post = await createPost(db, author);
+    const mod = await createModerator();
     const member = await db.createUser();
     const call = `select public.resolve_reports('post', $1, 'keep')`;
 
-    expect((await db.expectError(user(onMod, 'aal1'), call, [post])).code).toBe('PF428');
-    expect((await db.expectError(user(bcMod, 'aal2'), call, [post])).code).toBe('PF403');
+    expect((await db.expectError(user(mod, 'aal1'), call, [post])).code).toBe('PF428');
     expect((await db.expectError(user(member, 'aal2'), call, [post])).code).toBe('PF403');
-    await db.as(user(onMod, 'aal2'), call, [post]);
+    await db.as(user(mod, 'aal2'), call, [post]);
   });
 
   it('removal penalises the author (karma, strike, freeze) and rewards the reporters', async () => {
@@ -106,7 +104,7 @@ describe('moderator decisions', () => {
     expect(await postStatus(post)).toBe('removed');
     expect(await ledgerTotal(db, author, 'karma', 'mod_removal')).toBe(-25);
     expect(await db.integrity(author)).toBe(85);
-    const capability = await db.expectError(user(author), `select public.create_post('on', 'basics', 'claim', 'Another title right here', 'x')`);
+    const capability = await db.expectError(user(author), `select public.create_post('basics', 'claim', 'Another title right here', 'x')`);
     expect(capability.detail).toBe('post_text:frozen');
     for (const r of reporters) expect(await ledgerTotal(db, r, 'mod_xp', 'report_upheld')).toBe(3);
   });
@@ -181,7 +179,7 @@ describe('appeals', () => {
 });
 
 describe('sanctions and admin', () => {
-  it('zone moderators can freeze but only admins can suspend or ban', async () => {
+  it('moderators can freeze but only admins can suspend or ban', async () => {
     const target = await db.createUser({ karma: TIER.member });
     const mod = await createModerator();
     await db.as(user(mod, 'aal2'), `select public.apply_sanction($1, 'freeze', 'Repeated dosing advice', 7)`, [target]);

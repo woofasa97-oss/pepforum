@@ -10,3 +10,4 @@ Disallow: /advertiser
 Disallow: /contact
 Disallow: /media/
 Disallow: /ads/
+Disallow: /prices/go/

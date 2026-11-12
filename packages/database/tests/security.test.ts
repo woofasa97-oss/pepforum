@@ -34,7 +34,7 @@ describe('migrations', () => {
 describe('direct table writes are impossible for API roles', () => {
   it.each([
     [`insert into public.ledger_events (user_id, track, delta, reason, source_kind, event_key) values (gen_random_uuid(), 'karma', 1000, 'hack', 'hack', 'x')`],
-    [`insert into public.posts (author_id, zone_id, category_id, post_type, title, body) values (gen_random_uuid(), 'on', 'basics', 'claim', 'injected title', 'x')`],
+    [`insert into public.posts (author_id, category_id, post_type, title, body) values (gen_random_uuid(), 'basics', 'claim', 'injected title', 'x')`],
     [`update public.notes set status = 'helpful'`],
     [`insert into public.strikes (user_id, reason, points, source_kind, source_id, expires_at) values (gen_random_uuid(), 'sanction', 1, 'x', gen_random_uuid(), now())`],
     [`update public.app_config set value = '0' where key = 'notes.min_ratings'`],

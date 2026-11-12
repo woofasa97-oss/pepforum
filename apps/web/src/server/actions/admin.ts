@@ -23,7 +23,6 @@ import {
   CampaignDecisionSchema,
   CategorySchema,
   ClinicianDecisionSchema,
-  CitySchema,
   ConfigChangeSchema,
   ContentReasonSchema,
   DeleteRedirectSchema,
@@ -32,6 +31,10 @@ import {
   IdReasonSchema,
   LinkDecisionSchema,
   LinkSiteSchema,
+  PriceCoaSchema,
+  PriceCoaStatusSchema,
+  PriceVendorSchema,
+  PriceVendorStatusSchema,
   MemberReasonSchema,
   RedirectSchema,
   RenameMemberSchema,
@@ -49,7 +52,6 @@ import {
   TicketClosedSchema,
   TicketReplySchema,
   ToggleSchema,
-  ZoneSchema,
   fieldErrors,
   formToObject,
 } from '@/lib/validation';
@@ -194,7 +196,7 @@ export async function setModeratorAction(_prev: ActionState, form: FormData): Pr
   if (!parsed.success) return invalid(parsed.error);
   const id = await memberId(parsed.data.username);
   if (!id) return { ok: false, fieldErrors: { username: (await getT())('errors.notFound') } };
-  return run('set_zone_moderator', { p_user: id, p_zone: parsed.data.zone, p_appoint: parsed.data.appoint === 'true', p_reason: parsed.data.reason });
+  return run('set_moderator', { p_user: id, p_appoint: parsed.data.appoint === 'true', p_reason: parsed.data.reason });
 }
 
 export async function foundingAction(_prev: ActionState, form: FormData): Promise<ActionState> {
@@ -410,25 +412,6 @@ export async function archiveCategoryAction(_prev: ActionState, form: FormData):
   return result;
 }
 
-export async function upsertCityAction(_prev: ActionState, form: FormData): Promise<ActionState> {
-  const parsed = CitySchema.safeParse(formToObject(form));
-  if (!parsed.success) return invalid(parsed.error);
-  const c = parsed.data;
-  return run('admin_upsert_city', { p_id: c.id, p_zone_id: c.zone, p_name: c.name, p_sort_order: c.sortOrder, p_reason: c.reason });
-}
-
-export async function updateZoneAction(_prev: ActionState, form: FormData): Promise<ActionState> {
-  const parsed = ZoneSchema.safeParse(formToObject(form));
-  if (!parsed.success) return invalid(parsed.error);
-  const z = parsed.data;
-  const result = await run('admin_update_zone', {
-    p_id: z.id, p_name_en: z.nameEn, p_name_fr: z.nameFr, p_short_name: z.shortName,
-    p_description_en: z.descriptionEn, p_description_fr: z.descriptionFr, p_reason: z.reason,
-  });
-  if (result.ok) revalidatePath('/', 'layout');
-  return result;
-}
-
 // ── SEO: managed redirects (…021) ─────────────────────────────────────────
 export async function setRedirectAction(_prev: ActionState, form: FormData): Promise<ActionState> {
   const parsed = RedirectSchema.safeParse(formToObject(form));
@@ -512,4 +495,50 @@ export async function resolveAdReportAction(_prev: ActionState, form: FormData):
   const parsed = IdReasonSchema.safeParse(formToObject(form));
   if (!parsed.success) return invalid(parsed.error);
   return run('admin_resolve_ad_report', { p_id: parsed.data.id, p_reason: parsed.data.reason });
+}
+
+// ── Price tracking (…031, …032) ─────────────────────────────────────────────
+function priceDone(): void {
+  revalidatePath('/prices', 'layout');
+}
+
+export async function priceVendorSaveAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = PriceVendorSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const v = parsed.data;
+  const state = await run('admin_price_vendor_save', {
+    p_slug: v.slug, p_name: v.name, p_website_url: v.websiteUrl, p_origin_country: v.originCountry, p_origin_source: v.originSource, p_reason: v.reason,
+  });
+  if (state.ok) priceDone();
+  return state;
+}
+
+export async function priceVendorStatusAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = PriceVendorStatusSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const v = parsed.data;
+  const state = await run('admin_price_vendor_set_status', { p_slug: v.slug, p_status: v.status, p_unreadable: v.unreadable === 'on', p_reason: v.reason });
+  if (state.ok) priceDone();
+  return state;
+}
+
+export async function priceCoaSaveAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = PriceCoaSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const c = parsed.data;
+  const state = await run('admin_price_coa_save', {
+    p_id: c.id, p_vendor: c.vendor, p_compound: c.compound, p_url: c.url, p_scope: c.scope, p_batch: c.batch, p_lab: c.lab,
+    p_lab_accreditation: c.labAccreditation, p_method: c.method, p_test_date: c.testDate, p_stated_purity_pct: c.purity,
+    p_evidence_quote: c.quote, p_reason: c.reason,
+  });
+  if (state.ok) priceDone();
+  return state;
+}
+
+export async function priceCoaStatusAction(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const parsed = PriceCoaStatusSchema.safeParse(formToObject(form));
+  if (!parsed.success) return invalid(parsed.error);
+  const state = await run('admin_price_coa_set_status', { p_id: parsed.data.id, p_status: parsed.data.status, p_reason: parsed.data.reason });
+  if (state.ok) priceDone();
+  return state;
 }

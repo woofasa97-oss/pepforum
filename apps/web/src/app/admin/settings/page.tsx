@@ -7,10 +7,10 @@ import { DataUnavailable, PageHeader } from '@/components/admin/AdminBits';
 import { Icon } from '@/components/ui/Icon';
 import { formatDate, relativeTime } from '@/lib/format';
 import type { MessageKey, Translate } from '@/lib/i18n';
-import { announcementAction, archiveCategoryAction, setConfigAction, updateZoneAction, upsertCategoryAction, upsertCityAction } from '@/server/actions/admin';
+import { announcementAction, archiveCategoryAction, setConfigAction, upsertCategoryAction } from '@/server/actions/admin';
 import { adminConfig, adminConfigHistory } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
-import { getAllCategories, getTaxonomy } from '@/server/queries';
+import { getAllCategories } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Rules & settings' };
 
@@ -226,12 +226,8 @@ async function RulesTab({ t, locale, history }: { t: Translate; locale: string; 
 }
 
 async function TaxonomyTab({ t, locale }: { t: Translate; locale: string }) {
-  const [categories, taxonomy] = await Promise.all([getAllCategories(), getTaxonomy()]);
+  const categories = await getAllCategories();
   const labels = { reason: t('admin.reasonLabel'), reasonHint: t('admin.reasonHint') };
-  const zoneName = (id: string) => {
-    const z = taxonomy.zones.find((x) => x.id === id);
-    return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
-  };
   const categoryFields = (c?: (typeof categories)[number]) => (
     <>
       {!c ? (
@@ -291,55 +287,6 @@ async function TaxonomyTab({ t, locale }: { t: Translate; locale: string }) {
             </tbody>
           </table>
         </div>
-      </section>
-
-      <section className="admin-section card card-p" aria-labelledby="zones-h">
-        <h2 id="zones-h" style={{ fontSize: 16 }} className="mb8">{t('admin.tax.zones')}</h2>
-        <p className="small muted mb12">{t('admin.tax.zonesHelp')}</p>
-        <ul className="caps">
-          {taxonomy.zones.map((z) => (
-            <li key={z.id}>
-              <span><b>{zoneName(z.id)}</b> <code className="xs">{z.id}</code></span>
-              <ActionForm action={updateZoneAction} label={t('admin.cfgEdit')} submit={t('admin.save')} hidden={{ id: z.id }} labels={labels}>
-                <div className="row wrap" style={{ gap: 8 }}>
-                  <div className="field grow"><label htmlFor={`z-en-${z.id}`}>{t('admin.tax.nameEn')}</label><input id={`z-en-${z.id}`} name="nameEn" className="input" defaultValue={z.name_en} required /></div>
-                  <div className="field grow"><label htmlFor={`z-fr-${z.id}`}>{t('admin.tax.nameFr')}</label><input id={`z-fr-${z.id}`} name="nameFr" className="input" defaultValue={z.name_fr} required /></div>
-                  <div className="field"><label htmlFor={`z-short-${z.id}`}>{t('admin.tax.short')}</label><input id={`z-short-${z.id}`} name="shortName" className="input" defaultValue={z.short_name} required style={{ width: 100 }} /></div>
-                </div>
-                <div className="field"><label htmlFor={`z-den-${z.id}`}>{t('admin.tax.descEn')}</label><textarea id={`z-den-${z.id}`} name="descriptionEn" className="input" rows={2} defaultValue={z.description_en} /></div>
-                <div className="field"><label htmlFor={`z-dfr-${z.id}`}>{t('admin.tax.descFr')}</label><textarea id={`z-dfr-${z.id}`} name="descriptionFr" className="input" rows={2} defaultValue={z.description_fr} /></div>
-              </ActionForm>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="admin-section card card-p" aria-labelledby="cities-h">
-        <div className="row between wrap mb8">
-          <h2 id="cities-h" style={{ fontSize: 16 }}>{t('admin.tax.cities')}</h2>
-          <ActionForm action={upsertCityAction} label={t('admin.tax.newCity')} submit={t('admin.tax.create')} labels={labels}>
-            <div className="field"><label htmlFor="city-id">{t('admin.tax.id')}</label><input id="city-id" name="id" className="input" pattern="[a-z0-9-]{2,40}" required /><span className="hint">{t('admin.tax.idHint')}</span></div>
-            <div className="field"><label htmlFor="city-name">{t('admin.tax.name')}</label><input id="city-name" name="name" className="input" required maxLength={60} /></div>
-            <div className="field">
-              <label htmlFor="city-zone">{t('admin.zone')}</label>
-              <select id="city-zone" name="zone" className="input" required>
-                {taxonomy.zones.filter((z) => z.id !== 'national').map((z) => <option key={z.id} value={z.id}>{zoneName(z.id)}</option>)}
-              </select>
-            </div>
-            <div className="field"><label htmlFor="city-order">{t('admin.tax.order')}</label><input id="city-order" name="sortOrder" type="number" min={0} max={999} defaultValue={0} className="input" required /></div>
-          </ActionForm>
-        </div>
-        <ul className="caps">
-          {taxonomy.cities.map((c) => (
-            <li key={c.id}>
-              <span><b>{c.name}</b> <span className="xs muted">· {zoneName(c.zone_id)}</span></span>
-              <ActionForm action={upsertCityAction} label={t('admin.cfgEdit')} submit={t('admin.save')} hidden={{ id: c.id, zone: c.zone_id }} labels={labels}>
-                <div className="field"><label htmlFor={`city-name-${c.id}`}>{t('admin.tax.name')}</label><input id={`city-name-${c.id}`} name="name" className="input" defaultValue={c.name} required /></div>
-                <div className="field"><label htmlFor={`city-order-${c.id}`}>{t('admin.tax.order')}</label><input id={`city-order-${c.id}`} name="sortOrder" type="number" min={0} max={999} defaultValue={c.sort_order} className="input" required /></div>
-              </ActionForm>
-            </li>
-          ))}
-        </ul>
       </section>
     </>
   );

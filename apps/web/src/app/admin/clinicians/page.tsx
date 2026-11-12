@@ -8,6 +8,7 @@ import { EmptyState, TierBadge } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
 import { formatDate, relativeTime } from '@/lib/format';
 import type { MessageKey } from '@/lib/i18n';
+import { countryName } from '@/lib/countries';
 import { reviewClinicianAction, revokeClinicianAction } from '@/server/actions/admin';
 import { adminClinicians } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
@@ -50,7 +51,7 @@ export default async function AdminCliniciansPage({ searchParams }: { searchPara
                 <span className="xs muted">{t('admin.links.waitingSince', { time: relativeTime(v.submitted_at, t) })}</span>
               </div>
               <dl className="facts">
-                <div><dt>{t('clinician.regulator')}</dt><dd>{v.regulator} · {v.province_id.toUpperCase()}</dd></div>
+                <div><dt>{t('clinician.regulator')}</dt><dd>{v.regulator} · {countryName(v.country, locale)}</dd></div>
                 <div><dt>{t('clinician.registration')}</dt><dd><code>{v.registration_number}</code></dd></div>
                 <div><dt>{t('media.document')}</dt><dd>{v.document_id ? <a className="link" href={`/media/${v.document_id}`} target="_blank" rel="noopener noreferrer">{t('media.viewDocument')}</a> : '—'}</dd></div>
                 <div><dt>{t('admin.inbox.joined')}</dt><dd>{formatDate(v.joined, locale)}</dd></div>

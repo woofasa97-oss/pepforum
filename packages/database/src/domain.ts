@@ -128,7 +128,8 @@ export const MOD_ACTIONS = [
   'media_removed',
   'clinician_approved', 'clinician_rejected', 'clinician_revoked',
   'advertiser_approved', 'advertiser_suspended', 'ad_approved', 'ad_rejected', 'ad_suspended',
-  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved', 'social_unlinked'
+  'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved', 'social_unlinked',
+  'price_vendor_saved', 'price_vendor_status', 'price_coa_saved', 'price_coa_status'
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 
@@ -145,7 +146,8 @@ export const AD_REPORT_REASONS = ['vendor', 'medical_claim', 'misleading', 'offe
 export type AdReportReason = (typeof AD_REPORT_REASONS)[number];
 
 /** Where a campaign runs (ad_campaigns.package, …025). */
-export const AD_PACKAGES = ['zone', 'category', 'national'] as const;
+/** 'national' is shown as "Site-wide" (the zone package went in …034). */
+export const AD_PACKAGES = ['category', 'national'] as const;
 export type AdPackage = (typeof AD_PACKAGES)[number];
 
 export const AD_CAMPAIGN_STATUSES = ['draft', 'review', 'approved', 'active', 'paused', 'rejected', 'completed', 'suspended'] as const;
@@ -154,9 +156,26 @@ export type AdCampaignStatus = (typeof AD_CAMPAIGN_STATUSES)[number];
 export const ADVERTISER_STATUSES = ['pending', 'active', 'suspended'] as const;
 export type AdvertiserStatus = (typeof ADVERTISER_STATUSES)[number];
 
-/** Canadian provinces and territories, for advertiser billing (…025). */
-export const PROVINCES = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'] as const;
-export type Province = (typeof PROVINCES)[number];
+/**
+ * ISO 3166-1 alpha-2 country codes (…034): clinician country and advertiser
+ * billing country. The UI names them with Intl.DisplayNames in the reader's language.
+ */
+export const COUNTRIES = [
+  'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE',
+  'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD',
+  'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM',
+  'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF',
+  'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU',
+  'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN',
+  'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME',
+  'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA',
+  'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM',
+  'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI',
+  'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK',
+  'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI',
+  'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW',
+] as const;
+export type Country = (typeof COUNTRIES)[number];
 
 /** Health professions a member can be verified as (clinician_verifications.profession, …024). */
 export const CLINICIAN_PROFESSIONS = ['physician', 'nurse_practitioner', 'registered_nurse', 'pharmacist', 'naturopathic_doctor', 'dietitian', 'other'] as const;
@@ -209,3 +228,32 @@ export function inferSourceKind(url: string): SourceKind {
   if (/(^|\.)(cbc\.ca|radio-canada\.ca|theglobeandmail\.com|ctvnews\.ca|lapresse\.ca|nationalpost\.com)$/.test(host)) return 'news';
   return 'other';
 }
+
+// ── Price tracking (…030–…033) ──────────────────────────────────────────────
+/** prices.vendors.status: only `active` vendors are read live and shown. */
+export const PRICE_VENDOR_STATUSES = ['pending', 'active', 'paused', 'delisted'] as const;
+export type PriceVendorStatus = (typeof PRICE_VENDOR_STATUSES)[number];
+
+/** Where a vendor is based (prices.vendors.origin_country). */
+export const PRICE_ORIGINS = ['US', 'CA', 'GB', 'AU', 'NZ', 'EU', 'OTHER'] as const;
+export type PriceOrigin = (typeof PRICE_ORIGINS)[number];
+
+export const PRICE_CURRENCIES = ['USD', 'CAD', 'GBP', 'AUD', 'NZD', 'EUR'] as const;
+export type PriceCurrency = (typeof PRICE_CURRENCIES)[number];
+
+export const PRICE_AVAILABILITIES = ['in_stock', 'out_of_stock', 'backorder', 'preorder', 'discontinued', 'unknown'] as const;
+export type PriceAvailability = (typeof PRICE_AVAILABILITIES)[number];
+
+export const PRICE_COMPOUND_TYPES = ['Single compound', 'Copper complex', 'Blend'] as const;
+export type PriceCompoundType = (typeof PRICE_COMPOUND_TYPES)[number];
+
+/** What a certificate of analysis covers (prices.coa_documents.scope). */
+export const COA_SCOPES = ['vendor', 'product', 'batch'] as const;
+export type CoaScope = (typeof COA_SCOPES)[number];
+
+/** The method a certificate names (prices.coa_documents.method). */
+export const COA_METHODS = ['hplc', 'ms', 'hplc_ms', 'other'] as const;
+export type CoaMethod = (typeof COA_METHODS)[number];
+
+export const COA_STATUSES = ['candidate', 'published', 'withdrawn'] as const;
+export type CoaStatus = (typeof COA_STATUSES)[number];

@@ -13,19 +13,18 @@ interface Option { readonly id: string; readonly name: string }
 
 interface Props {
   readonly labels: Record<string, string>;
-  readonly zones: Option[];
   readonly categories: Option[];
   readonly cpm: Record<AdPackage, string>;
   readonly minBudgetCad: number;
   readonly campaign?: MyCampaign | undefined;
 }
 
-export function CampaignForm({ labels, zones, categories, cpm, minBudgetCad, campaign }: Props) {
+export function CampaignForm({ labels, categories, cpm, minBudgetCad, campaign }: Props) {
   const [state, action] = useActionState(upsertCampaignAction, initialActionState);
-  const [pkg, setPkg] = useState<AdPackage>(campaign?.package ?? 'zone');
-  const [zone, setZone] = useState(campaign?.zone_id ?? zones[0]?.id ?? '');
+  const [pkg, setPkg] = useState<AdPackage>(campaign?.package ?? 'category');
   const errors = state.fieldErrors ?? {};
-  const frenchRequired = pkg !== 'zone' || zone === 'qc';
+  // Every campaign needs French copy (…034).
+  const frenchRequired = true;
   const locked = campaign ? !['draft', 'rejected'].includes(campaign.status) : false;
 
   return (
@@ -54,14 +53,6 @@ export function CampaignForm({ labels, zones, categories, cpm, minBudgetCad, cam
           </div>
         </fieldset>
 
-        {pkg === 'zone' ? (
-          <div className="field">
-            <label htmlFor="cp-zone">{labels['submit.zone']}</label>
-            <select id="cp-zone" name="zone" className="input" value={zone} onChange={(e) => setZone(e.target.value)}>
-              {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-            </select>
-          </div>
-        ) : null}
         {pkg === 'category' ? (
           <div className="field">
             <label htmlFor="cp-cat">{labels['submit.category']}</label>

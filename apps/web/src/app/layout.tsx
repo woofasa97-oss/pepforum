@@ -32,17 +32,17 @@ const montserrat = localFont({
   display: 'swap',
 });
 
-const DESCRIPTION = 'Canada’s peptide-discussion forum, kept honest by community notes. No vendors, no sales, not medical advice.';
+const DESCRIPTION = 'The peptide-discussion forum for the whole world, kept honest by community notes. No sales, not medical advice.';
 
 /** metadataBase makes every relative canonical/og URL absolute (SEO, …021). */
 export function generateMetadata(): Metadata {
   return {
     metadataBase: new URL(env().SITE_URL),
-    title: { default: 'Pepforum', template: '%s · Pepforum' },
+    title: { default: 'Pepforums', template: '%s · Pepforums' },
     description: DESCRIPTION,
     robots: { index: true, follow: true },
     referrer: 'strict-origin-when-cross-origin',
-    openGraph: { siteName: 'Pepforum', type: 'website', locale: 'en_CA', alternateLocale: ['fr_CA'], images: ['/icon.png'] },
+    openGraph: { siteName: 'Pepforums', type: 'website', locale: 'en_CA', alternateLocale: ['fr_CA'], images: ['/icon.png'] },
     twitter: { card: 'summary' },
   };
 }

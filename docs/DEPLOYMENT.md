@@ -27,7 +27,7 @@
 7. **Auth → Sign In / Providers (social sign-in):** switch on any provider. The sign-in and sign-up pages show a "Continue with …" button for every enabled provider within five minutes; no deploy is needed. For each provider:
    - Create an OAuth app in the provider's developer console and register this **callback URL**: `https://<ref>.supabase.co/auth/v1/callback` (it's shown on the provider's page in Supabase).
    - Paste its client ID and secret into Supabase.
-   - Request only the basic scopes (email, profile/openid). Pepforum never reads anything else.
+   - Request only the basic scopes (email, profile/openid). Pepforums never reads anything else.
 
    | Provider | Where to create the app | Notes |
    |---|---|---|
@@ -81,6 +81,10 @@ Members verify an X, YouTube, Instagram, TikTok or Reddit account from **Setting
    | Reddit | reddit.com/prefs/apps → *web app* | `identity` | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Audience = the profile's followers. |
 3. **The bonus** is tuned in Rules & settings (`socials.bonus_*`, docs/SELF_MODERATION.md).
 
+### Price tracking (optional)
+
+Migrations …030–…033 create the `prices` schema and a login for the pipeline, `pepforum_prices`, with no password. To run the pipeline, set one out of band (`alter role pepforum_prices password '…';`), store that login's session-pooler connection string as the GitHub secret `PRICES_DB_URL`, and follow "Going live" in [PRICES.md](PRICES.md). Nothing is shown to visitors until an admin switches on "Show the Prices section". The pipeline runs on GitHub Actions, not Render, and needs no other secret.
+
 ## 2. Render (web and worker)
 
 1. **New Blueprint**, pointing at this repo. `render.yaml` creates:
@@ -88,7 +92,7 @@ Members verify an X, YouTube, Instagram, TikTok or Reddit account from **Setting
    - `pepforum-worker`: a cron job running every 10 minutes.
 2. **Fill in the `sync: false` variables:**
    - **web:** `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SITE_URL`, `TURNSTILE_SITE_KEY` (optional), `VAPID_PUBLIC_KEY` (optional, push), `AD_VISITOR_SALT` (optional; any random string, salts the ad frequency-cap hash);
-     - `SITE_URL` is the full public origin, with the scheme: `https://pepforum.ca`, not `pepforum.ca`. Leave it blank to use Render's `https://<service>.onrender.com` URL (`RENDER_EXTERNAL_URL`), and set it once you add a custom domain. It must match the Site URL in Supabase Auth (step 1).
+     - `SITE_URL` is the full public origin, with the scheme: `https://pepforums.com`, not `pepforums.com`. Leave it blank to use Render's `https://<service>.onrender.com` URL (`RENDER_EXTERNAL_URL`), and set it once you add a custom domain. It must match the Site URL in Supabase Auth (step 1).
    - **worker:** `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `SITE_URL` (for links in push payloads), `VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` (optional, push), `VAPID_SUBJECT` (`mailto:` address the push services can contact).
    - **Never** put the secret key on the web service; the app refuses to start in production if it finds it.
 3. **Custom domain and TLS** are set in the Render dashboard. HSTS preload is on, so serve every subdomain over HTTPS.

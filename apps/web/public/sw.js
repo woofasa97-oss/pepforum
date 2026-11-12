@@ -1,5 +1,5 @@
 /* global self */
-/* Pepforum service worker: web push only. Nothing is cached or intercepted —
+/* Pepforums service worker: web push only. Nothing is cached or intercepted —
    private pages and API responses must always come from the server. */
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
@@ -11,7 +11,7 @@ self.addEventListener('push', (event) => {
   } catch {
     return;
   }
-  const title = typeof data.title === 'string' ? data.title.slice(0, 120) : 'Pepforum';
+  const title = typeof data.title === 'string' ? data.title.slice(0, 120) : 'Pepforums';
   let url = '/notifications';
   try {
     const candidate = new URL(data.url || '/notifications', self.location.origin);

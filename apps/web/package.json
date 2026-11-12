@@ -2,7 +2,7 @@
   "name": "@pepforum/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Pepforum web app (Next.js App Router, server-rendered, Supabase SSR auth).",
+  "description": "Pepforums web app (Next.js App Router, server-rendered, Supabase SSR auth).",
   "type": "module",
   "scripts": {
     "dev": "next dev",

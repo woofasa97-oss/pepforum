@@ -110,7 +110,7 @@ describe('push delivery (…022)', () => {
     const replier = await db.createUser({ username: 'push_replier' });
     await db.as(user(author), `select public.save_push_subscription('https://push.example.test/ok', $1, 'tBHItJI5svbpez7KI4CCXg', 'Firefox')`, [KEY]);
     await db.as(user(author), `select public.save_push_subscription('https://push.example.test/gone', $1, 'tBHItJI5svbpez7KI4CCXg', 'Old phone')`, [KEY]);
-    const { id: post } = await db.asOne<{ id: string }>(user(author), `select public.create_post('on', 'basics', 'question', 'Does anyone push?', 'Testing push delivery.', null) as id`);
+    const { id: post } = await db.asOne<{ id: string }>(user(author), `select public.create_post('basics', 'question', 'Does anyone push?', 'Testing push delivery.', null) as id`);
     await db.as(user(replier), `select public.create_comment($1, 'Yes.')`, [post]);
 
     const sent: Array<{ endpoint: string; payload: string }> = [];
@@ -135,7 +135,7 @@ describe('push delivery (…022)', () => {
 
   it('words the payload in the member’s language', () => {
     const item = { id: 'x', kind: 'team_reply' as const, locale: 'fr' as const, post_title: null, url: '/contact/abc', subscriptions: [] };
-    expect(JSON.parse(pushPayload(item, 'https://pepforum.test'))).toMatchObject({ title: 'L’équipe Pepforum a répondu', url: 'https://pepforum.test/contact/abc' });
+    expect(JSON.parse(pushPayload(item, 'https://pepforum.test'))).toMatchObject({ title: 'L’équipe Pepforums a répondu', url: 'https://pepforum.test/contact/abc' });
   });
 });
 

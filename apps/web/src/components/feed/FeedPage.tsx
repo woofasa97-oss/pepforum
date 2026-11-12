@@ -21,7 +21,7 @@ interface Props {
 
 const SORTS = ['hot', 'new', 'top'] as const;
 
-/** Shared layout for the national, zone and category feeds. */
+/** Shared layout for the community, category and following feeds. */
 export async function FeedPage({ title, subtitle, basePath, query, hero, scope }: Props) {
   const [t, locale, standing, taxonomy, posts] = await Promise.all([getT(), getLocale(), getStanding(), getTaxonomy(), getFeed(query)]);
   // Capabilities are null when allowed, otherwise a reason key.
@@ -97,7 +97,7 @@ export async function FeedPage({ title, subtitle, basePath, query, hero, scope }
         </main>
 
         <aside className="rail right" aria-label={t('standing.title')}>
-          <AdSlot pkg={query.category ? 'category' : query.zone ? 'zone' : 'national'} target={query.category ?? query.zone ?? null} />
+          <AdSlot pkg={query.category ? 'category' : 'national'} target={query.category ?? null} />
           {standing ? <StandingCard standing={standing} t={t} /> : (
             <div className="card card-p">
               <p className="bold">{t('app.tagline')}</p>

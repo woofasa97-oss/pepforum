@@ -7,7 +7,6 @@ import { type TestDb, service, user } from '../src/testing/index.ts';
 export const TIER = { newcomer: 0, member: 100, trusted: 1000, contributor: 3000, steward: 10000 } as const;
 
 export interface PostOptions {
-  readonly zone?: string;
   readonly category?: string;
   readonly type?: 'experience' | 'claim' | 'question' | 'resource';
   readonly title?: string;
@@ -18,9 +17,8 @@ export interface PostOptions {
 export async function createPost(db: TestDb, author: string, options: PostOptions = {}): Promise<string> {
   const { id } = await db.asOne<{ id: string }>(
     user(author),
-    `select public.create_post($1, $2, $3, $4, $5, $6) as id`,
+    `select public.create_post($1, $2, $3, $4, $5) as id`,
     [
-      options.zone ?? 'on',
       options.category ?? 'basics',
       options.type ?? 'claim',
       options.title ?? 'A sufficiently descriptive title',

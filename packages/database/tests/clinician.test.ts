@@ -30,7 +30,7 @@ async function credential(member: string): Promise<string> {
   return r.id;
 }
 const submit = async (member: string, doc: string, profession = 'pharmacist') =>
-  (await db.asOne<{ id: string }>(user(member), `select public.submit_clinician_verification($1, 'Ontario College of Pharmacists', 'on', 'OCP-123456', $2, 'Community pharmacist since 2015.') as id`, [profession, doc])).id;
+  (await db.asOne<{ id: string }>(user(member), `select public.submit_clinician_verification($1, 'Ontario College of Pharmacists', 'CA', 'OCP-123456', $2, 'Community pharmacist since 2015.') as id`, [profession, doc])).id;
 const mine = async (member: string) => (await db.asOne<{ r: Mine }>(user(member), `select public.my_clinician_verification() as r`)).r;
 const queue = async (filter = 'pending') => (await db.asOne<{ r: Queue }>(user(admin, 'aal2'), `select public.admin_clinician_verifications($1) as r`, [filter])).r;
 const review = (id: string, decision: 'approve' | 'reject', reason = 'Registration confirmed on the regulator’s public register') =>
@@ -40,18 +40,18 @@ const profile = async (username: string) => (await db.asOne<{ p: { clinician: st
 describe('submitting', () => {
   it('needs a private credential document and sane fields', async () => {
     const member = await db.createUser({ username: 'rx_sam' });
-    expect((await db.expectError(user(member), `select public.submit_clinician_verification('pharmacist', 'OCP', 'on', 'OCP-1', gen_random_uuid(), '')`)).code).toBe('PF404');
+    expect((await db.expectError(user(member), `select public.submit_clinician_verification('pharmacist', 'OCP', 'CA', 'OCP-1', gen_random_uuid(), '')`)).code).toBe('PF404');
     const doc = await credential(member);
-    expect((await db.expectError(user(member), `select public.submit_clinician_verification('wizard', 'OCP', 'on', 'OCP-1', $1, '')`, [doc])).message).toBe('invalid_profession');
-    expect((await db.expectError(user(member), `select public.submit_clinician_verification('pharmacist', 'OCP', 'national', 'OCP-1', $1, '')`, [doc])).message).toBe('invalid_province');
+    expect((await db.expectError(user(member), `select public.submit_clinician_verification('wizard', 'OCP', 'CA', 'OCP-1', $1, '')`, [doc])).message).toBe('invalid_profession');
+    expect((await db.expectError(user(member), `select public.submit_clinician_verification('pharmacist', 'OCP', 'Canada', 'OCP-1', $1, '')`, [doc])).message).toBe('invalid_country');
 
     // Someone else's document can't be used, even if they know its id.
     const other = await db.createUser();
-    expect((await db.expectError(user(other), `select public.submit_clinician_verification('pharmacist', 'OCP', 'on', 'OCP-1', $1, '')`, [doc])).code).toBe('PF404');
+    expect((await db.expectError(user(other), `select public.submit_clinician_verification('pharmacist', 'OCP', 'CA', 'OCP-1', $1, '')`, [doc])).code).toBe('PF404');
 
     const id = await submit(member, doc);
     expect(await mine(member)).toMatchObject({ badge: null, latest: { id, status: 'pending' } });
-    expect((await db.expectError(user(member), `select public.submit_clinician_verification('pharmacist', 'OCP', 'on', 'OCP-1', $1, '')`, [doc])).message).toBe('already_pending');
+    expect((await db.expectError(user(member), `select public.submit_clinician_verification('pharmacist', 'OCP', 'CA', 'OCP-1', $1, '')`, [doc])).message).toBe('already_pending');
 
     // The document is visible to its owner and admins (MFA), to nobody else.
     const access = (actor: ReturnType<typeof user> | typeof anon) =>

@@ -13,9 +13,15 @@ import type { Database } from '@pepforum/database';
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { canonicalRedirect } from '@/lib/canonical-host';
 import { buildCsp, createNonce } from '@/lib/csp';
 
 export async function proxy(request: NextRequest) {
+  // pepforum.ca and www → the same page on SITE_URL (pepforums.com). Permanent:
+  // 301 for reads, 308 for anything else so a form post keeps its method.
+  const moved = canonicalRedirect(request.headers.get('host'), process.env.SITE_URL, request.nextUrl.pathname + request.nextUrl.search);
+  if (moved) return NextResponse.redirect(moved, request.method === 'GET' || request.method === 'HEAD' ? 301 : 308);
+
   const nonce = createNonce();
   const csp = buildCsp({
     nonce,

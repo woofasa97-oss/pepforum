@@ -46,7 +46,7 @@ export function SignInForm({ labels, next, captcha }: { labels: Labels; next: st
   );
 }
 
-export function SignUpForm({ labels, zones, locale, captcha }: { labels: Labels; zones: Array<{ id: string; name: string }>; locale: 'en' | 'fr'; captcha: Captcha }) {
+export function SignUpForm({ labels, locale, captcha }: { labels: Labels; locale: 'en' | 'fr'; captcha: Captcha }) {
   const [state, action] = useActionState(signUpAction, initialActionState);
   if (state.ok) return <FormMessage ok message={state.message} />;
   const errors = state.fieldErrors ?? {};
@@ -73,15 +73,6 @@ export function SignUpForm({ labels, zones, locale, captcha }: { labels: Labels;
         <FieldError message={errors.username} />
       </div>
       <div className="row wrap" style={{ gap: 12 }}>
-        {zones.length > 0 ? (
-          <div className="field grow">
-            <label htmlFor="su-zone">{labels['auth.homeZone']}</label>
-            <select id="su-zone" name="homeZone" className="input" defaultValue="">
-              <option value="">—</option>
-              {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-            </select>
-          </div>
-        ) : null}
         <div className="field grow">
           <label htmlFor="su-locale">{labels['auth.locale']}</label>
           <select id="su-locale" name="locale" className="input" defaultValue={locale}>
@@ -119,7 +110,7 @@ export function SignInLinkForm({ labels, captcha }: { labels: Labels; captcha: C
 }
 
 /** First social sign-in: what the identity provider can't tell us. */
-export function OnboardingForm({ labels, zones, next }: { labels: Labels; zones: Array<{ id: string; name: string }>; next: string }) {
+export function OnboardingForm({ labels, next }: { labels: Labels; next: string }) {
   const [state, action] = useActionState(completeOnboardingAction, initialActionState);
   const errors = state.fieldErrors ?? {};
   return (
@@ -133,15 +124,6 @@ export function OnboardingForm({ labels, zones, next }: { labels: Labels; zones:
         <span id="ob-user-hint" className="hint">{labels['auth.usernameHint']}</span>
         <FieldError message={errors.username} />
       </div>
-      {zones.length > 0 ? (
-        <div className="field">
-          <label htmlFor="ob-zone">{labels['auth.homeZone']}</label>
-          <select id="ob-zone" name="homeZone" className="input" defaultValue="">
-            <option value="">—</option>
-            {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-          </select>
-        </div>
-      ) : null}
       <label className="check mb12"><input type="checkbox" name="ageAck" required /><span>{labels['auth.ageAck']}</span></label>
       <label className="check mb16">
         <input type="checkbox" name="terms" required />

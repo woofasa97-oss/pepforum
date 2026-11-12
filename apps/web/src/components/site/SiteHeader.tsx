@@ -5,16 +5,16 @@ import { Icon } from '@/components/ui/Icon';
 import { signOutAction } from '@/server/actions/auth';
 import { setLocaleAction, setThemeAction } from '@/server/actions/settings';
 import { getLocale, getStanding, getT, getViewer } from '@/server/context';
-import { getAnnouncement, getTaxonomy } from '@/server/queries';
+import { getAnnouncement, getPricesEnabled } from '@/server/queries';
 
 import { Logo } from './Logo';
 import { NavLink } from './NavLink';
 import { ReplyNotice } from './ReplyNotice';
 import { UserMenu } from './UserMenu';
 
-/** Global header + zone bar. Server-rendered; forms work without JavaScript. */
+/** Global header. Server-rendered; forms work without JavaScript. */
 export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefined }) {
-  const [t, locale, viewer, standing, taxonomy, announcement] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getTaxonomy(), getAnnouncement()]);
+  const [t, locale, viewer, standing, announcement, prices] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getAnnouncement(), getPricesEnabled()]);
   const announcementText = announcement ? (locale === 'fr' ? announcement.fr || announcement.en : announcement.en || announcement.fr) : '';
 
   return (
@@ -25,6 +25,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           <nav className="nav" aria-label="Primary">
             <NavLink href="/" className="hide-sm">{t('nav.home')}</NavLink>
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
+            {prices ? <NavLink href="/prices" className="hide-sm">{t('nav.prices')}</NavLink> : null}
             {standing?.is_moderator ? <NavLink href="/mod" className="hide-md">{t('nav.mod')}</NavLink> : null}
             {standing?.is_admin ? <NavLink href="/admin" className="hide-md">{t('nav.admin')}</NavLink> : null}
             <form action={setLocaleAction}>
@@ -92,22 +93,6 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
         <div className="onboard-bar" role="status">
           <span>{t('auth.finishBanner')}</span>
           <Link className="btn red sm" href="/auth/welcome">{t('auth.finishSetup')}</Link>
-        </div>
-      ) : null}
-      {taxonomy.regions ? (
-        <div className="zonebar">
-          <nav className="zonebar-in" id="zones" aria-label={t('nav.zones')}>
-            <span className="lbl">{t('nav.zones')}</span>
-            {taxonomy.zones.map((z) => {
-              const href = z.id === 'national' ? '/' : `/zone/${z.id}`;
-              return (
-                <NavLink key={z.id} className="chip" href={href}>
-                  {z.id === 'national' ? <Icon name="globe" /> : null}
-                  {locale === 'fr' ? z.name_fr : z.name_en}
-                </NavLink>
-              );
-            })}
-          </nav>
         </div>
       ) : null}
     </>

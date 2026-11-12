@@ -24,9 +24,9 @@ async function createAdmin(options: { username?: string; email?: string } = {}):
   return id;
 }
 
-async function createModerator(zone = 'on'): Promise<string> {
+async function createModerator(): Promise<string> {
   const id = await db.createUser({ karma: TIER.contributor });
-  await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ($1, $2)`, [zone, id]);
+  await db.sql(`insert into public.moderators (user_id) values ($1)`, [id]);
   return id;
 }
 
@@ -40,8 +40,8 @@ describe('access', () => {
     `select public.admin_metrics(7)`,
     `select public.admin_people(null, 'all', 'newest', 0)`,
     `select public.admin_member('access_target')`,
-    `select public.admin_content('post', null, null, null, 0)`,
-    `select public.admin_mod_log(null, null, null, null, null)`,
+    `select public.admin_content('post', null, null, 0)`,
+    `select public.admin_mod_log(null, null, null, null)`,
     `select public.admin_team()`,
     `select public.admin_notes_health()`,
     `select public.admin_config()`,
@@ -52,8 +52,6 @@ describe('access', () => {
     `select public.admin_member_reports()`,
     `select public.admin_tickets('open', null)`,
     `select public.admin_ticket(gen_random_uuid())`,
-    `select public.mod_queue(null)`,
-    `select public.open_appeals(null)`,
   ];
   const WRITES = [
     `select public.admin_set_role(gen_random_uuid(), true, 'promote')`,
@@ -69,8 +67,7 @@ describe('access', () => {
     `select public.admin_set_comments_locked(gen_random_uuid(), true, 'heated')`,
     `select public.admin_upsert_category('new-cat', 'New', 'Nouveau', 'book', '', '', '{}', '{}', null, 0::smallint, 'new')`,
     `select public.admin_archive_category('basics', true, 'old')`,
-    `select public.admin_upsert_city('new-city', 'on', 'Newtown', 0::smallint, 'new')`,
-    `select public.admin_update_zone('on', 'Ontario', 'Ontario', 'ON', '', '', 'copy')`,
+    `select public.set_moderator(gen_random_uuid(), true, 'appoint')`,
     `select public.admin_shield_add('domain', 'vendor.example', null, 'vendor')`,
     `select public.admin_shield_remove('domain', 'vendor.example', 'mistake')`,
     `select public.admin_set_config('notes.min_ratings', '6', 'more ratings')`,
@@ -213,16 +210,17 @@ describe('notes', () => {
 });
 
 describe('pins and comment locks', () => {
-  it('pins lead their zone feed, two per zone', async () => {
+  it('pins lead the community feed, two for the whole site', async () => {
     const a = await createAdmin();
+    await db.sql(`update public.posts set pinned_at = null where pinned_at is not null`);
     const author = await db.createUser({ karma: TIER.member });
     const posts = [];
-    for (let i = 0; i < 3; i++) posts.push(await createPost(db, author, { zone: 'bc', title: `Pinned candidate number ${i}` }));
+    for (let i = 0; i < 3; i++) posts.push(await createPost(db, author, { title: `Pinned candidate number ${i}` }));
     await db.as(user(a, 'aal2'), `select public.admin_set_pinned($1, true, 'Read first')`, [posts[0]]);
     await db.as(user(a, 'aal2'), `select public.admin_set_pinned($1, true, 'Read first')`, [posts[1]]);
     expect((await db.expectError(user(a, 'aal2'), `select public.admin_set_pinned($1, true, 'Third')`, [posts[2]])).message).toBe('pin_limit');
 
-    const feed = await db.as<{ id: string; pinned: boolean }>(anon, `select id, pinned from public.get_feed('bc', null, null, null, 'new')`);
+    const feed = await db.as<{ id: string; pinned: boolean }>(anon, `select id, pinned from public.get_feed(p_sort => 'new')`);
     expect(feed.slice(0, 2).every((row) => row.pinned)).toBe(true);
     expect(new Set(feed.slice(0, 2).map((row) => row.id))).toEqual(new Set([posts[0], posts[1]]));
   });
@@ -325,25 +323,22 @@ describe('people and privacy', () => {
     const mod = await createModerator();
     const target = await db.createUser();
     await db.as(user(mod, 'aal2'), `select public.apply_sanction($1, 'warning', 'Please label personal experience')`, [target]);
-    const { log } = await db.asOne<{ log: Array<{ action: string; actor: string }> }>(user(a, 'aal2'), `select public.admin_mod_log('sanction', null, null, null, null) as log`);
+    const { log } = await db.asOne<{ log: Array<{ action: string; actor: string }> }>(user(a, 'aal2'), `select public.admin_mod_log('sanction', null, null, null) as log`);
     const { username } = await db.profile(mod) as { username: string };
     expect(log[0]).toMatchObject({ action: 'sanction', actor: username });
   });
 });
 
 describe('taxonomy', () => {
-  it('creates, edits and archives categories and cities', async () => {
+  it('creates, edits and archives categories', async () => {
     const a = await createAdmin();
     await db.as(user(a, 'aal2'), `select public.admin_upsert_category('sleep', 'Sleep', 'Sommeil', 'moon', 'Sleep research', 'Recherche', '{"Cite sources"}', '{"Citez vos sources"}', null, 9::smallint, 'New topic')`);
     await db.as(user(a, 'aal2'), `select public.admin_upsert_category('sleep', 'Sleep & rest', 'Sommeil', 'moon', '', '', '{}', '{}', 7::smallint, 9::smallint, 'Rename')`);
     expect(await db.sqlOne(`select name_en, min_note_ratings from public.categories where id = 'sleep'`)).toEqual({ name_en: 'Sleep & rest', min_note_ratings: 7 });
     await db.as(user(a, 'aal2'), `select public.admin_archive_category('sleep', true, 'Merged into recovery')`);
     const author = await db.createUser({ karma: TIER.member });
-    expect((await db.expectError(user(author), `select public.create_post('on', 'sleep', 'claim', 'A sufficiently descriptive title', 'Body')`)).message).toBe('invalid_category');
-
-    await db.as(user(a, 'aal2'), `select public.admin_upsert_city('kingston', 'on', 'Kingston', 5::smallint, 'New city')`);
-    expect((await db.expectError(user(a, 'aal2'), `select public.admin_upsert_city('Bad Id', 'on', 'X', 0::smallint, 'x x x')`)).message).toBe('invalid_id');
-    expect((await lastLog('taxonomy_change')).metadata).toMatchObject({ kind: 'city', id: 'kingston' });
+    expect((await db.expectError(user(author), `select public.create_post('sleep', 'claim', 'A sufficiently descriptive title', 'Body')`)).message).toBe('invalid_category');
+    expect((await lastLog('taxonomy_change')).metadata).toMatchObject({ kind: 'category', id: 'sleep' });
   });
 });
 
@@ -372,7 +367,7 @@ describe('dashboards', () => {
 
   it('staff without two-factor sign-in are flagged', async () => {
     const a = await createAdmin();
-    await createModerator('qc');
+    await createModerator();
     await db.sql(`insert into auth.mfa_factors (user_id, status) values ($1, 'verified')`, [a]);
     const { s } = await db.asOne<{ s: { staff_without_mfa: string[] } }>(user(a, 'aal2'), `select public.admin_system_status() as s`);
     const { username } = await db.profile(a) as { username: string };

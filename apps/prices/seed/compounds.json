@@ -1,0 +1,863 @@
+[
+  {
+    "slug": "5-amino-1mq",
+    "name": "5-Amino-1MQ",
+    "type": "Single compound",
+    "aliases": [
+      "5-Amino-1-methylquinolinium",
+      "5A1MQ"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ace-031",
+    "name": "ACE-031",
+    "type": "Single compound",
+    "aliases": [
+      "ACVR2B-Fc",
+      "Ramatercept"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "aicar",
+    "name": "AICAR",
+    "type": "Single compound",
+    "aliases": [
+      "Acadesine",
+      "AICA ribonucleotide",
+      "5-aminoimidazole-4-carboxamide ribonucleotide"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "aod-9604",
+    "name": "AOD-9604",
+    "type": "Single compound",
+    "aliases": [
+      "Advanced Obesity Drug 9604",
+      "AOD 9604",
+      "AOD9604"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ara-290",
+    "name": "ARA-290",
+    "type": "Single compound",
+    "aliases": [
+      "Cibinetide"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "bpc-157",
+    "name": "BPC-157",
+    "type": "Single compound",
+    "aliases": [
+      "Body Protection Compound 157",
+      "PL 14736"
+    ],
+    "known_sizes_mg": [
+      5,
+      10,
+      20
+    ]
+  },
+  {
+    "slug": "bpc-157-tb-500",
+    "name": "BPC-157 + TB-500",
+    "type": "Blend",
+    "aliases": [
+      "Wolverine"
+    ],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "bpc-157"
+      },
+      {
+        "slug": "tb-500"
+      }
+    ]
+  },
+  {
+    "slug": "bpc-157-tb-500-cartalax",
+    "name": "BPC-157 + TB-500 + Cartalax",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "bpc-157"
+      },
+      {
+        "slug": "tb-500"
+      },
+      {
+        "slug": "cartalax"
+      }
+    ]
+  },
+  {
+    "slug": "bpc-157-tb-500-ghk-cu",
+    "name": "BPC-157 + TB-500 + GHK-Cu",
+    "type": "Blend",
+    "aliases": [
+      "GLOW"
+    ],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "bpc-157"
+      },
+      {
+        "slug": "tb-500"
+      },
+      {
+        "slug": "ghk-cu"
+      }
+    ]
+  },
+  {
+    "slug": "bpc-157-tb-500-ghk-cu-kpv",
+    "name": "BPC-157 + TB-500 + GHK-Cu + KPV",
+    "type": "Blend",
+    "aliases": [
+      "KLOW"
+    ],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "bpc-157"
+      },
+      {
+        "slug": "tb-500"
+      },
+      {
+        "slug": "ghk-cu"
+      },
+      {
+        "slug": "kpv"
+      }
+    ]
+  },
+  {
+    "slug": "bpc-157-tb-500-kpv",
+    "name": "BPC-157 + TB-500 + KPV",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "bpc-157"
+      },
+      {
+        "slug": "tb-500"
+      },
+      {
+        "slug": "kpv"
+      }
+    ]
+  },
+  {
+    "slug": "cagrilintide",
+    "name": "Cagrilintide",
+    "type": "Single compound",
+    "aliases": [
+      "AM833"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "cagrilintide-semaglutide",
+    "name": "Cagrilintide + Semaglutide",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "cagrilintide"
+      },
+      {
+        "slug": "semaglutide"
+      }
+    ]
+  },
+  {
+    "slug": "cartalax",
+    "name": "Cartalax",
+    "type": "Single compound",
+    "aliases": [
+      "Ala-Glu-Asp-Arg"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "cjc-1295",
+    "name": "CJC-1295 (without DAC)",
+    "type": "Single compound",
+    "aliases": [
+      "CJC-1295",
+      "CJC-1295 no DAC",
+      "CJC-1295 no-DAC",
+      "CJC-1295 without DAC",
+      "CJC 1295",
+      "Mod GRF 1-29",
+      "Modified GRF 1-29",
+      "Tetrasubstituted GRF 1-29"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "cjc-1295-dac",
+    "name": "CJC-1295 DAC",
+    "type": "Single compound",
+    "aliases": [
+      "CJC-1295 with DAC",
+      "CJC-1295-DAC",
+      "DAC:GRF",
+      "DAC-GRF",
+      "CJC 1295 DAC"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "cjc-1295-ghrp-2",
+    "name": "CJC-1295 (without DAC) + GHRP-2",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "cjc-1295"
+      },
+      {
+        "slug": "ghrp-2"
+      }
+    ]
+  },
+  {
+    "slug": "cjc-1295-ghrp-6",
+    "name": "CJC-1295 (without DAC) + GHRP-6",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "cjc-1295"
+      },
+      {
+        "slug": "ghrp-6"
+      }
+    ]
+  },
+  {
+    "slug": "cjc-1295-hexarelin",
+    "name": "CJC-1295 (without DAC) + Hexarelin",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "cjc-1295"
+      },
+      {
+        "slug": "hexarelin"
+      }
+    ]
+  },
+  {
+    "slug": "cjc-1295-ipamorelin",
+    "name": "CJC-1295 (without DAC) + Ipamorelin",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "cjc-1295"
+      },
+      {
+        "slug": "ipamorelin"
+      }
+    ]
+  },
+  {
+    "slug": "dsip",
+    "name": "DSIP",
+    "type": "Single compound",
+    "aliases": [
+      "Delta Sleep-Inducing Peptide",
+      "Delta Sleep Peptide",
+      "Emideltide"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "epithalon",
+    "name": "Epithalon",
+    "type": "Single compound",
+    "aliases": [
+      "Epitalon",
+      "Epithalamin",
+      "Ala-Glu-Asp-Gly"
+    ],
+    "known_sizes_mg": [
+      10,
+      50
+    ]
+  },
+  {
+    "slug": "foxo4-dri",
+    "name": "Foxo4-DRI",
+    "type": "Single compound",
+    "aliases": [
+      "Foxo4-D-Retro-Inverso",
+      "Proxofim"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ghk-cu",
+    "name": "GHK-Cu",
+    "type": "Copper complex",
+    "aliases": [
+      "Tripeptide-1 Copper",
+      "Glycyl-L-Histidyl-L-Lysine Copper"
+    ],
+    "known_sizes_mg": [
+      50,
+      100
+    ]
+  },
+  {
+    "slug": "ghk-cu-kpv",
+    "name": "GHK-Cu + KPV",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "ghk-cu"
+      },
+      {
+        "slug": "kpv"
+      }
+    ]
+  },
+  {
+    "slug": "ghrp-2",
+    "name": "GHRP-2",
+    "type": "Single compound",
+    "aliases": [
+      "Growth Hormone Releasing Peptide 2",
+      "Pralmorelin",
+      "GHRP2"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ghrp-6",
+    "name": "GHRP-6",
+    "type": "Single compound",
+    "aliases": [
+      "Growth Hormone Releasing Peptide-6"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "glutathione",
+    "name": "Glutathione",
+    "type": "Single compound",
+    "aliases": [
+      "GSH",
+      "Reduced Glutathione",
+      "gamma-glutamylcysteinylglycine"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "hcg",
+    "name": "hCG",
+    "type": "Single compound",
+    "aliases": [
+      "Human Chorionic Gonadotropin",
+      "Pregnyl",
+      "Novarel",
+      "Choragon"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "hexarelin",
+    "name": "Hexarelin",
+    "type": "Single compound",
+    "aliases": [
+      "Examorelin",
+      "EP-23905"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "igf-1-lr3",
+    "name": "IGF-1 LR3",
+    "type": "Single compound",
+    "aliases": [
+      "Insulin-like Growth Factor 1 Long R3",
+      "Long R3 IGF-1",
+      "IGF1 LR3",
+      "Long-R3-IGF-1"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "igf-des",
+    "name": "IGF-DES",
+    "type": "Single compound",
+    "aliases": [
+      "des(1-3)IGF-1",
+      "DES IGF-1",
+      "des-IGF-1"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ipamorelin",
+    "name": "Ipamorelin",
+    "type": "Single compound",
+    "aliases": [
+      "NNC 26-0161"
+    ],
+    "known_sizes_mg": [
+      5,
+      10
+    ]
+  },
+  {
+    "slug": "kisspeptin-10",
+    "name": "Kisspeptin-10",
+    "type": "Single compound",
+    "aliases": [
+      "KP-10",
+      "Metastin 45-54"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "kpv",
+    "name": "KPV",
+    "type": "Single compound",
+    "aliases": [
+      "Lys-Pro-Val"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ll-37",
+    "name": "LL-37",
+    "type": "Single compound",
+    "aliases": [
+      "CAP18"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "melanotan-ii",
+    "name": "Melanotan II",
+    "type": "Single compound",
+    "aliases": [
+      "MT-II",
+      "MT2",
+      "Melanotan 2"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "mk-677",
+    "name": "MK-677",
+    "type": "Single compound",
+    "aliases": [
+      "Ibutamoren",
+      "MK-0677",
+      "Nutrobal"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "mots-c",
+    "name": "MOTS-c",
+    "type": "Single compound",
+    "aliases": [
+      "Mitochondrial ORF of the 12S rRNA type-c"
+    ],
+    "known_sizes_mg": [
+      10,
+      20,
+      40
+    ]
+  },
+  {
+    "slug": "n-acetyl-selank",
+    "name": "N-Acetyl Selank",
+    "type": "Single compound",
+    "aliases": [
+      "NA-Selank",
+      "N-Acetyl Selank Amidate",
+      "Selank Amidate",
+      "NA Selank"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "n-acetyl-selank-n-acetyl-semax",
+    "name": "N-Acetyl Selank + N-Acetyl Semax",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "n-acetyl-selank"
+      },
+      {
+        "slug": "n-acetyl-semax"
+      }
+    ]
+  },
+  {
+    "slug": "n-acetyl-semax",
+    "name": "N-Acetyl Semax",
+    "type": "Single compound",
+    "aliases": [
+      "NA-Semax",
+      "N-Acetyl Semax Amidate",
+      "NA-Semax Amidate",
+      "NA Semax"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "nad-plus",
+    "name": "NAD+",
+    "type": "Single compound",
+    "aliases": [
+      "NAD",
+      "Nicotinamide Adenine Dinucleotide"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "nad-plus-mots-c-5-amino-1mq",
+    "name": "NAD+ + MOTS-c + 5-Amino-1MQ",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "nad-plus"
+      },
+      {
+        "slug": "mots-c"
+      },
+      {
+        "slug": "5-amino-1mq"
+      }
+    ]
+  },
+  {
+    "slug": "oxytocin",
+    "name": "Oxytocin",
+    "type": "Single compound",
+    "aliases": [
+      "OT",
+      "Pitocin"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "peg-mgf",
+    "name": "PEG-MGF",
+    "type": "Single compound",
+    "aliases": [
+      "Pegylated Mechano Growth Factor",
+      "PEGylated MGF"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "pinealon",
+    "name": "Pinealon",
+    "type": "Single compound",
+    "aliases": [
+      "EDR tripeptide"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "pt-141",
+    "name": "PT-141",
+    "type": "Single compound",
+    "aliases": [
+      "Bremelanotide",
+      "Vyleesi"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "retatrutide",
+    "name": "Retatrutide",
+    "type": "Single compound",
+    "aliases": [
+      "LY3437943"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "selank",
+    "name": "Selank",
+    "type": "Single compound",
+    "aliases": [
+      "TP-7"
+    ],
+    "known_sizes_mg": [
+      5,
+      10
+    ]
+  },
+  {
+    "slug": "selank-semax",
+    "name": "Selank + Semax",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "selank"
+      },
+      {
+        "slug": "semax"
+      }
+    ]
+  },
+  {
+    "slug": "semaglutide",
+    "name": "Semaglutide",
+    "type": "Single compound",
+    "aliases": [
+      "Ozempic",
+      "Wegovy",
+      "Rybelsus"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "semax",
+    "name": "Semax",
+    "type": "Single compound",
+    "aliases": [
+      "ACTH(4-10) analogue",
+      "Meksidol"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "sermorelin",
+    "name": "Sermorelin",
+    "type": "Single compound",
+    "aliases": [
+      "GHRH 1-29",
+      "Sermorelin Acetate",
+      "Geref"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "sermorelin-ghrp-2",
+    "name": "Sermorelin + GHRP-2",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "sermorelin"
+      },
+      {
+        "slug": "ghrp-2"
+      }
+    ]
+  },
+  {
+    "slug": "sermorelin-ghrp-6",
+    "name": "Sermorelin + GHRP-6",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "sermorelin"
+      },
+      {
+        "slug": "ghrp-6"
+      }
+    ]
+  },
+  {
+    "slug": "sermorelin-ghrp-6-ghrp-2",
+    "name": "Sermorelin + GHRP-6 + GHRP-2",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "sermorelin"
+      },
+      {
+        "slug": "ghrp-6"
+      },
+      {
+        "slug": "ghrp-2"
+      }
+    ]
+  },
+  {
+    "slug": "sermorelin-ipamorelin",
+    "name": "Sermorelin + Ipamorelin",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "sermorelin"
+      },
+      {
+        "slug": "ipamorelin"
+      }
+    ]
+  },
+  {
+    "slug": "snap-8",
+    "name": "SNAP-8",
+    "type": "Single compound",
+    "aliases": [
+      "Acetyl Octapeptide-3"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "ss-31",
+    "name": "SS-31",
+    "type": "Single compound",
+    "aliases": [
+      "Elamipretide",
+      "Bendavia",
+      "MTP-131"
+    ],
+    "known_sizes_mg": [
+      10,
+      50
+    ]
+  },
+  {
+    "slug": "tb-500",
+    "name": "TB-500",
+    "type": "Single compound",
+    "aliases": [
+      "thymosin beta 4",
+      "TB4",
+      "thymosin β4",
+      "Thymosin Beta 4",
+      "TB500",
+      "Thymosin Beta-4",
+      "Tb4",
+      "Tβ4"
+    ],
+    "known_sizes_mg": [
+      5,
+      10
+    ]
+  },
+  {
+    "slug": "tb4-frag",
+    "name": "TB4-Frag",
+    "type": "Single compound",
+    "aliases": [
+      "Thymosin Beta-4 Fragment",
+      "TB4 500-509",
+      "LKKTETQ"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "tesamorelin",
+    "name": "Tesamorelin",
+    "type": "Single compound",
+    "aliases": [
+      "Egrifta",
+      "TH9507"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "tesamorelin-cjc-1295-ipamorelin",
+    "name": "Tesamorelin + CJC-1295 (without DAC) + Ipamorelin",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "tesamorelin"
+      },
+      {
+        "slug": "cjc-1295"
+      },
+      {
+        "slug": "ipamorelin"
+      }
+    ]
+  },
+  {
+    "slug": "tesamorelin-ipamorelin",
+    "name": "Tesamorelin + Ipamorelin",
+    "type": "Blend",
+    "aliases": [],
+    "known_sizes_mg": [],
+    "blend_components": [
+      {
+        "slug": "tesamorelin"
+      },
+      {
+        "slug": "ipamorelin"
+      }
+    ]
+  },
+  {
+    "slug": "thymosin-alpha-1",
+    "name": "Thymosin Alpha-1",
+    "type": "Single compound",
+    "aliases": [
+      "Tα1",
+      "Zadaxin",
+      "TA1"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "tirzepatide",
+    "name": "Tirzepatide",
+    "type": "Single compound",
+    "aliases": [
+      "Mounjaro",
+      "Zepbound"
+    ],
+    "known_sizes_mg": []
+  },
+  {
+    "slug": "vip",
+    "name": "VIP",
+    "type": "Single compound",
+    "aliases": [
+      "Vasoactive Intestinal Peptide",
+      "Vasoactive Intestinal Polypeptide"
+    ],
+    "known_sizes_mg": []
+  }
+]

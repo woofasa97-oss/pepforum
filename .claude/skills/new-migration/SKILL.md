@@ -1,11 +1,11 @@
 ---
 name: new-migration
-description: Use for ANY change to the Pepforum database — new table, column, RPC, policy, grant, trigger or config default in supabase/migrations. Walks through the security checklist (RLS, grants, definer functions, rate limits, ledger rules), the tests to add, and the TypeScript types to update.
+description: Use for ANY change to the Pepforums database — new table, column, RPC, policy, grant, trigger or config default in supabase/migrations. Walks through the security checklist (RLS, grants, definer functions, rate limits, ledger rules), the tests to add, and the TypeScript types to update.
 ---
 
 # Adding or changing a Supabase migration
 
-Pepforum enforces every permission in Postgres (docs/adr/0001). A migration that skips a step below can expose data or let members mint karma. Follow the steps in order.
+Pepforums enforces every permission in Postgres (docs/adr/0001). A migration that skips a step below can expose data or let members mint karma. Follow the steps in order.
 
 ## 1. Create the file
 
@@ -51,7 +51,7 @@ grant execute on function public.do_thing(uuid, ...) to authenticated;
 ```
 
 - Karma or XP changes **only** via `private.reconcile(event_key, user, track, reason, source_kind, source_id, desired)`.
-- Moderator or admin functions call `private.require_zone_mod()` / `private.require_admin()`. These enforce MFA (aal2). Log the action with `private.log_mod_action()`.
+- Moderator or admin functions call `private.require_moderator()` / `private.require_admin()`. These enforce MFA (aal2). Log the action with `private.log_mod_action()`.
 - Read-projection functions: make every `auth.uid()` comparison NULL-safe (`coalesce(x = auth.uid(), false)`).
 - A function used inside an RLS policy needs `grant execute … to anon, authenticated`. Keep such helpers read-only.
 - New thresholds become `app_config` rows (with a description) plus a section in docs/SELF_MODERATION.md.

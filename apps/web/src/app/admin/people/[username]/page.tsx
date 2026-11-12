@@ -24,7 +24,6 @@ import {
 } from '@/server/actions/admin';
 import { adminMember, adminOverview } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
 
 const TABS = ['activity', 'standing', 'moderation', 'notes', 'staff'] as const;
 type Tab = (typeof TABS)[number];
@@ -223,7 +222,7 @@ function StaffTab({ m, t }: { m: AdminMember; t: Translate }) {
 }
 
 export default async function AdminMemberPage({ params, searchParams }: { params: Promise<{ username: string }>; searchParams: Promise<{ tab?: string }> }) {
-  const [t, locale, { username }, query, taxonomy] = await Promise.all([getT(), getLocale(), params, searchParams, getTaxonomy()]);
+  const [t, locale, { username }, query] = await Promise.all([getT(), getLocale(), params, searchParams]);
   const tab: Tab = TABS.includes(query.tab as Tab) ? (query.tab as Tab) : 'activity';
   const [result, overview] = await Promise.all([adminMember(decodeURIComponent(username)), adminOverview()]);
   if (!result.ok) return <DataUnavailable result={result} t={t} />;
@@ -234,11 +233,6 @@ export default async function AdminMemberPage({ params, searchParams }: { params
   const founding = m.rater_status === 'founding' && m.founding_until;
   const writingLocked = isFuture(m.writing_locked_until);
   const canSanction = !m.is_admin && !m.is_self && !m.deleted_at;
-  const zones = taxonomy.zones.filter((z) => z.id !== 'national');
-  const zoneName = (id: string) => {
-    const z = taxonomy.zones.find((x) => x.id === id);
-    return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
-  };
   const in90 = isoDateInDays(90);
   const owner = overview.ok ? overview.data.owner : null;
   const isOwner = overview.ok && overview.data.is_owner;
@@ -253,7 +247,7 @@ export default async function AdminMemberPage({ params, searchParams }: { params
             <h1 tabIndex={-1} className="row wrap" style={{ gap: 8 }}>u/{m.username} <TierBadge tier={m.tier} t={t} /></h1>
             <div className="row wrap mt8" style={{ gap: 4 }}>
               {m.is_admin ? <span className="pill blue">{t(m.username === owner ? 'admin.role.owner' : 'admin.role.admin')}</span> : null}
-              {m.moderates.map((z) => <span key={z} className="pill blue">{t('admin.role.modOf', { zone: zoneName(z) })}</span>)}
+              {m.is_moderator ? <span className="pill blue">{t('admin.role.moderator')}</span> : null}
               {founding ? <span className="pill green">{t('admin.role.foundingUntil', { date: formatDate(m.founding_until as string, locale) })}</span> : null}
               {active ? <span className="pill red">{t(`admin.sanction.${active.kind}` as MessageKey)}</span> : null}
               {m.needs_onboarding ? <span className="pill amber">{t('admin.people.onboarding')}</span> : null}
@@ -277,7 +271,6 @@ export default async function AdminMemberPage({ params, searchParams }: { params
               )],
               [t('admin.member.lastSignIn'), m.account.last_sign_in_at ? relativeTime(m.account.last_sign_in_at, t) : '—'],
               [t('admin.member.mfa'), m.account.mfa ? t('admin.yes') : t('admin.no')],
-              [t('admin.member.home'), m.home_zone_id ? zoneName(m.home_zone_id) : '—'],
             ]} />
           </div>
         </div>
@@ -351,21 +344,15 @@ export default async function AdminMemberPage({ params, searchParams }: { params
                 consequence={t(m.is_admin ? 'admin.member.removeAdminHelp' : 'admin.member.makeAdminHelp')}
                 hidden={{ username: m.username, admin: m.is_admin ? 'false' : 'true' }} labels={reasonLabels} />
             ) : null}
-            {!m.deleted_at ? (
-              <ActionForm action={setModeratorAction} label={t('admin.member.addZone')} submit={t('admin.member.appoint')}
-                consequence={t('admin.member.addZoneHelp')} hidden={{ username: m.username, appoint: 'true' }} labels={reasonLabels}>
-                <div className="field">
-                  <label htmlFor="mod-zone">{t('admin.zone')}</label>
-                  <select id="mod-zone" name="zone" className="input" required>
-                    {zones.filter((z) => !m.moderates.includes(z.id)).map((z) => <option key={z.id} value={z.id}>{zoneName(z.id)}</option>)}
-                  </select>
-                </div>
-              </ActionForm>
+            {!m.deleted_at && !m.is_self ? (
+              m.is_moderator ? (
+                <ActionForm action={setModeratorAction} label={t('admin.member.removeModerator')} submit={t('admin.member.remove')}
+                  tone="danger" consequence={t('admin.member.removeModeratorHelp')} hidden={{ username: m.username, appoint: 'false' }} labels={reasonLabels} />
+              ) : (
+                <ActionForm action={setModeratorAction} label={t('admin.member.makeModerator')} submit={t('admin.member.appoint')}
+                  consequence={t('admin.member.appointHelp')} hidden={{ username: m.username, appoint: 'true' }} labels={reasonLabels} />
+              )
             ) : null}
-            {m.moderates.map((z) => (
-              <ActionForm key={z} action={setModeratorAction} label={t('admin.member.removeZone', { zone: zoneName(z) })} submit={t('admin.member.remove')}
-                tone="danger" hidden={{ username: m.username, zone: z, appoint: 'false' }} labels={reasonLabels} />
-            ))}
           </div>
 
           <div className="grp">

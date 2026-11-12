@@ -30,9 +30,12 @@ const SPECIFIC_MESSAGES = new Set<string>([
   'invalid_attestation', 'attestation_expired', 'social_taken', 'socials_not_configured',
   // Ported features (…021–…025)
   'invalid_path', 'reserved_path', 'redirect_loop', 'invalid_push_endpoint', 'unsupported_file_type', 'file_too_large', 'too_many_images',
-  'already_removed', 'already_pending', 'already_verified', 'invalid_profession', 'invalid_province', 'already_advertiser', 'advertiser_suspended',
+  'already_removed', 'already_pending', 'already_verified', 'invalid_profession', 'invalid_country', 'already_advertiser', 'advertiser_suspended',
   'advertiser_not_approved', 'budget_below_minimum', 'french_required', 'insufficient_credit', 'campaign_locked', 'duplicate_reference',
   'invalid_amount', 'reference_required', 'invalid_creative', 'invalid_decision',
+  // Price tracking (…031, …032)
+  'invalid_vendor_slug', 'invalid_vendor_url', 'vendor_not_found', 'compound_not_found', 'coa_exists', 'coa_incomplete',
+  'coa_batch_required', 'invalid_coa_purity', 'invalid_coa_date',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

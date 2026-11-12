@@ -24,7 +24,7 @@ describe('posting gates', () => {
     const link = 'https://clinicaltrials.gov/study/NCT03548935';
     const linkError = await db.expectError(
       user(newcomer),
-      `select public.create_post('on', 'research', 'resource', 'A link to the primary source', '', $1)`,
+      `select public.create_post('research', 'resource', 'A link to the primary source', '', $1)`,
       [link],
     );
     expect(linkError).toMatchObject({ code: 'PF403', message: 'capability_denied', detail: 'post_link:tier:1' });
@@ -38,7 +38,7 @@ describe('posting gates', () => {
     for (let i = 0; i < 3; i += 1) await createPost(db, newcomer);
     const error = await db.expectError(
       user(newcomer),
-      `select public.create_post('on', 'basics', 'question', 'One post too many today', 'Body.')`,
+      `select public.create_post('basics', 'question', 'One post too many today', 'Body.')`,
     );
     expect(error).toMatchObject({ code: 'PF429', message: 'rate_limited', detail: 'post_newcomer' });
 
@@ -50,7 +50,7 @@ describe('posting gates', () => {
     const unconfirmed = await db.createUser({ emailConfirmed: false });
     const error = await db.expectError(
       user(unconfirmed),
-      `select public.create_post('on', 'basics', 'question', 'How do I read a trial registry?', 'Beginner here.')`,
+      `select public.create_post('basics', 'question', 'How do I read a trial registry?', 'Beginner here.')`,
     );
     expect(error.detail).toBe('post_text:email_unconfirmed');
   });

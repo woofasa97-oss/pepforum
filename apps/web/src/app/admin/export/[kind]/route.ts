@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const rows: AdminLogEntry[] = [];
     let before: string | null = null;
     for (let n = 0; n < MAX_LOG_PAGES; n++) {
-      const result = await supabase.rpc('admin_mod_log', { p_action: null, p_actor: null, p_zone: null, p_target: null, p_before: before });
+      const result = await supabase.rpc('admin_mod_log', { p_action: null, p_actor: null, p_target: null, p_before: before });
       if (result.error) return new NextResponse('Forbidden', { status: 403 });
       const page: AdminLogEntry[] = result.data;
       rows.push(...page);
@@ -38,8 +38,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       before = page[page.length - 1]?.created_at ?? null;
     }
     return download(`pepforum-modlog-${today}.csv`, csv([
-      ['created_at', 'actor', 'action', 'target_kind', 'target_id', 'target_user', 'zone', 'reason', 'metadata'],
-      ...rows.map((e) => [e.created_at, e.actor ?? 'system', e.action, e.target_kind, e.target_id, e.target_user, e.zone_id, e.reason, e.metadata]),
+      ['created_at', 'actor', 'action', 'target_kind', 'target_id', 'target_user', 'reason', 'metadata'],
+      ...rows.map((e) => [e.created_at, e.actor ?? 'system', e.action, e.target_kind, e.target_id, e.target_user, e.reason, e.metadata]),
     ]));
   }
 

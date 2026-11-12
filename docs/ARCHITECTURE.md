@@ -21,10 +21,11 @@ Render cron · apps/worker (*/10 min)
 
 | Path | What | Notes |
 |---|---|---|
-| `supabase/migrations/` | Schema, RLS, grants, every business rule | Ordered, append-only. 29 files. |
+| `supabase/migrations/` | Schema, RLS, grants, every business rule | Ordered, append-only. 33 files. |
 | `supabase/seed.sql` | Local demo data (dev only) | Creates content through the real RPCs |
 | `supabase/config.toml`, `templates/` | Local Supabase + auth email templates | Only `public` exposed via the API |
 | `packages/database/` | `Database` types, domain vocabulary, PGlite test harness, schema tests | The database contract |
+| `apps/prices/` | Price pipeline (ported from PepSpotter): reads vendors' stores, gates each run, publishes checked prices | Own Postgres login `pepforum_prices`; never holds the secret key. See [PRICES.md](PRICES.md) |
 | `apps/worker/` | Note scoring, maintenance, deletions, web push, media purge, ad settlement | Pure algorithms + a storage interface |
 | `apps/web/` | Next.js app | Server-rendered, no browser→Supabase traffic |
 | `docs/` | Specs, threat model, privacy, ops, ADRs | |
@@ -108,3 +109,19 @@ Five features from the `pepforum-ca` prototype build were ported onto this model
 | Advertising (…025) | `advertisers`, `ad_campaigns`, append-only `ad_ledger` → cached balance, `ad_daily_stats`, `ad_deliveries`, `ad_reports`; `get_ad` (anon) and `ad_click`; `settle_ads` (service only) | `/advertise`, `/advertiser`, `/advertiser/campaign`, `AdSlot` in feeds, `/ads/go/[id]`, `/admin/ads` | `settle_ads` job |
 
 Images stay on this origin (`/media/<id>`), so CSP `img-src` is still `'self'` and the browser still never talks to Supabase.
+
+## Price tracking (migrations …030–…033)
+
+An editorial Prices section, off until `features.prices` is switched on ([ADR-0008](adr/0008-price-tracking.md), [PRICES.md](PRICES.md)).
+
+| Part | Database | Web | Pipeline |
+|---|---|---|---|
+| Prices (…030, …033) | Schema `prices` (closed to every API role): `vendors`, `compounds`, `offers` → `published_offers`, append-only `offer_observations`, run records; `publish_offers`; read API `get_price_catalog`, `get_price_history` | `/prices`, `/prices/[compound]`, `/prices/vendors`, `/prices/vendor/[slug]`, pricing rules in `lib/prices/model.ts` | `apps/prices`: `refresh` → `gate` → `publish`, scheduled by `.github/workflows/refresh-prices.yml` |
+| Certificates (…031) | `prices.coa_documents`; `admin_price_coa_*`; `prices.file_coa_candidate` (pipeline, candidates only) | `/admin/prices`, certificate tables on price pages | `coa-scan` |
+| Links (…032) | `prices.click_daily_stats`; `price_link` (plain links, ADR-0009) | `/prices/go/[id]` (302, no referrer) | — |
+
+The invariants hold with one addition: the pipeline is a second writer, and it reaches the database as its own login with column-level grants in `prices` only. It cannot touch a forum table, and the web app still reads only through functions.
+
+## No zones (migration …034)
+
+Zones, cities, home zones and province fields were removed ([ADR-0010](adr/0010-no-zones.md)). Moderators are site-wide (`public.moderators`, `private.is_moderator`, `private.require_moderator`, `public.set_moderator`); `mod_queue()` and `open_appeals()` take no arguments; clinicians and advertisers give an ISO country. `/zone/*` redirects to `/` (`next.config.ts`). `packages/database/tests/zones-removed.test.ts` fails if any function still mentions a zone.

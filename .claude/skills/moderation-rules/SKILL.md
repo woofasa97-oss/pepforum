@@ -1,6 +1,6 @@
 ---
 name: moderation-rules
-description: Use when changing Pepforum's self-moderation economy — karma rewards/penalties, tiers, capability gates, community-note rating/settlement/scoring, reports, strikes, sanctions or appeals. Explains which knob to turn (config vs code), the anti-gaming properties that must be preserved, and the tests that prove them.
+description: Use when changing Pepforums' self-moderation economy — karma rewards/penalties, tiers, capability gates, community-note rating/settlement/scoring, reports, strikes, sanctions or appeals. Explains which knob to turn (config vs code), the anti-gaming properties that must be preserved, and the tests that prove them.
 ---
 
 # Changing the self-moderation rules

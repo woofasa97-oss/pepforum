@@ -11,7 +11,7 @@ async function load() {
 beforeEach(() => {
   vi.stubEnv('SUPABASE_URL', 'https://project.supabase.co');
   vi.stubEnv('SUPABASE_PUBLISHABLE_KEY', 'x'.repeat(32));
-  vi.stubEnv('SITE_URL', 'https://pepforum.ca');
+  vi.stubEnv('SITE_URL', 'https://pepforums.com');
   vi.stubEnv('SOCIAL_ATTESTATION_KEY', 'k'.repeat(40));
   vi.stubEnv('X_CLIENT_ID', 'x-client-id');
   vi.stubEnv('X_CLIENT_SECRET', 'x-client-secret');
@@ -46,7 +46,7 @@ describe('verified social accounts', () => {
     const flow = newSocialFlow('x');
     const x = new URL(authorizeUrl(flow) ?? '');
     expect(x.origin).toBe('https://x.com');
-    expect(x.searchParams.get('redirect_uri')).toBe('https://pepforum.ca/social/x/callback');
+    expect(x.searchParams.get('redirect_uri')).toBe('https://pepforums.com/social/x/callback');
     expect(x.searchParams.get('state')).toBe(flow.state);
     expect(x.searchParams.get('code_challenge')).toBe(createHash('sha256').update(flow.verifier).digest('base64url'));
 

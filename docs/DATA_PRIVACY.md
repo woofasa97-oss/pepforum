@@ -6,7 +6,7 @@
 |---|---|---|---|
 | Email, password hash, sessions, MFA factors | Supabase Auth (ca-central-1) | Sign-in | Until account deletion (the worker removes the auth user) |
 | Social sign-in identity: provider user id, email, and usually the name and photo the provider sends | Supabase Auth (`auth.identities`, user metadata) | Sign-in only. Never copied to `profiles` or shown: members pick a username at onboarding | Until account deletion, with the auth user |
-| Username, bio, conflicts of interest, home zone, locale | `profiles` | Public profile | Tombstoned on deletion (username replaced, fields cleared) |
+| Username, bio, conflicts of interest, locale | `profiles` | Public profile | Tombstoned on deletion (username replaced, fields cleared) |
 | Posts, revisions, comments | `posts`, `post_revisions`, `comments` | Core service | Kept (attributed to the anonymised account) unless the member chooses "erase my content" |
 | Votes, ratings, reports | `post_votes`, `note_ratings`, `reports` | Scoring and moderation | Kept as anonymous records |
 | Member reports | `member_reports`: reporter, reported member, reason, the reporter's details | Admins investigating a member | Kept as moderation records. Only admins read them; the reported member never learns who reported them |
@@ -14,6 +14,7 @@
 | Karma ledger, strikes, sanctions, moderator log | `ledger_events`, `strikes`, `sanctions`, `mod_actions` | Accountability, appeals | Kept; ledger rows point at the anonymised id |
 | Rate-limit events | `private.rate_limit_events` | Abuse prevention | 2 days |
 | Staff notes on members | `staff_notes` | Moderation context (staff only, append-only) | Kept with the moderation record |
+| Clicks from price pages to stores: a count per vendor per day, with no member, address or token | `prices.click_daily_stats` | Measuring the section | Kept |
 | Sourcing-shield holds (member + rule matched, never the text) | `shield_hits` | Abuse prevention | Kept; reviewed in the admin console |
 | Staff access to an email (lookup or reveal) | `mod_actions` (`lookup_email`, `reveal_email`) | Accountability for staff access to personal information | Kept with the moderation record |
 | Notifications and preferences | `notifications`, `notification_settings`: what happened (never who wrote a note or which moderator acted), read state, category switches | Telling members about replies, note outcomes, moderation and the team | `notifications.retention_days` (90 by default), and deleted with the account |
@@ -22,12 +23,12 @@
 | Profile picture | `media` row (kind `avatar`) + the file in the `media` bucket; `profiles.avatar_media_id` | Shown on the member's profile and menu | Re-encoded to a 256×256 WebP on upload, which removes EXIF data such as a phone photo's location. Public while current; replaced or removed pictures are deleted by the worker, and the picture goes with the account |
 | Follows | `follows`: who follows whom, and since when | Followers and following lists, "friends" when mutual, new-follower notifications | Public lists, like most networks. In the data export. Deleted in both directions with the account |
 | Verified social accounts | `social_accounts`: network, account ID, handle, audience, a few public counts, profile link, when verified | Badges on the profile and the capped karma bonus | Read once from the network's API when the member signs in to it; the network token is never stored. Public on the profile. Removed by the member or an admin, and deleted with the account |
-| Clinician verification | `clinician_verifications`: profession, regulator, province, **registration number**, a credential document (`media`, kind `credential`), an optional statement, the decision | Verified-clinician badge | Registration number and document are visible only to admins in an MFA session and are **deleted with the account**. Only the profession is public |
-| Advertiser account | `advertisers`: organisation name, website, billing email and address, province; `ad_campaigns`; `ad_ledger` | Selling and billing reviewed sponsored cards | Financial records are kept (tax law); the account is suspended, not deleted, when its owner deletes their member account |
+| Clinician verification | `clinician_verifications`: profession, regulator, country, **registration number**, a credential document (`media`, kind `credential`), an optional statement, the decision | Verified-clinician badge | Registration number and document are visible only to admins in an MFA session and are **deleted with the account**. Only the profession is public |
+| Advertiser account | `advertisers`: organisation name, website, billing email and address, billing country; `ad_campaigns`; `ad_ledger` | Selling and billing reviewed sponsored cards | Financial records are kept (tax law); the account is suspended, not deleted, when its owner deletes their member account |
 | Ad delivery counts | `ad_daily_stats` (per campaign, per day), `ad_deliveries` (campaign + an opaque salted hash of network address, user agent and date, per hour) | Billing advertisers once per visitor per hour | Deliveries 2 days; daily totals kept with the campaign. The hash can't be reversed and is never joined to a member |
 | Server logs | Render | Operations | Per Render plan. Logs hold error codes and opaque ids, never content |
 
-**Not collected:** health information, real names, date of birth, location beyond province or zone, advertising or analytics profiles. The composer warns members not to include identifying details. Ads carry no third-party trackers: impressions and clicks are counted on this site only, against an opaque daily hash, and never tied to a member.
+**Not collected:** health information, real names, date of birth, location beyond the country a clinician or advertiser gives, advertising or analytics profiles. The composer warns members not to include identifying details. Ads carry no third-party trackers: impressions and clicks are counted on this site only, against an opaque daily hash, and never tied to a member.
 
 ## Residency and transfers
 
@@ -41,7 +42,7 @@
 | Right | Implementation |
 |---|---|
 | Access and portability | Settings → Download my data → `export_my_data()` returns JSON with the account, profile, content, votes, ratings, reports (including member reports you filed), your tickets to the team, notifications and preferences, push browsers, uploads, clinician verification requests, advertiser account and ledger, ad reports you filed, ledger, strikes, sanctions and moderator actions taken on you. Rate-limited to 3 per day. |
-| Correction | Profile fields are editable; anything else via privacy@pepforum.ca |
+| Correction | Profile fields are editable; anything else via privacy@pepforums.com |
 | Deletion | Settings → Delete account. The member re-enters their password or, for social-only accounts, must have signed in within the last 10 minutes. `request_account_deletion()` tombstones the profile immediately and the worker deletes the auth user within about 10 minutes. Optionally erases authored content. |
 | Information about automated decisions (Loi 25 s. 12.1) | Note status, karma and tiers are automated. The rules are published (`/legal/community-notes`), every change is listed in the member's ledger, and human review is available via appeals or the privacy officer. |
 | Withdrawal of consent | No optional processing exists in v1. Add toggles here if analytics are ever introduced. |
@@ -59,4 +60,4 @@ Deleting a member's ledger rows would silently change *other* members' standing.
 - [ ] Enable Supabase PITR backups; document the retention period
 - [ ] Sign a DPA with Supabase and Render
 - [ ] Limit the admin role to people who need it; review **Admin → Moderation → Log** for `reveal_email` / `lookup_email` entries monthly
-- [ ] For each social provider you enable, list it in the privacy policy and point its consent screen at `/legal/privacy` (the provider learns that the member uses Pepforum)
+- [ ] For each social provider you enable, list it in the privacy policy and point its consent screen at `/legal/privacy` (the provider learns that the member uses Pepforums)

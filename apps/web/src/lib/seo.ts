@@ -12,8 +12,9 @@ export function absoluteUrl(path: string): string {
   return new URL(path, env().SITE_URL).toString();
 }
 
-/** Public routes that aren't in the database (zones and categories are added by the caller). */
-export const STATIC_PATHS = ['/', '/notes', '/transparency', '/advertise', '/legal/terms', '/legal/privacy', '/legal/community-guidelines'] as const;
+/** Public routes that aren't in the database (categories are added by the caller). */
+export const STATIC_PATHS = ['/', '/notes', '/transparency', '/advertise', '/legal/terms', '/legal/privacy', '/legal/content-policy', '/legal/community-notes', '/legal/loi-25',
+  '/legal/price-methodology'] as const;
 
 const escapeXml = (value: string): string =>
   value.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' })[c] ?? c);
@@ -38,7 +39,7 @@ export function jsonLd(data: Record<string, unknown>): string {
 export function organizationJsonLd(): Record<string, unknown> {
   return {
     '@type': 'Organization',
-    name: 'Pepforum',
+    name: 'Pepforums',
     url: absoluteUrl('/'),
     logo: absoluteUrl('/icon.png'),
   };
@@ -47,7 +48,7 @@ export function organizationJsonLd(): Record<string, unknown> {
 export function websiteJsonLd(): Record<string, unknown> {
   return {
     '@type': 'WebSite',
-    name: 'Pepforum',
+    name: 'Pepforums',
     url: absoluteUrl('/'),
     inLanguage: ['en-CA', 'fr-CA'],
   };

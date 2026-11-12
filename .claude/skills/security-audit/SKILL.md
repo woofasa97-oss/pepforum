@@ -1,9 +1,9 @@
 ---
 name: security-audit
-description: Use when reviewing a Pepforum change, PR or the whole codebase for security — authorisation bypasses via direct PostgREST calls, karma/notes manipulation, data exposure, secrets, XSS/CSRF/redirects, privacy (PIPEDA/Loi 25). Gives the project-specific checklist to run alongside the built-in /security-review.
+description: Use when reviewing a Pepforums change, PR or the whole codebase for security — authorisation bypasses via direct PostgREST calls, karma/notes manipulation, data exposure, secrets, XSS/CSRF/redirects, privacy (PIPEDA/Loi 25). Gives the project-specific checklist to run alongside the built-in /security-review.
 ---
 
-# Pepforum security review
+# Pepforums security review
 
 Start from the assumption in docs/THREAT_MODEL.md: **an attacker holds a valid member JWT and calls Supabase directly**. Nothing the web app does protects data on its own.
 

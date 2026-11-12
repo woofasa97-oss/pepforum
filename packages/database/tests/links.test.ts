@@ -80,7 +80,7 @@ describe('holding', () => {
 
   it('exempts moderators and admins, and can be switched off', async () => {
     const mod = await db.createUser({ karma: TIER.contributor });
-    await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ('on', $1)`, [mod]);
+    await db.sql(`insert into public.moderators (user_id) values ($1)`, [mod]);
     expect((await row('posts', await linkPost(mod, 'https://staff-link.example/a'))).status).toBe('visible');
     expect((await row('posts', await linkPost(admin, 'https://staff-link.example/b'))).status).toBe('visible');
 
@@ -93,7 +93,7 @@ describe('holding', () => {
   it('still refuses blocked domains before looking at links', async () => {
     await db.sql(`insert into public.shield_domains (domain) values ('blocked-vendor.example')`);
     const error = await db.expectError(user(await db.createUser({ karma: TIER.member })),
-      `select public.create_post('on', 'research', 'resource', 'A link to a vendor here', '', 'https://shop.blocked-vendor.example/x')`);
+      `select public.create_post('research', 'resource', 'A link to a vendor here', '', 'https://shop.blocked-vendor.example/x')`);
     expect(error.message).toBe('blocked_by_shield');
   });
 });
@@ -158,7 +158,7 @@ describe('deciding a whole site', () => {
     expect(n).toBe(1);
     expect(await row('posts', post)).toMatchObject({ status: 'removed', removal_reason: 'link_declined' });
     const error = await db.expectError(user(author),
-      `select public.create_post('on', 'research', 'resource', 'Another vendor link here', '', 'https://spam-vendor.example/2')`);
+      `select public.create_post('research', 'resource', 'Another vendor link here', '', 'https://spam-vendor.example/2')`);
     expect(error.message).toBe('blocked_by_shield');
   });
 });
@@ -166,7 +166,7 @@ describe('deciding a whole site', () => {
 describe('with the shield', () => {
   it('publishes only when both the shield hold and the link are cleared', async () => {
     const mod = await db.createUser({ karma: TIER.contributor });
-    await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ('on', $1)`, [mod]);
+    await db.sql(`insert into public.moderators (user_id) values ($1)`, [mod]);
     const post = await createPost(db, await db.createUser(), { body: 'DM me, or see https://both-holds.example/x' });
     expect(await db.sqlOne(`select status, held_reason, links_pending from public.posts where id = $1`, [post]))
       .toEqual({ status: 'held', held_reason: 'dm me', links_pending: ['both-holds.example'] });
@@ -174,7 +174,7 @@ describe('with the shield', () => {
     // The moderator keeps it: it leaves their queue but waits for the link.
     await db.as(user(mod, 'aal2'), `select public.resolve_reports('post', $1, 'keep', null, 'Context is fine')`, [post]);
     expect((await row('posts', post)).status).toBe('held');
-    const { q } = await db.asOne<{ q: Array<{ target_id: string }> }>(user(mod, 'aal2'), `select public.mod_queue('on') as q`);
+    const { q } = await db.asOne<{ q: Array<{ target_id: string }> }>(user(mod, 'aal2'), `select public.mod_queue() as q`);
     expect(q.some((i) => i.target_id === post)).toBe(false);
 
     await decide('post', post, 'approve');
@@ -183,7 +183,7 @@ describe('with the shield', () => {
 
   it('keeps link-only holds out of the moderators’ queue and the shield counts', async () => {
     const post = await linkPost(await db.createUser({ karma: TIER.member }), 'https://queue-check.example/x');
-    const { q } = await db.asOne<{ q: Array<{ target_id: string }> }>(user(admin, 'aal2'), `select public.mod_queue(null) as q`);
+    const { q } = await db.asOne<{ q: Array<{ target_id: string }> }>(user(admin, 'aal2'), `select public.mod_queue() as q`);
     expect(q.some((i) => i.target_id === post)).toBe(false);
     const { o } = await db.asOne<{ o: { links_pending: number } }>(user(admin, 'aal2'), `select public.admin_overview() as o`);
     expect(o.links_pending).toBeGreaterThan(0);

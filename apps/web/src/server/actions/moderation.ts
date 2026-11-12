@@ -8,7 +8,7 @@ import { DecideAppealSchema, ResolveReportsSchema, fieldErrors, formToObject } f
 import { getSupabase, getT, getViewer } from '@/server/context';
 
 /**
- * Moderator actions. The database requires zone-moderator rights AND an MFA
+ * Moderator actions. The database requires a (site-wide) moderator AND an MFA
  * (aal2) session, and records every action in the append-only mod log.
  */
 export async function resolveReportsAction(_prev: ActionState, form: FormData): Promise<ActionState> {

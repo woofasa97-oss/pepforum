@@ -10,12 +10,19 @@ import type {
   AdvertiserStatus,
   ClinicianProfession,
   ClinicianStatus,
+  CoaMethod,
+  CoaScope,
+  CoaStatus,
   ImageContentType,
   Locale,
   MediaKind,
   MediaStatus,
   NotificationKind,
-  Province,
+  PriceAvailability,
+  PriceCompoundType,
+  PriceCurrency,
+  PriceOrigin,
+  PriceVendorStatus,
 } from './domain.ts';
 
 // ── SEO (…021) ──────────────────────────────────────────────────────────────
@@ -98,7 +105,7 @@ export type MyClinicianVerification = {
     id: string;
     profession: ClinicianProfession;
     regulator: string;
-    province_id: string;
+    country: string;
     status: ClinicianStatus | 'expired';
     submitted_at: string;
     reviewed_at: string | null;
@@ -117,7 +124,7 @@ export type AdminClinicianRow = {
   joined: string;
   profession: ClinicianProfession;
   regulator: string;
-  province_id: string;
+  country: string;
   registration_number: string;
   document_id: string | null;
   statement: string;
@@ -147,7 +154,6 @@ export type MyCampaign = {
   id: string;
   name: string;
   package: AdPackage;
-  zone_id: string | null;
   category_id: string | null;
   budget: number;
   cpm: number;
@@ -182,7 +188,7 @@ export type MyAdvertiser = {
   website: string;
   billing_email: string;
   billing_address: string;
-  billing_province: Province;
+  billing_country: string;
   status: AdvertiserStatus;
   review_note: string;
   created_at: string;
@@ -197,7 +203,7 @@ export type MyAdvertiser = {
 export type ServedAd = { id: string; advertiser: string; headline: string; body: string; cta: string; image_id: string | null };
 
 export type AdminAdvertiserRow = {
-  id: string; name: string; website: string; billing_email: string; billing_province: Province; status: AdvertiserStatus; review_note: string;
+  id: string; name: string; website: string; billing_email: string; billing_country: string; status: AdvertiserStatus; review_note: string;
   owner: string; owner_tier: number; created_at: string; balance: number; reserved: number; campaigns: number; in_review: number;
 };
 export type AdminCampaignRow = Omit<MyCampaign, 'days' | 'created_at' | 'updated_at' | 'reviewed_at'> & {
@@ -219,3 +225,135 @@ export type SettleAdsResult = { days_settled: number; charged_microcad: number; 
 export function formatCad(microcad: number, locale: string = 'en-CA'): string {
   return new Intl.NumberFormat(locale, { style: 'currency', currency: 'CAD' }).format(microcad / 1_000_000);
 }
+
+// ── Price tracking (…030–…033) ──────────────────────────────────────────────
+export type PriceRate = { base: PriceCurrency; quote: PriceCurrency; rate: number; provider: string; rate_date: string };
+export type PriceCompound = {
+  slug: string;
+  name: string;
+  type: PriceCompoundType;
+  aliases: string[];
+  formulation: string;
+  blend_components: Array<{ name: string; mg?: number | null }> | null;
+};
+/** A certificate of analysis as the vendor published it. The document's address is never sent; link through price_link('coa', id). */
+export type PriceCoa = {
+  id: string;
+  compound: string | null;
+  scope: CoaScope;
+  batch: string | null;
+  lab: string;
+  lab_accreditation: string | null;
+  method: CoaMethod | null;
+  test_date: string | null;
+  stated_purity_pct: number;
+  checked: string;
+};
+export type PriceQuantityTier = { vials: number; percent: number; blends: boolean; any_product: boolean; checked: string };
+export type PriceVendor = {
+  slug: string;
+  name: string;
+  domain: string;
+  origin_country: PriceOrigin;
+  ships_to: string[];
+  native_currency: PriceCurrency | null;
+  coa_scope: CoaScope | 'none' | 'unknown';
+  last_ingested_at: string | null;
+  coas: PriceCoa[];
+  quantity_tiers: PriceQuantityTier[];
+};
+export type PriceOffer = {
+  id: string;
+  vendor: string;
+  compound: string;
+  product_name: string;
+  variant_label: string | null;
+  currency: PriceCurrency;
+  /** Integer minor units (cents) in `currency`. */
+  price_minor: number;
+  list_price_minor: number | null;
+  on_sale: boolean;
+  price_kind: 'per_pack' | 'fixed_kit';
+  mg_per_vial: number | null;
+  vials_per_pack: number;
+  total_mg: number | null;
+  /** Minor units per mg × 10^4; null for blends. */
+  per_mg_minor_e4: number | null;
+  availability: PriceAvailability;
+  observed_at: string;
+  price_changed_at: string;
+  recipe_key: string | null;
+  is_blend: boolean;
+};
+/** get_price_catalog(): everything the Prices section shows. Null while features.prices is off. */
+export type PriceCatalog = {
+  stale_hours: number;
+  lead_vials: number;
+  publication: { published_at: string; run_finished_at: string | null } | null;
+  rates: PriceRate[];
+  compounds: PriceCompound[];
+  vendors: PriceVendor[];
+  offers: PriceOffer[];
+};
+export type PriceHistoryPoint = { day: string; vendor: string; currency: PriceCurrency; per_mg_minor_e4: number };
+
+export type AdminPriceVendor = {
+  slug: string;
+  name: string;
+  website_url: string;
+  origin_country: PriceOrigin;
+  origin_source: string | null;
+  platform: string | null;
+  status: PriceVendorStatus;
+  status_note: string | null;
+  unreadable: boolean;
+  coa_scope: string;
+  last_ingested_at: string | null;
+  offers: number;
+  coas: number;
+  coa_candidates: number;
+  last_outcome: string | null;
+  last_http_status: number | null;
+};
+export type AdminPriceRun = {
+  run_label: string;
+  mode: string;
+  dry_run: boolean;
+  status: string;
+  verdict: string | null;
+  started_at: string;
+  finished_at: string | null;
+  vendors_read: number;
+  vendors_tried: number;
+};
+export type AdminPriceOverview = {
+  enabled: boolean;
+  publication: { published_at: string; offers: number; vendors: number; compounds: number; waiting: number; run_label: string } | null;
+  runs: AdminPriceRun[];
+  vendors: AdminPriceVendor[];
+  compounds: Array<{ slug: string; name: string }>;
+};
+export type AdminPriceCoa = {
+  id: string;
+  vendor: string;
+  vendor_name: string;
+  compound: string | null;
+  compound_name: string | null;
+  url: string;
+  scope: CoaScope;
+  batch: string | null;
+  lab: string | null;
+  lab_accreditation: string | null;
+  method: CoaMethod | null;
+  test_date: string | null;
+  stated_purity_pct: number | null;
+  evidence_quote: string | null;
+  status: CoaStatus;
+  checked_at: string | null;
+  checked_by: string | null;
+  created_at: string;
+};
+/** Clicks per store (plain links only; ADR-0009). */
+export type AdminPriceLinks = {
+  clicks: Array<{ vendor: string; vendor_name: string; clicks_7d: number; clicks_30d: number }>;
+};

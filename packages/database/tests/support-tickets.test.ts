@@ -73,7 +73,7 @@ describe('opening a ticket', () => {
     const member = await db.createUser();
     await db.createUser({ username: 'pushy_seller' });
     const id = await open(member, 'report_member', 'Selling in DMs', 'They message newcomers with a price list.', 'Pushy_Seller',
-      'https://pepforum.ca/u/pushy_seller');
+      'https://pepforums.com/u/pushy_seller');
     expect((await thread(member, id))?.about_username).toBe('pushy_seller');
     expect((await inbox()).tickets.find((x) => x.id === id)?.about).toBe('pushy_seller');
   });
@@ -86,7 +86,7 @@ describe('opening a ticket', () => {
     expect(await fail(['praise', 'Hello there', body, null, null])).toBe('invalid_kind');
     expect(await fail(['bug', 'Hi', body, null, null])).toBe('invalid_subject');
     expect(await fail(['bug', 'Broken page', 'Too short', null, null])).toBe('invalid_body');
-    expect(await fail(['bug', 'Broken page', body, null, 'http://pepforum.ca/x'])).toBe('invalid_url');
+    expect(await fail(['bug', 'Broken page', body, null, 'http://pepforums.com/x'])).toBe('invalid_url');
     expect(await fail(['report_member', 'Report', body, 'careful_writer', null])).toBe('report_self');
     expect((await db.expectError(user(me), `select public.open_ticket('report_member', 'Report', $1, 'nobody_here')`, [body])).code).toBe('PF404');
     expect((await db.expectError(user(me), `select public.open_ticket('report_member', 'Report', $1)`, [body])).code).toBe('PF404');

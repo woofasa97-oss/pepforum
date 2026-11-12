@@ -13,7 +13,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
       <body>
         <main id="main" className="page narrow" style={{ width: '100%' }}>
           <div className="card empty" role="alert">
-            <b>Pepforum is temporarily unavailable · Pepforum est temporairement indisponible</b>
+            <b>Pepforums is temporarily unavailable · Pepforums est temporairement indisponible</b>
             {error.digest ? <p className="xs faint">Ref: {error.digest}</p> : null}
             <button type="button" className="btn dark mt16" onClick={reset}>Try again · Réessayer</button>
           </div>

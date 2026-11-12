@@ -1,0 +1,68 @@
+{
+  "products": [
+    {
+      "id": 9662090117341,
+      "title": "OR-3R 10mg, Elora 5mg (15mg Blend)",
+      "handle": "or-3r-10mg-elora-5mg-15mg-blend-1",
+      "variants": [
+        {
+          "id": 48544481509597,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null,
+          "sku": "LPOR3ELR15",
+          "requires_shipping": true,
+          "taxable": true,
+          "available": false,
+          "price": "169.99",
+          "grams": 5,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 9662090117341
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "Default Title"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9632790282461,
+      "title": "Elora 5mg",
+      "handle": "elora-5mg",
+      "variants": [
+        {
+          "id": 48434342035677,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "option2": null,
+          "option3": null,
+          "sku": "LPELR5",
+          "requires_shipping": true,
+          "taxable": true,
+          "available": false,
+          "price": "59.99",
+          "grams": 0,
+          "compare_at_price": null,
+          "position": 1,
+          "product_id": 9632790282461
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "Default Title"
+          ]
+        }
+      ]
+    }
+  ]
+}

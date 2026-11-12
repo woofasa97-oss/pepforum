@@ -18,10 +18,10 @@ const EnvSchema = z.object({
   // notifications stay in-app only.
   VAPID_PUBLIC_KEY: z.string().min(20).optional(),
   VAPID_PRIVATE_KEY: z.string().min(20).optional(),
-  VAPID_SUBJECT: z.string().regex(/^(mailto:|https:\/\/)/).default('mailto:privacy@pepforum.ca'),
+  VAPID_SUBJECT: z.string().regex(/^(mailto:|https:\/\/)/).default('mailto:privacy@pepforums.com'),
   PUSH_BATCH_SIZE: z.coerce.number().int().min(1).max(1000).default(200),
   // Public origin of the site, for links in push payloads.
-  SITE_URL: z.url({ protocol: /^https?$/ }).default('https://pepforum.ca'),
+  SITE_URL: z.url({ protocol: /^https?$/ }).default('https://pepforums.com'),
 });
 export type WorkerEnv = z.infer<typeof EnvSchema>;
 

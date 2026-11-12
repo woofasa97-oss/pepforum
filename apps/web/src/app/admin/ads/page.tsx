@@ -9,6 +9,7 @@ import { Icon } from '@/components/ui/Icon';
 import { campaignTone } from '@/lib/ads';
 import { formatDate, formatDay, relativeTime } from '@/lib/format';
 import type { MessageKey } from '@/lib/i18n';
+import { countryName } from '@/lib/countries';
 import {
   adAdjustmentAction, recordAdPaymentAction, resolveAdReportAction, reviewAdvertiserAction, reviewCampaignAction, suspendCampaignAction,
 } from '@/server/actions/admin';
@@ -35,7 +36,7 @@ export default async function AdminAdsPage() {
         <span className="row wrap" style={{ gap: 6 }}>
           <b>{c.name}</b>
           <span className={`pill ${campaignTone(c.status)}`}>{t(`ads.status.${c.status}` as MessageKey)}</span>
-          <span className="pill">{t(`ads.package.${c.package}` as MessageKey)}{c.zone_id ? ` · ${c.zone_id.toUpperCase()}` : ''}{c.category_id ? ` · ${c.category_id}` : ''}</span>
+          <span className="pill">{t(`ads.package.${c.package}` as MessageKey)}{c.category_id ? ` · ${c.category_id}` : ''}</span>
           {c.open_reports > 0 ? <span className="pill red">{t('admin.ads.reportsOn', { n: c.open_reports })}</span> : null}
         </span>
         <span className="xs muted">{c.advertiser} · u/{c.owner}{c.submitted_at ? ` · ${relativeTime(c.submitted_at, t)}` : ''}</span>
@@ -131,7 +132,7 @@ export default async function AdminAdsPage() {
                 </div>
                 <dl className="facts">
                   <div><dt>{t('ads.orgWebsite')}</dt><dd><a className="link" href={o.website} target="_blank" rel="nofollow noopener noreferrer">{o.website}</a></dd></div>
-                  <div><dt>{t('ads.billingEmail')}</dt><dd>{o.billing_email} · {o.billing_province}</dd></div>
+                  <div><dt>{t('ads.billingEmail')}</dt><dd>{o.billing_email} · {countryName(o.billing_country, locale)}</dd></div>
                   <div><dt>{t('ads.balance')}</dt><dd>{fmt(o.balance)} ({t('ads.reservedLabel')} {fmt(o.reserved)}) · {t('admin.ads.campaignCount', { n: o.campaigns, review: o.in_review })}</dd></div>
                   {o.review_note ? <div><dt>{t('admin.clin.reviewedBy')}</dt><dd>{o.review_note}</dd></div> : null}
                 </dl>

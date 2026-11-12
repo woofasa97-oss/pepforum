@@ -5,8 +5,8 @@ import { createHash, randomBytes } from 'node:crypto';
 /**
  * "Continue with Google" handled on our own domain. Google redirects back to
  * <SITE_URL>/auth/oauth/google/callback instead of to Supabase, so Google's
- * screen names pepforum.ca (and, once Google verifies the brand, shows the
- * Pepforum name and logo) instead of the Supabase project address.
+ * screen names pepforums.com (and, once Google verifies the brand, shows the
+ * Pepforums name and logo) instead of the Supabase project address.
  *
  * Flow: authorization code + PKCE + state + nonce. The server swaps the code
  * for Google's ID token, then signInWithIdToken() hands that token to

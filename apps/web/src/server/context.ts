@@ -46,3 +46,6 @@ export const getLocale = cache(async (): Promise<Locale> => {
 export const getT = cache(async (): Promise<Translate> => translator(await getLocale()));
 
 export const getNonce = cache(async (): Promise<string | undefined> => (await headers()).get('x-nonce') ?? undefined);
+
+/** The request's clock: one reading shared by everything rendered for it, so "checked 3 h ago" and "stale" agree. */
+export const getNow = cache(async (): Promise<number> => Date.now());

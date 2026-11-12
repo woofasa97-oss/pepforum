@@ -3,7 +3,7 @@ import type { Translate } from '@/lib/i18n';
 
 export interface ThreadMessage {
   readonly id: string;
-  /** Who wrote it, already worded for the reader ("You", "Pepforum team", "u/name"). */
+  /** Who wrote it, already worded for the reader ("You", "Pepforums team", "u/name"). */
   readonly who: string;
   readonly fromStaff: boolean;
   readonly body: string;

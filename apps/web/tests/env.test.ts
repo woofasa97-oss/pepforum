@@ -26,15 +26,15 @@ describe('server environment', () => {
 
   it('prefers SITE_URL and normalises it to the origin', async () => {
     vi.stubEnv('RENDER_EXTERNAL_URL', 'https://pepforum-web.onrender.com');
-    vi.stubEnv('SITE_URL', 'https://pepforum.ca/');
-    expect((await loadEnv()).SITE_URL).toBe('https://pepforum.ca');
+    vi.stubEnv('SITE_URL', 'https://pepforums.com/');
+    expect((await loadEnv()).SITE_URL).toBe('https://pepforums.com');
   });
 
   it('explains an invalid SITE_URL without echoing the value', async () => {
-    vi.stubEnv('SITE_URL', 'pepforum.ca');
+    vi.stubEnv('SITE_URL', 'pepforums.com');
     const error = await loadEnv().catch((e: Error) => e);
     expect(String(error)).toContain('SITE_URL (expected a full URL such as https://example.com)');
-    expect(String(error)).not.toContain('pepforum.ca');
+    expect(String(error)).not.toContain('pepforums.com');
   });
 
   it('treats blank optional variables as unset', async () => {

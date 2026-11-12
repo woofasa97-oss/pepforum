@@ -40,6 +40,11 @@ import type {
 import type {
   AdRateCard,
   AdminAds,
+  AdminPriceCoa,
+  AdminPriceLinks,
+  AdminPriceOverview,
+  PriceCatalog,
+  PriceHistoryPoint,
   AdminClinicians,
   AdminMedia,
   AdminRedirect,
@@ -69,7 +74,6 @@ import type {
   Locale,
   MediaKind,
   MediaStatus,
-  Province,
   MemberReportOutcome,
   MemberReportReason,
   NoteClassification,
@@ -80,6 +84,11 @@ import type {
   ShieldAction,
   SourceKind,
   SocialPlatform,
+  CoaMethod,
+  CoaScope,
+  CoaStatus,
+  PriceOrigin,
+  PriceVendorStatus,
   StaffNoteLabel,
   TicketKind,
   TicketStatus,
@@ -92,23 +101,6 @@ type ReadOnlyTable<Row> = {
   Insert: Record<string, never>;
   Update: Record<string, never>;
   Relationships: [];
-};
-
-export type ZoneRow = {
-  id: string;
-  name_en: string;
-  name_fr: string;
-  short_name: string;
-  description_en: string;
-  description_fr: string;
-  sort_order: number;
-};
-
-export type CityRow = {
-  id: string;
-  zone_id: string;
-  name: string;
-  sort_order: number;
 };
 
 export type CategoryRow = {
@@ -127,13 +119,12 @@ export type CategoryRow = {
 
 /**
  * Full row (service_role). API roles may select only: id, username, locale,
- * home_zone_id, bio, coi, karma, tier, created_at, deleted_at.
+ * bio, coi, karma, tier, created_at, deleted_at.
  */
 export type ProfileRow = {
   id: string;
   username: string;
   locale: Locale;
-  home_zone_id: string | null;
   bio: string;
   coi: string;
   karma: number;
@@ -206,13 +197,6 @@ export type NoteRatingRow = {
   updated_at: string;
 };
 
-export type ZoneModeratorRow = {
-  zone_id: string;
-  user_id: string;
-  appointed_by: string | null;
-  created_at: string;
-};
-
 /** Member-visible columns (actor_id is withheld by column grants). */
 export type ModActionRow = {
   id: string;
@@ -220,7 +204,6 @@ export type ModActionRow = {
   target_kind: string | null;
   target_id: string | null;
   target_user_id: string | null;
-  zone_id: string | null;
   reason: string;
   metadata: Json;
   created_at: string;
@@ -252,8 +235,6 @@ export type FeedRow = {
   link_url: string | null;
   language: Locale;
   status: ContentStatus;
-  zone_id: string;
-  city_id: string | null;
   category_id: string;
   author_username: string;
   author_tier: number;
@@ -265,7 +246,7 @@ export type FeedRow = {
   my_vote: -1 | 1 | null;
   has_helpful_note: boolean;
   has_open_note: boolean;
-  /** Pinned by an admin; leads its zone's feed. */
+  /** Pinned by an admin; leads the community feed (two for the whole site). */
   pinned: boolean;
   /** The author's profile picture, served at /media/<id> (…029). */
   author_avatar: string | null;
@@ -280,8 +261,6 @@ export type PostDetailRow = {
   language: Locale;
   status: ContentStatus;
   removal_reason: string | null;
-  zone_id: string;
-  city_id: string | null;
   category_id: string;
   author_username: string;
   author_tier: number;
@@ -345,7 +324,7 @@ export type NoteView = {
 };
 
 export type NoteDetailView = NoteView & {
-  post: { id: string; title: string; body: string; post_type: PostType; category_id: string; zone_id: string; is_mine: boolean };
+  post: { id: string; title: string; body: string; post_type: PostType; category_id: string; is_mine: boolean };
   history: Array<{ event: string; from: NoteStatus | null; to: NoteStatus | null; at: string }>;
   can_rate: boolean;
 };
@@ -422,7 +401,6 @@ export type ProfileView = {
   username: string;
   bio: string;
   coi: string;
-  home_zone_id: string | null;
   karma: number;
   tier: number;
   /** Moderation-track fields: null unless the viewer is the profile owner. */
@@ -433,7 +411,7 @@ export type ProfileView = {
   joined_at: string;
   deleted: boolean;
   is_me: boolean;
-  /** Admins are named publicly, as zone moderators are (…019). */
+  /** Admins are named publicly, as moderators are (…019). */
   is_admin: boolean;
   /** Verified clinician badge (…024). */
   clinician: ClinicianProfession | null;
@@ -445,7 +423,8 @@ export type ProfileView = {
   follows_you: boolean;
   /** Verified social accounts (…028), largest audience first. */
   socials: SocialBadge[];
-  moderates: string[];
+  /** A site-wide moderator (…034). */
+  is_moderator: boolean;
   post_count: number;
   comment_count: number;
 };
@@ -454,7 +433,6 @@ export type ModQueueItem = {
   target_kind: 'post' | 'comment';
   target_id: string;
   post_id: string;
-  zone_id: string;
   /** Set when the sourcing shield is holding the content (the rule that matched). */
   held_reason: string | null;
   excerpt: string;
@@ -481,29 +459,25 @@ export type AppealView = {
   reason: string;
   acted_by: string | null;
   acted_at: string;
-  /** null for sanction appeals, which only admins decide. */
-  zone_id: string | null;
+  /** False when you acted or appealed, or for a sanction appeal unless you are an admin. */
   can_decide: boolean;
 };
 
 export type Database = {
   public: {
     Tables: {
-      zones: ReadOnlyTable<ZoneRow>;
-      cities: ReadOnlyTable<CityRow>;
       categories: ReadOnlyTable<CategoryRow>;
       app_config: ReadOnlyTable<AppConfigRow>;
       ledger_events: ReadOnlyTable<LedgerEventRow>;
       notes: ReadOnlyTable<NoteRow>;
       note_ratings: ReadOnlyTable<NoteRatingRow>;
-      zone_moderators: ReadOnlyTable<ZoneModeratorRow>;
       mod_actions: ReadOnlyTable<ModActionRow>;
       appeals: ReadOnlyTable<AppealRow>;
       profiles: {
         Row: ProfileRow;
         Insert: Record<string, never>;
         /** Mirrors the column-level grant: members may update only these. */
-        Update: Partial<Pick<ProfileRow, 'bio' | 'locale' | 'home_zone_id' | 'coi'>>;
+        Update: Partial<Pick<ProfileRow, 'bio' | 'locale' | 'coi'>>;
         Relationships: [];
       };
       account_deletions: {
@@ -518,16 +492,14 @@ export type Database = {
     Functions: {
       username_available: { Args: { p_username: string }; Returns: boolean };
       my_standing: { Args: Record<string, never>; Returns: StandingView };
-      complete_onboarding: { Args: { p_username: string; p_home_zone: string | null; p_adult: boolean }; Returns: undefined };
+      complete_onboarding: { Args: { p_username: string; p_adult: boolean }; Returns: undefined };
       create_post: {
         Args: {
-          p_zone_id: string;
           p_category_id: string;
           p_post_type: PostType;
           p_title: string;
           p_body: string;
           p_link_url?: string | null;
-          p_city_id?: string | null;
           p_language?: Locale;
         };
         Returns: string;
@@ -591,7 +563,7 @@ export type Database = {
       submit_appeal: { Args: { p_mod_action_id: string; p_body: string }; Returns: string };
       decide_appeal: { Args: { p_appeal_id: string; p_uphold: boolean; p_note: string }; Returns: undefined };
       grant_founding_rater: { Args: { p_user: string; p_until: string; p_reason: string }; Returns: undefined };
-      set_zone_moderator: { Args: { p_user: string; p_zone: string; p_appoint: boolean; p_reason: string }; Returns: undefined };
+      set_moderator: { Args: { p_user: string; p_appoint: boolean; p_reason: string }; Returns: undefined };
       admin_set_config: { Args: { p_key: string; p_value: Json; p_reason: string }; Returns: undefined };
       expire_stale_collapses: { Args: Record<string, never>; Returns: number };
       run_maintenance: { Args: Record<string, never>; Returns: { uncollapsed: number; rate_limit_purged: number; assignments_purged: number } };
@@ -599,9 +571,7 @@ export type Database = {
       export_my_data: { Args: Record<string, never>; Returns: Json };
       get_feed: {
         Args: {
-          p_zone?: string | null;
           p_category?: string | null;
-          p_city?: string | null;
           p_author_username?: string | null;
           p_sort?: 'hot' | 'new' | 'top';
           p_limit?: number;
@@ -620,9 +590,9 @@ export type Database = {
         Returns: NoteView[];
       };
       get_profile: { Args: { p_username: string }; Returns: ProfileView | null };
-      /** p_zone null = every zone (admins only). */
-      mod_queue: { Args: { p_zone: string | null }; Returns: ModQueueItem[] };
-      open_appeals: { Args: { p_zone: string | null }; Returns: AppealView[] };
+      /** Moderators (site-wide, …034), in an MFA session. */
+      mod_queue: { Args: Record<string, never>; Returns: ModQueueItem[] };
+      open_appeals: { Args: Record<string, never>; Returns: AppealView[] };
 
       // ── Admin console (admin + aal2) ──────────────────────────────────────
       admin_overview: { Args: Record<string, never>; Returns: AdminOverview };
@@ -635,11 +605,11 @@ export type Database = {
       admin_find_by_email: { Args: { p_email: string }; Returns: string | null };
       admin_reveal_email: { Args: { p_user: string; p_reason: string }; Returns: string };
       admin_content: {
-        Args: { p_kind: ContentKind; p_query: string | null; p_status: string | null; p_zone: string | null; p_page: number };
+        Args: { p_kind: ContentKind; p_query: string | null; p_status: string | null; p_page: number };
         Returns: Page<AdminContentRow>;
       };
       admin_mod_log: {
-        Args: { p_action: string | null; p_actor: string | null; p_zone: string | null; p_target: string | null; p_before: string | null };
+        Args: { p_action: string | null; p_actor: string | null; p_target: string | null; p_before: string | null };
         Returns: AdminLogEntry[];
       };
       admin_team: { Args: Record<string, never>; Returns: AdminTeam };
@@ -679,11 +649,6 @@ export type Database = {
         Returns: undefined;
       };
       admin_archive_category: { Args: { p_id: string; p_archived: boolean; p_reason: string }; Returns: undefined };
-      admin_upsert_city: { Args: { p_id: string; p_zone_id: string; p_name: string; p_sort_order: number; p_reason: string }; Returns: undefined };
-      admin_update_zone: {
-        Args: { p_id: string; p_name_en: string; p_name_fr: string; p_short_name: string; p_description_en: string; p_description_fr: string; p_reason: string };
-        Returns: undefined;
-      };
       /** service_role only (worker heartbeat). */
       record_job_run: { Args: { p_job: JobName; p_started_at: string; p_ok: boolean; p_summary?: Json }; Returns: undefined };
       /** Public monthly aggregates (no member data). */
@@ -740,7 +705,7 @@ export type Database = {
 
       // ── Clinician verification (…024) ─────────────────────────────────────
       submit_clinician_verification: {
-        Args: { p_profession: ClinicianProfession; p_regulator: string; p_province: string; p_registration_number: string; p_document_id: string; p_statement?: string };
+        Args: { p_profession: ClinicianProfession; p_regulator: string; p_country: string; p_registration_number: string; p_document_id: string; p_statement?: string };
         Returns: string;
       };
       withdraw_clinician_verification: { Args: Record<string, never>; Returns: undefined };
@@ -752,13 +717,13 @@ export type Database = {
       // ── Advertising (…025) ────────────────────────────────────────────────
       ad_rate_card: { Args: Record<string, never>; Returns: AdRateCard };
       create_advertiser: {
-        Args: { p_name: string; p_website: string; p_billing_email: string; p_billing_address: string; p_billing_province: Province };
+        Args: { p_name: string; p_website: string; p_billing_email: string; p_billing_address: string; p_billing_country: string };
         Returns: string;
       };
       my_advertiser: { Args: Record<string, never>; Returns: MyAdvertiser | null };
       upsert_campaign: {
         Args: {
-          p_id: string | null; p_name: string; p_package: AdPackage; p_zone: string | null; p_category: string | null; p_budget_microcad: number;
+          p_id: string | null; p_name: string; p_package: AdPackage; p_category: string | null; p_budget_microcad: number;
           p_headline: string; p_body: string; p_cta: string; p_headline_fr: string; p_body_fr: string; p_cta_fr: string;
           p_landing_url: string; p_image_id: string | null;
         };
@@ -769,6 +734,27 @@ export type Database = {
       withdraw_campaign: { Args: { p_id: string }; Returns: undefined };
       get_ad: { Args: { p_package: AdPackage; p_target: string | null; p_visitor: string; p_locale?: Locale }; Returns: ServedAd | null };
       ad_click: { Args: { p_id: string }; Returns: string | null };
+      // Price tracking (…031–…033)
+      get_price_catalog: { Args: Record<string, never>; Returns: PriceCatalog | null };
+      get_price_history: { Args: { p_compound: string; p_days?: number }; Returns: PriceHistoryPoint[] | null };
+      price_link: { Args: { p_kind: 'offer' | 'vendor' | 'coa'; p_id: string }; Returns: string | null };
+      admin_price_overview: { Args: Record<string, never>; Returns: AdminPriceOverview };
+      admin_price_vendor_save: {
+        Args: { p_slug: string; p_name: string; p_website_url: string; p_origin_country: PriceOrigin; p_origin_source: string | null; p_reason: string };
+        Returns: string;
+      };
+      admin_price_vendor_set_status: { Args: { p_slug: string; p_status: PriceVendorStatus; p_unreadable: boolean | null; p_reason: string }; Returns: undefined };
+      admin_price_coas: { Args: { p_status?: CoaStatus | null }; Returns: AdminPriceCoa[] };
+      admin_price_coa_save: {
+        Args: {
+          p_id: string | null; p_vendor: string; p_compound: string | null; p_url: string; p_scope: CoaScope; p_batch: string | null;
+          p_lab: string | null; p_lab_accreditation: string | null; p_method: CoaMethod | null; p_test_date: string | null;
+          p_stated_purity_pct: number | null; p_evidence_quote: string | null; p_reason: string;
+        };
+        Returns: string;
+      };
+      admin_price_coa_set_status: { Args: { p_id: string; p_status: CoaStatus; p_reason: string }; Returns: undefined };
+      admin_price_links: { Args: Record<string, never>; Returns: AdminPriceLinks };
       report_ad: { Args: { p_id: string; p_reason: AdReportReason; p_details?: string }; Returns: undefined };
       admin_ads: { Args: Record<string, never>; Returns: AdminAds };
       admin_review_advertiser: { Args: { p_id: string; p_decision: 'approve' | 'suspend'; p_reason: string }; Returns: undefined };
