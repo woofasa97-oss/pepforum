@@ -28,7 +28,7 @@ export async function updateProfileAction(_prev: ActionState, form: FormData): P
   // Direct table update is allowed only for these columns (column-level grant + RLS).
   const { error } = await supabase
     .from('profiles')
-    .update({ bio: parsed.data.bio, coi: parsed.data.coi, locale: parsed.data.locale, home_zone_id: parsed.data.homeZone || null })
+    .update({ bio: parsed.data.bio, coi: parsed.data.coi, locale: parsed.data.locale })
     .eq('id', viewer.id);
   if (error) {
     logUnexpected('update_profile', error);

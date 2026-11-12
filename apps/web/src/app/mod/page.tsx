@@ -8,8 +8,8 @@ import { EmptyState } from '@/components/ui/Bits';
 import { Icon } from '@/components/ui/Icon';
 import { messageForDbError } from '@/lib/errors';
 import { type MessageKey, pick } from '@/lib/i18n';
-import { getLocale, getStanding, getT, getViewer } from '@/server/context';
-import { getModQueue, getMyModZones, getTaxonomy } from '@/server/queries';
+import { getStanding, getT, getViewer } from '@/server/context';
+import { getModQueue } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Moderation', robots: { index: false } };
 
@@ -18,17 +18,15 @@ const LABEL_KEYS = [
   ...REPORT_REASONS.map((r) => `report.reason.${r}` as const),
 ] satisfies MessageKey[];
 
-export default async function ModPage({ searchParams }: { searchParams: Promise<{ zone?: string }> }) {
-  const [t, locale, viewer, standing, taxonomy, params] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getTaxonomy(), searchParams]);
+export default async function ModPage() {
+  const [t, viewer, standing] = await Promise.all([getT(), getViewer(), getStanding()]);
   if (!viewer || !standing) redirect('/auth/sign-in?next=/mod');
 
-  const myZones = standing.is_admin ? taxonomy.zones.filter((z) => z.id !== 'national').map((z) => z.id) : await getMyModZones();
-  if (myZones.length === 0) {
+  // Moderators are site-wide (…034): one queue for everyone who moderates.
+  if (!standing.is_moderator) {
     return <div className="page"><main id="main" className="narrow"><div className="card"><EmptyState title={t('mod.notModerator')} /></div></main></div>;
   }
-  const zone = myZones.includes(params.zone ?? '') ? (params.zone as string) : (myZones[0] as string);
-  const zoneName = taxonomy.zones.find((z) => z.id === zone);
-  const result = await getModQueue(zone);
+  const result = await getModQueue();
   const labels = pick(t, LABEL_KEYS);
 
   return (
@@ -36,15 +34,10 @@ export default async function ModPage({ searchParams }: { searchParams: Promise<
       <main id="main" className="narrow">
         <div className="page-h">
           <div>
-            <h1 tabIndex={-1}>{t('mod.title', { zone: zoneName ? (locale === 'fr' ? zoneName.name_fr : zoneName.name_en) : zone })}</h1>
+            <h1 tabIndex={-1}>{t('mod.title')}</h1>
             <p>{t('mod.sub')}</p>
           </div>
         </div>
-        {myZones.length > 1 ? (
-          <nav className="row wrap mb16" aria-label="Zone">
-            {myZones.map((z) => <Link key={z} className={`chip sm ${z === zone ? 'active' : ''}`} href={`/mod?zone=${z}`}>{z}</Link>)}
-          </nav>
-        ) : null}
 
         {viewer.aal !== 'aal2' ? <div className="banner warn mb16"><Icon name="shield" /><div>{t('mod.mfaRequired')} <Link className="link" href="/settings">{t('nav.settings')}</Link></div></div> : null}
 

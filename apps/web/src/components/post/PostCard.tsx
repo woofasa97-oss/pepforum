@@ -36,8 +36,6 @@ export const REPORT_LABEL_KEYS = [
 
 export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, canWriteNotes = false, full = false, images }: Props) {
   const category = taxonomy.categories.find((c) => c.id === post.category_id);
-  const zone = taxonomy.zones.find((z) => z.id === post.zone_id);
-  const city = post.city_id ? taxonomy.cities.find((c) => c.id === post.city_id) : undefined;
   const body = 'body' in post && post.body !== undefined ? post.body : (post as FeedRow).excerpt;
   const Heading = full ? 'h1' : 'h2';
   // Display only: the database rejects self-votes, self-reports and self-notes regardless.
@@ -60,12 +58,6 @@ export function PostCard({ post, t, locale, taxonomy, signedIn, viewerUsername, 
           {category ? (
             <Link className="pill" href={`/category/${category.id}`}>
               {locale === 'fr' ? category.name_fr : category.name_en}
-            </Link>
-          ) : null}
-          {zone && taxonomy.regions ? (
-            <Link className="pill zone" href={zone.id === 'national' ? '/' : `/zone/${zone.id}`}>
-              {locale === 'fr' ? zone.name_fr : zone.name_en}
-              {city ? ` · ${city.name}` : ''}
             </Link>
           ) : null}
           <span className="sep lead" />

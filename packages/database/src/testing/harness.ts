@@ -44,7 +44,6 @@ export interface CreateUserOptions {
   /** Grants this much karma through the ledger (so tiers update). */
   readonly karma?: number;
   readonly locale?: 'en' | 'fr';
-  readonly homeZone?: string;
   /**
    * Simulates a social sign-up: Supabase Auth sets `raw_app_meta_data.provider`
    * and fills `raw_user_meta_data` from the identity provider (no username).
@@ -62,18 +61,34 @@ export class TestDb {
     this.pg = pg;
   }
 
-  /** Fresh database with the shim and all migrations applied. */
-  static async create(): Promise<TestDb> {
+  /**
+   * Fresh database with the shim and all migrations applied. `stopBefore`
+   * (a migration's timestamp prefix) stops before that migration, so a test
+   * can load old-shaped data and then call applyMigrationsFrom() to check how
+   * the migration carries it over.
+   */
+  static async create(options: { stopBefore?: string } = {}): Promise<TestDb> {
     const pg = await PGlite.create();
     await pg.exec(await readFile(SHIM_PATH, 'utf8'));
+    const db = new TestDb(pg);
+    await db.applyMigrations((file) => !options.stopBefore || file < options.stopBefore);
+    return db;
+  }
+
+  /** Applies the migrations from this timestamp prefix on (see create's stopBefore). */
+  async applyMigrationsFrom(prefix: string): Promise<void> {
+    await this.applyMigrations((file) => file >= prefix);
+  }
+
+  private async applyMigrations(include: (file: string) => boolean): Promise<void> {
     for (const file of await listMigrations()) {
+      if (!include(file)) continue;
       try {
-        await pg.exec(await readFile(path.join(MIGRATIONS_DIR, file), 'utf8'));
+        await this.pg.exec(await readFile(path.join(MIGRATIONS_DIR, file), 'utf8'));
       } catch (error) {
         throw new Error(`Migration ${file} failed: ${(error as Error).message}`, { cause: error });
       }
     }
-    return new TestDb(pg);
   }
 
   /** Applies supabase/seed.sql (the local-development demo data). */
@@ -141,7 +156,6 @@ export class TestDb {
     const username = options.username ?? `user_${userCounter}_${crypto.randomUUID().slice(0, 5)}`;
     const email = options.email ?? `${username.toLowerCase()}@example.test`;
     const metadata: Record<string, string> = options.providerMetadata ?? { username, locale: options.locale ?? 'en' };
-    if (options.homeZone) metadata.home_zone = options.homeZone;
     const appMetadata = { provider: options.provider ?? 'email' };
 
     const { id } = await this.sqlOne<{ id: string }>(

@@ -6,7 +6,7 @@
 |---|---|---|---|
 | Email, password hash, sessions, MFA factors | Supabase Auth (ca-central-1) | Sign-in | Until account deletion (the worker removes the auth user) |
 | Social sign-in identity: provider user id, email, and usually the name and photo the provider sends | Supabase Auth (`auth.identities`, user metadata) | Sign-in only. Never copied to `profiles` or shown: members pick a username at onboarding | Until account deletion, with the auth user |
-| Username, bio, conflicts of interest, home zone, locale | `profiles` | Public profile | Tombstoned on deletion (username replaced, fields cleared) |
+| Username, bio, conflicts of interest, locale | `profiles` | Public profile | Tombstoned on deletion (username replaced, fields cleared) |
 | Posts, revisions, comments | `posts`, `post_revisions`, `comments` | Core service | Kept (attributed to the anonymised account) unless the member chooses "erase my content" |
 | Votes, ratings, reports | `post_votes`, `note_ratings`, `reports` | Scoring and moderation | Kept as anonymous records |
 | Member reports | `member_reports`: reporter, reported member, reason, the reporter's details | Admins investigating a member | Kept as moderation records. Only admins read them; the reported member never learns who reported them |
@@ -23,12 +23,12 @@
 | Profile picture | `media` row (kind `avatar`) + the file in the `media` bucket; `profiles.avatar_media_id` | Shown on the member's profile and menu | Re-encoded to a 256×256 WebP on upload, which removes EXIF data such as a phone photo's location. Public while current; replaced or removed pictures are deleted by the worker, and the picture goes with the account |
 | Follows | `follows`: who follows whom, and since when | Followers and following lists, "friends" when mutual, new-follower notifications | Public lists, like most networks. In the data export. Deleted in both directions with the account |
 | Verified social accounts | `social_accounts`: network, account ID, handle, audience, a few public counts, profile link, when verified | Badges on the profile and the capped karma bonus | Read once from the network's API when the member signs in to it; the network token is never stored. Public on the profile. Removed by the member or an admin, and deleted with the account |
-| Clinician verification | `clinician_verifications`: profession, regulator, province, **registration number**, a credential document (`media`, kind `credential`), an optional statement, the decision | Verified-clinician badge | Registration number and document are visible only to admins in an MFA session and are **deleted with the account**. Only the profession is public |
-| Advertiser account | `advertisers`: organisation name, website, billing email and address, province; `ad_campaigns`; `ad_ledger` | Selling and billing reviewed sponsored cards | Financial records are kept (tax law); the account is suspended, not deleted, when its owner deletes their member account |
+| Clinician verification | `clinician_verifications`: profession, regulator, country, **registration number**, a credential document (`media`, kind `credential`), an optional statement, the decision | Verified-clinician badge | Registration number and document are visible only to admins in an MFA session and are **deleted with the account**. Only the profession is public |
+| Advertiser account | `advertisers`: organisation name, website, billing email and address, billing country; `ad_campaigns`; `ad_ledger` | Selling and billing reviewed sponsored cards | Financial records are kept (tax law); the account is suspended, not deleted, when its owner deletes their member account |
 | Ad delivery counts | `ad_daily_stats` (per campaign, per day), `ad_deliveries` (campaign + an opaque salted hash of network address, user agent and date, per hour) | Billing advertisers once per visitor per hour | Deliveries 2 days; daily totals kept with the campaign. The hash can't be reversed and is never joined to a member |
 | Server logs | Render | Operations | Per Render plan. Logs hold error codes and opaque ids, never content |
 
-**Not collected:** health information, real names, date of birth, location beyond province or zone, advertising or analytics profiles. The composer warns members not to include identifying details. Ads carry no third-party trackers: impressions and clicks are counted on this site only, against an opaque daily hash, and never tied to a member.
+**Not collected:** health information, real names, date of birth, location beyond the country a clinician or advertiser gives, advertising or analytics profiles. The composer warns members not to include identifying details. Ads carry no third-party trackers: impressions and clicks are counted on this site only, against an opaque daily hash, and never tied to a member.
 
 ## Residency and transfers
 

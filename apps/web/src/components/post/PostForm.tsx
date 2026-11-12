@@ -12,20 +12,17 @@ import { createPostAction, editPostAction } from '@/server/actions/content';
 interface Option {
   readonly id: string;
   readonly name: string;
-  readonly zoneId?: string;
 }
 
 interface Props {
   readonly labels: Record<string, string>;
-  readonly zones: Option[];
-  readonly cities: Option[];
   readonly categories: Option[];
   readonly locale: 'en' | 'fr';
   /** Why link posts are locked ("Requires Member"), or null when allowed. */
   readonly linkRequirement: string | null;
   /** Links wait for an admin (links.require_approval). */
   readonly linkReview: boolean;
-  readonly defaults?: { zone?: string | undefined; category?: string | undefined };
+  readonly defaults?: { category?: string | undefined };
   /** Present when editing an existing post. */
   readonly edit?: { postId: string; title: string; body: string; link: string | null; type: PostType; images?: UploadedImage[] };
   /** Why images are locked ("Requires Trusted"), or null when allowed (…023). */
@@ -33,13 +30,11 @@ interface Props {
   readonly maxImages?: number;
 }
 
-export function PostForm({ labels, zones, cities, categories, locale, linkRequirement, linkReview, defaults, edit, uploadRequirement = null, maxImages = 4 }: Props) {
+export function PostForm({ labels, categories, locale, linkRequirement, linkReview, defaults, edit, uploadRequirement = null, maxImages = 4 }: Props) {
   const canPostLinks = linkRequirement === null;
   const [state, action] = useActionState(edit ? editPostAction : createPostAction, initialActionState);
-  const [zone, setZone] = useState(defaults?.zone ?? 'national');
   const [type, setType] = useState<PostType>(edit?.type ?? 'question');
   const errors = state.fieldErrors ?? {};
-  const zoneCities = cities.filter((c) => c.zoneId === zone);
   const showLink = type === 'resource' || Boolean(edit?.link);
 
   return (
@@ -50,26 +45,6 @@ export function PostForm({ labels, zones, cities, categories, locale, linkRequir
       {!edit ? (
         <>
           <div className="row wrap" style={{ gap: 12, alignItems: 'flex-start' }}>
-            {zones.length > 1 ? (
-              <div className="field grow">
-                <label htmlFor="pf-zone">{labels['submit.zone']}</label>
-                <select id="pf-zone" name="zone" className="input" value={zone} onChange={(e) => setZone(e.target.value)}>
-                  {zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-                </select>
-              </div>
-            ) : (
-              // Regions are hidden: everything posts to the national feed.
-              <input type="hidden" name="zone" value={zones[0]?.id ?? 'national'} />
-            )}
-            {zoneCities.length > 0 ? (
-              <div className="field grow">
-                <label htmlFor="pf-city">{labels['submit.city']}</label>
-                <select id="pf-city" name="city" className="input" defaultValue="">
-                  <option value="">{labels['submit.wholeZone']}</option>
-                  {zoneCities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-            ) : null}
             <div className="field grow">
               <label htmlFor="pf-category">{labels['submit.category']}</label>
               <select id="pf-category" name="category" className="input" defaultValue={defaults?.category ?? categories[0]?.id} aria-invalid={Boolean(errors.category)}>

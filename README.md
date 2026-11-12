@@ -33,7 +33,7 @@ cp .env.example apps/web/.env.local   # fill SUPABASE_URL / SUPABASE_PUBLISHABLE
 pnpm dev                      # http://localhost:3000 · demo accounts use password pepforum-demo-2026
 ```
 
-Demo accounts include `maple_you` (Trusted), `peptide_analyst` (founding rater), `nurse_nova` (Ontario moderator), `newbie_sask` (newcomer) and `ops_lead` (admin).
+Demo accounts include `maple_you` (Trusted), `peptide_analyst` (founding rater), `nurse_nova` (moderator), `newbie_sask` (newcomer) and `ops_lead` (admin).
 
 ## Repository
 

@@ -11,7 +11,7 @@ import { initialActionState } from '@/lib/action-state';
 import { reportMemberAction } from '@/server/actions/content';
 
 /**
- * "Report member" on a profile. Goes to the admins, not to zone moderators,
+ * "Report member" on a profile. Goes to the admins, not to moderators,
  * and never collapses anything. Built on <details>: works without JS.
  */
 export function ReportMemberForm({ username, labels }: { username: string; labels: Record<string, string> }) {

@@ -30,20 +30,20 @@ select
   now() - make_interval(days => u.age_days),
   '', '', '', '',
   '{"provider": "email", "providers": ["email"]}'::jsonb,
-  jsonb_build_object('username', u.username, 'locale', u.locale, 'home_zone', u.zone),
+  jsonb_build_object('username', u.username, 'locale', u.locale),
   now() - make_interval(days => u.age_days), now()
 from (values
-  ('a0000000-0000-4000-8000-000000000001', 'ops_lead',        'en', 'on',       400),
-  ('a0000000-0000-4000-8000-000000000002', 'maple_you',       'en', 'on',       240),
-  ('a0000000-0000-4000-8000-000000000003', 'peptide_analyst', 'en', 'national', 600),
-  ('a0000000-0000-4000-8000-000000000004', 'nurse_nova',      'en', 'on',       500),
-  ('a0000000-0000-4000-8000-000000000005', 'bc_biohacker',    'en', 'bc',       450),
-  ('a0000000-0000-4000-8000-000000000006', 'dr_leclerc',      'fr', 'qc',       700),
-  ('a0000000-0000-4000-8000-000000000007', 'newbie_sask',     'en', 'prairies',   2),
-  ('a0000000-0000-4000-8000-000000000008', 'island_rn',       'en', 'bc',       480),
-  ('a0000000-0000-4000-8000-000000000009', 'to_runner',       'en', 'on',       520),
-  ('a0000000-0000-4000-8000-000000000010', 'yyc_lifter',      'en', 'ab',       200)
-) as u(id, username, locale, zone, age_days);
+  ('a0000000-0000-4000-8000-000000000001', 'ops_lead',        'en', 400),
+  ('a0000000-0000-4000-8000-000000000002', 'maple_you',       'en', 240),
+  ('a0000000-0000-4000-8000-000000000003', 'peptide_analyst', 'en', 600),
+  ('a0000000-0000-4000-8000-000000000004', 'nurse_nova',      'en', 500),
+  ('a0000000-0000-4000-8000-000000000005', 'bc_biohacker',    'en', 450),
+  ('a0000000-0000-4000-8000-000000000006', 'dr_leclerc',      'fr', 700),
+  ('a0000000-0000-4000-8000-000000000007', 'newbie_sask',     'en', 2),
+  ('a0000000-0000-4000-8000-000000000008', 'island_rn',       'en', 480),
+  ('a0000000-0000-4000-8000-000000000009', 'to_runner',       'en', 520),
+  ('a0000000-0000-4000-8000-000000000010', 'yyc_lifter',      'en', 200)
+) as u(id, username, locale, age_days);
 
 insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 select u.id::text, u.id,
@@ -78,9 +78,9 @@ update public.profiles set bio = 'MD, endocrinology. General information only.',
 insert into public.user_roles (user_id, role)
 select id, 'admin' from public.profiles where username = 'ops_lead';
 
-insert into public.zone_moderators (zone_id, user_id)
-select z, p.id from public.profiles p
-join (values ('on', 'nurse_nova'), ('bc', 'bc_biohacker'), ('qc', 'dr_leclerc')) as m(z, username) on m.username = p.username;
+-- Site-wide moderators (…034).
+insert into public.moderators (user_id)
+select p.id from public.profiles p where p.username in ('nurse_nova', 'bc_biohacker', 'dr_leclerc');
 
 -- ---------------------------------------------------------------------------
 -- Posts and comments, created as their authors
@@ -91,33 +91,32 @@ insert into public.approved_domains (domain, reason) values
   ('nejm.org', 'Peer-reviewed journal'), ('clinicaltrials.gov', 'Trial registry'), ('scc.ca', 'Standards Council of Canada');
 
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-4000-8000-000000000002","role":"authenticated"}', false);
-select public.create_post('national', 'weight', 'claim',
+select public.create_post('weight', 'claim',
   'New study claims GLP-1 peptides cut body weight by 25% in 12 weeks',
   'A chart is circulating showing dramatic weight loss from a recent peptide trial. Is this what people are seeing with their own clinicians?');
-select public.create_post('on', 'recovery', 'experience',
+select public.create_post('recovery', 'experience',
   'Six months after knee surgery: what my physio said about the healing-peptide hype',
-  'Personal experience: the physio protocol and sleep mattered most. Sharing what I tried and what I think was placebo.',
-  null, 'toronto');
+  'Personal experience: the physio protocol and sleep mattered most. Sharing what I tried and what I think was placebo.');
 
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-4000-8000-000000000010","role":"authenticated"}', false);
-select public.create_post('ab', 'regulation', 'question',
+select public.create_post('regulation', 'question',
   'Is BPC-157 now legal to buy in Canada without a prescription?',
   'Heard from a friend that Health Canada loosened its stance on research peptides. Anyone have an official source?');
-select public.create_post('ab', 'research', 'claim',
+select public.create_post('research', 'claim',
   'Got a purity report back on a research compound: 98.7% means it is safe, right?',
   'Posting the certificate I was sent. No lab name on it, but 98.7% sounds great.');
 
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-4000-8000-000000000004","role":"authenticated"}', false);
-select public.create_post('national', 'access', 'resource',
+select public.create_post('access', 'resource',
   'Pharmacare coverage expands: will peptide-based prescriptions be included?',
   'Breaking down the newly announced list of covered medications and which provinces are opting in first.',
   'https://www.canada.ca/en/health-canada/services/pharmacare.html');
 
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-4000-8000-000000000006","role":"authenticated"}', false);
-select public.create_post('qc', 'weight', 'resource',
+select public.create_post('weight', 'resource',
   'RAMQ et les GLP-1 : ce qui est couvert, ce qui ne l’est pas (mise à jour 2026)',
   'Résumé en français de la couverture actuelle au Québec. Information générale, pas un avis médical.',
-  'https://www.ramq.gouv.qc.ca/fr/citoyens/assurance-medicaments', null, 'fr');
+  'https://www.ramq.gouv.qc.ca/fr/citoyens/assurance-medicaments', 'fr');
 
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-4000-8000-000000000006","role":"authenticated"}', false);
 select public.create_comment(p.id,

@@ -28,9 +28,9 @@ afterAll(async () => {
   await db.close();
 });
 
-async function createModerator(zone = 'on'): Promise<string> {
+async function createModerator(): Promise<string> {
   const id = await db.createUser({ karma: TIER.contributor });
-  await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ($1, $2)`, [zone, id]);
+  await db.sql(`insert into public.moderators (user_id) values ($1)`, [id]);
   return id;
 }
 
@@ -121,7 +121,7 @@ describe('#6 sanctions cannot be lifted by the sanctioned or by unrelated modera
   it('blocks self-revocation and revocation of another moderator’s freeze', async () => {
     const m1 = await createModerator();
     const m2 = await createModerator();
-    const m3 = await createModerator('bc');
+    const m3 = await createModerator();
     const { s: sanction } = await db.asOne<{ s: string }>(user(m2, 'aal2'), `select public.apply_sanction($1, 'freeze', 'Repeated sourcing hints', 7) as s`, [m1]);
 
     expect((await db.expectError(user(m1, 'aal2'), `select public.revoke_sanction($1, 'mine')`, [sanction])).message).toBe('conflict_of_interest');

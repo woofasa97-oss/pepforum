@@ -14,7 +14,6 @@ import { type MessageKey, type Translate, pick } from '@/lib/i18n';
 import { restoreContentAction, setCommentsLockedAction, setNoteHiddenAction, setPinnedAction } from '@/server/actions/admin';
 import { adminAppeals, adminModLog, adminQueue, adminTeam } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Moderation' };
 
@@ -57,15 +56,10 @@ function Undo({ e, t }: { e: AdminLogEntry; t: Translate }) {
 }
 
 export default async function AdminModerationPage({ searchParams }: {
-  searchParams: Promise<{ tab?: string; zone?: string; action?: string; actor?: string; target?: string; before?: string }>;
+  searchParams: Promise<{ tab?: string; action?: string; actor?: string; target?: string; before?: string }>;
 }) {
-  const [t, locale, params, taxonomy] = await Promise.all([getT(), getLocale(), searchParams, getTaxonomy()]);
+  const [t, locale, params] = await Promise.all([getT(), getLocale(), searchParams]);
   const tab: Tab = TABS.includes(params.tab as Tab) ? (params.tab as Tab) : 'queue';
-  const zoneName = (id: string | null) => {
-    if (!id) return t('admin.mod.noZone');
-    const z = taxonomy.zones.find((x) => x.id === id);
-    return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
-  };
   const labels = pick(t, RESOLVE_LABELS);
 
   return (
@@ -78,26 +72,14 @@ export default async function AdminModerationPage({ searchParams }: {
       {tab === 'queue' ? await (async () => {
         const result = await adminQueue();
         if (!result.ok) return <DataUnavailable result={result} t={t} />;
-        const zones = [...new Set(result.data.map((i) => i.zone_id))];
-        const items = params.zone ? result.data.filter((i) => i.zone_id === params.zone) : result.data;
+        const items = result.data;
         return (
           <>
-            {zones.length > 1 ? (
-              <nav className="row wrap mb12" style={{ gap: 6 }} aria-label={t('admin.zone')}>
-                <Link className="chip sm" href="/admin/moderation" aria-current={!params.zone ? 'page' : undefined}>{t('admin.all')} · {result.data.length}</Link>
-                {zones.map((z) => (
-                  <Link key={z} className="chip sm" href={`/admin/moderation?zone=${z}`} aria-current={params.zone === z ? 'page' : undefined}>
-                    {zoneName(z)} · {result.data.filter((i) => i.zone_id === z).length}
-                  </Link>
-                ))}
-              </nav>
-            ) : null}
             {items.length === 0 ? <div className="card"><EmptyState title={t('admin.mod.queueEmpty')} /></div> : (
               <div className="feed">
                 {items.map((item) => (
                   <article key={item.target_id} className="card card-p">
                     <div className="meta">
-                      <span className="pill zone">{zoneName(item.zone_id)}</span>
                       <span className="pill">{t(`admin.kind.${item.target_kind}` as MessageKey)}</span>
                       <StatusPill status={item.status} t={t} />
                       {item.held_reason ? <span className="pill amber"><Icon name="shield" />{t('admin.mod.heldBy', { rule: item.held_reason })}</span> : null}
@@ -128,7 +110,6 @@ export default async function AdminModerationPage({ searchParams }: {
             {result.data.map((appeal) => (
               <article key={appeal.id} className="card card-p">
                 <div className="meta">
-                  <span className="pill zone">{zoneName(appeal.zone_id)}</span>
                   <span className="pill amber">{t(`admin.action.${appeal.action}` as MessageKey)}</span>
                   <Link className="link" href={`/admin/people/${encodeURIComponent(appeal.appellant)}`}>u/{appeal.appellant}</Link>
                   <span className="xs faint">{relativeTime(appeal.created_at, t)}</span>
@@ -145,12 +126,12 @@ export default async function AdminModerationPage({ searchParams }: {
       {tab === 'log' ? await (async () => {
         const action = MOD_ACTIONS.includes(params.action as (typeof MOD_ACTIONS)[number]) ? (params.action as string) : null;
         const result = await adminModLog({
-          p_action: action, p_actor: params.actor?.trim() || null, p_zone: params.zone || null,
+          p_action: action, p_actor: params.actor?.trim() || null,
           p_target: params.target?.trim() || null, p_before: params.before || null,
         });
         const last = result.ok ? result.data[result.data.length - 1] : undefined;
         const older = new URLSearchParams({ tab: 'log', ...(action ? { action } : {}), ...(params.actor ? { actor: params.actor } : {}),
-          ...(params.target ? { target: params.target } : {}), ...(params.zone ? { zone: params.zone } : {}), ...(last ? { before: last.created_at } : {}) });
+          ...(params.target ? { target: params.target } : {}), ...(last ? { before: last.created_at } : {}) });
         return (
           <>
             <form className="filters card card-p" action="/admin/moderation">
@@ -164,11 +145,6 @@ export default async function AdminModerationPage({ searchParams }: {
               <input id="log-actor" name="actor" className="input" placeholder={t('admin.log.actor')} defaultValue={params.actor ?? ''} style={{ maxWidth: 160 }} />
               <label className="vh" htmlFor="log-target">{t('admin.log.target')}</label>
               <input id="log-target" name="target" className="input" placeholder={t('admin.log.target')} defaultValue={params.target ?? ''} style={{ maxWidth: 160 }} />
-              <label className="vh" htmlFor="log-zone">{t('admin.zone')}</label>
-              <select id="log-zone" name="zone" className="input" defaultValue={params.zone ?? ''} style={{ maxWidth: 180 }}>
-                <option value="">{t('admin.log.anyZone')}</option>
-                {taxonomy.zones.map((z) => <option key={z.id} value={z.id}>{zoneName(z.id)}</option>)}
-              </select>
               <button type="submit" className="btn">{t('admin.filter')}</button>
               <a className="btn ghost" href="/admin/export/modlog" download><Icon name="download" />{t('admin.export')}</a>
             </form>
@@ -216,7 +192,7 @@ export default async function AdminModerationPage({ searchParams }: {
                 <div className="tbl-wrap">
                   <table className="tbl">
                     <thead><tr>
-                      <th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.zone')}</th>
+                      <th scope="col">{t('admin.people.member')}</th>
                       <th scope="col" className="num">{t('admin.team.actions30')}</th><th scope="col" className="num">{t('admin.perf.median')}</th>
                       <th scope="col" className="num">{t('admin.perf.overturned')}</th><th scope="col">{t('admin.team.lastAction')}</th>
                     </tr></thead>
@@ -224,9 +200,8 @@ export default async function AdminModerationPage({ searchParams }: {
                       {team.moderators.map((m) => {
                         const overturned = percent(m.decisions_overturned, m.decisions_appealed);
                         return (
-                          <tr key={`${m.zone_id}-${m.username}`}>
+                          <tr key={m.username}>
                             <td><Link className="link" href={`/admin/people/${encodeURIComponent(m.username)}`}>u/{m.username}</Link></td>
-                            <td>{zoneName(m.zone_id)}</td>
                             <td className="num">{m.actions_30d}</td>
                             <td className="num">{m.median_hours === null ? '—' : t('admin.hours', { n: m.median_hours })}</td>
                             <td className="num">

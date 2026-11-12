@@ -105,7 +105,7 @@ export async function submitClinicianAction(_prev: ActionState, form: FormData):
   const c = parsed.data;
   const t = await getT();
   return run('submit_clinician_verification', {
-    p_profession: c.profession, p_regulator: c.regulator, p_province: c.province, p_registration_number: c.registrationNumber,
+    p_profession: c.profession, p_regulator: c.regulator, p_country: c.country, p_registration_number: c.registrationNumber,
     p_document_id: c.documentId, p_statement: c.statement ?? '',
   }, t('clinician.submitted'), ['/settings/clinician']);
 }
@@ -124,7 +124,7 @@ export async function createAdvertiserAction(_prev: ActionState, form: FormData)
   const a = parsed.data;
   const t = await getT();
   return run('create_advertiser', {
-    p_name: a.name, p_website: a.website, p_billing_email: a.billingEmail, p_billing_address: a.billingAddress, p_billing_province: a.billingProvince,
+    p_name: a.name, p_website: a.website, p_billing_email: a.billingEmail, p_billing_address: a.billingAddress, p_billing_country: a.billingCountry,
   }, t('ads.orgCreated'), ['/advertiser']);
 }
 
@@ -135,7 +135,7 @@ export async function upsertCampaignAction(_prev: ActionState, form: FormData): 
   const t = await getT();
   if (!(await getViewer())) return { ok: false, message: t('errors.signInRequired') };
   const { data, error } = await rpc('upsert_campaign', {
-    p_id: c.id || null, p_name: c.name, p_package: c.package, p_zone: c.zone || null, p_category: c.category || null,
+    p_id: c.id || null, p_name: c.name, p_package: c.package, p_category: c.category || null,
     p_budget_microcad: c.budgetCad * MICRO,
     p_headline: c.headline, p_body: c.body, p_cta: c.cta, p_headline_fr: c.headlineFr, p_body_fr: c.bodyFr, p_cta_fr: c.ctaFr,
     p_landing_url: c.landingUrl, p_image_id: c.imageId || null,

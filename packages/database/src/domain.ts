@@ -146,7 +146,8 @@ export const AD_REPORT_REASONS = ['vendor', 'medical_claim', 'misleading', 'offe
 export type AdReportReason = (typeof AD_REPORT_REASONS)[number];
 
 /** Where a campaign runs (ad_campaigns.package, …025). */
-export const AD_PACKAGES = ['zone', 'category', 'national'] as const;
+/** 'national' is shown as "Site-wide" (the zone package went in …034). */
+export const AD_PACKAGES = ['category', 'national'] as const;
 export type AdPackage = (typeof AD_PACKAGES)[number];
 
 export const AD_CAMPAIGN_STATUSES = ['draft', 'review', 'approved', 'active', 'paused', 'rejected', 'completed', 'suspended'] as const;
@@ -155,9 +156,26 @@ export type AdCampaignStatus = (typeof AD_CAMPAIGN_STATUSES)[number];
 export const ADVERTISER_STATUSES = ['pending', 'active', 'suspended'] as const;
 export type AdvertiserStatus = (typeof ADVERTISER_STATUSES)[number];
 
-/** Canadian provinces and territories, for advertiser billing (…025). */
-export const PROVINCES = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT'] as const;
-export type Province = (typeof PROVINCES)[number];
+/**
+ * ISO 3166-1 alpha-2 country codes (…034): clinician country and advertiser
+ * billing country. The UI names them with Intl.DisplayNames in the reader's language.
+ */
+export const COUNTRIES = [
+  'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE',
+  'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD',
+  'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM',
+  'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF',
+  'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU',
+  'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN',
+  'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME',
+  'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA',
+  'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM',
+  'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI',
+  'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK',
+  'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI',
+  'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW',
+] as const;
+export type Country = (typeof COUNTRIES)[number];
 
 /** Health professions a member can be verified as (clinician_verifications.profession, …024). */
 export const CLINICIAN_PROFESSIONS = ['physician', 'nurse_practitioner', 'registered_nurse', 'pharmacist', 'naturopathic_doctor', 'dietitian', 'other'] as const;

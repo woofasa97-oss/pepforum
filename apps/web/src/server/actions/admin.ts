@@ -23,7 +23,6 @@ import {
   CampaignDecisionSchema,
   CategorySchema,
   ClinicianDecisionSchema,
-  CitySchema,
   ConfigChangeSchema,
   ContentReasonSchema,
   DeleteRedirectSchema,
@@ -53,7 +52,6 @@ import {
   TicketClosedSchema,
   TicketReplySchema,
   ToggleSchema,
-  ZoneSchema,
   fieldErrors,
   formToObject,
 } from '@/lib/validation';
@@ -198,7 +196,7 @@ export async function setModeratorAction(_prev: ActionState, form: FormData): Pr
   if (!parsed.success) return invalid(parsed.error);
   const id = await memberId(parsed.data.username);
   if (!id) return { ok: false, fieldErrors: { username: (await getT())('errors.notFound') } };
-  return run('set_zone_moderator', { p_user: id, p_zone: parsed.data.zone, p_appoint: parsed.data.appoint === 'true', p_reason: parsed.data.reason });
+  return run('set_moderator', { p_user: id, p_appoint: parsed.data.appoint === 'true', p_reason: parsed.data.reason });
 }
 
 export async function foundingAction(_prev: ActionState, form: FormData): Promise<ActionState> {
@@ -410,25 +408,6 @@ export async function archiveCategoryAction(_prev: ActionState, form: FormData):
   const parsed = ArchiveCategorySchema.safeParse(formToObject(form));
   if (!parsed.success) return invalid(parsed.error);
   const result = await run('admin_archive_category', { p_id: parsed.data.id, p_archived: parsed.data.archived === 'true', p_reason: parsed.data.reason });
-  if (result.ok) revalidatePath('/', 'layout');
-  return result;
-}
-
-export async function upsertCityAction(_prev: ActionState, form: FormData): Promise<ActionState> {
-  const parsed = CitySchema.safeParse(formToObject(form));
-  if (!parsed.success) return invalid(parsed.error);
-  const c = parsed.data;
-  return run('admin_upsert_city', { p_id: c.id, p_zone_id: c.zone, p_name: c.name, p_sort_order: c.sortOrder, p_reason: c.reason });
-}
-
-export async function updateZoneAction(_prev: ActionState, form: FormData): Promise<ActionState> {
-  const parsed = ZoneSchema.safeParse(formToObject(form));
-  if (!parsed.success) return invalid(parsed.error);
-  const z = parsed.data;
-  const result = await run('admin_update_zone', {
-    p_id: z.id, p_name_en: z.nameEn, p_name_fr: z.nameFr, p_short_name: z.shortName,
-    p_description_en: z.descriptionEn, p_description_fr: z.descriptionFr, p_reason: z.reason,
-  });
   if (result.ok) revalidatePath('/', 'layout');
   return result;
 }

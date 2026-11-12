@@ -1,5 +1,5 @@
 /**
- * Sourcing shield and the all-zones queue (migration …016).
+ * Sourcing shield and the moderation queue (migration …016; one site-wide queue since …034).
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -19,9 +19,9 @@ afterAll(async () => {
   await db.close();
 });
 
-async function createModerator(zone = 'on'): Promise<string> {
+async function createModerator(): Promise<string> {
   const id = await db.createUser({ karma: TIER.contributor });
-  await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ($1, $2)`, [zone, id]);
+  await db.sql(`insert into public.moderators (user_id) values ($1)`, [id]);
   return id;
 }
 
@@ -40,7 +40,7 @@ describe('hold', () => {
 
     const mod = await createModerator();
     const { q } = await db.asOne<{ q: Array<{ target_id: string; held_reason: string; report_count: number }> }>(
-      user(mod, 'aal2'), `select public.mod_queue('on') as q`);
+      user(mod, 'aal2'), `select public.mod_queue() as q`);
     expect(q.find((item) => item.target_id === post)).toMatchObject({ held_reason: 'dm me', report_count: 0 });
 
     await db.as(user(mod, 'aal2'), `select public.resolve_reports('post', $1, 'keep', null, 'Asking about clinic hours, fine')`, [post]);
@@ -92,7 +92,7 @@ describe('block', () => {
       { body: 'They sell it at peptide-shop.example, cheap.' },
     ]) {
       const error = await db.expectError(user(author),
-        `select public.create_post('on', 'basics', $1, 'A sufficiently descriptive title', $2, $3)`,
+        `select public.create_post('basics', $1, 'A sufficiently descriptive title', $2, $3)`,
         [options.type ?? 'claim', options.body ?? 'Body', options.link ?? null]);
       expect(error).toMatchObject({ code: 'PF422', message: 'blocked_by_shield' });
     }
@@ -129,17 +129,23 @@ describe('block', () => {
 });
 
 describe('admin queue', () => {
-  it('lists every zone for admins and includes sanction appeals that belong to no zone', async () => {
-    const bc = await createPost(db, await db.createUser({ karma: TIER.member }), { zone: 'bc', body: 'coupon code inside' });
-    const qc = await createPost(db, await db.createUser({ karma: TIER.member }), { zone: 'qc', body: 'discount code inside' });
-    const { q } = await db.asOne<{ q: Array<{ target_id: string; zone_id: string }> }>(user(admin, 'aal2'), `select public.mod_queue(null) as q`);
-    expect(q.map((item) => item.target_id)).toEqual(expect.arrayContaining([bc, qc]));
+  it('one queue for every moderator; sanction appeals are listed but only an admin decides them', async () => {
+    const first = await createPost(db, await db.createUser({ karma: TIER.member }), { body: 'coupon code inside' });
+    const second = await createPost(db, await db.createUser({ karma: TIER.member }), { body: 'discount code inside' });
+    const mod = await createModerator();
+    for (const actor of [admin, mod]) {
+      const { q } = await db.asOne<{ q: Array<{ target_id: string }> }>(user(actor, 'aal2'), `select public.mod_queue() as q`);
+      expect(q.map((item) => item.target_id)).toEqual(expect.arrayContaining([first, second]));
+    }
 
     const target = await db.createUser();
     const { s } = await db.asOne<{ s: string }>(user(admin, 'aal2'), `select public.apply_sanction($1, 'suspension', 'Ban evasion', 7) as s`, [target]);
     const { id } = await db.sqlOne<{ id: string }>(`select mod_action_id as id from public.sanctions where id = $1`, [s]);
     await db.as(user(target), `select public.submit_appeal($1, 'I am not the same person as the banned account.')`, [id]);
-    const { a } = await db.asOne<{ a: Array<{ zone_id: string | null; can_decide: boolean }> }>(user(admin, 'aal2'), `select public.open_appeals(null) as a`);
-    expect(a).toContainEqual(expect.objectContaining({ zone_id: null, can_decide: false }));
+    // The admin who acted can't decide it; a moderator who isn't an admin can't either.
+    for (const actor of [admin, mod]) {
+      const { a } = await db.asOne<{ a: Array<{ target_kind: string; can_decide: boolean }> }>(user(actor, 'aal2'), `select public.open_appeals() as a`);
+      expect(a).toContainEqual(expect.objectContaining({ target_kind: 'user', can_decide: false }));
+    }
   });
 });

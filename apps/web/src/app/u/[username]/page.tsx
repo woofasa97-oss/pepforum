@@ -82,7 +82,6 @@ export default async function ProfilePage({ params }: Props) {
               <SocialBadges username={profile.username} socials={profile.socials ?? []} t={t} locale={locale} isAdmin={Boolean(standing?.is_admin)} />
               {profile.bio ? <p className="mt8">{profile.bio}</p> : null}
               {profile.coi ? <p className="small mt8"><b>{t('profile.coi')}:</b> {profile.coi}</p> : null}
-              {profile.moderates.length ? <p className="small mt8 pill blue">{t('profile.moderates', { zones: profile.moderates.join(', ') })}</p> : null}
             </div>
           </div>
           <div className="stats mt16">

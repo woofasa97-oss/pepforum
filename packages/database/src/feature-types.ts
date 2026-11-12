@@ -23,7 +23,6 @@ import type {
   PriceCurrency,
   PriceOrigin,
   PriceVendorStatus,
-  Province,
 } from './domain.ts';
 
 // ── SEO (…021) ──────────────────────────────────────────────────────────────
@@ -106,7 +105,7 @@ export type MyClinicianVerification = {
     id: string;
     profession: ClinicianProfession;
     regulator: string;
-    province_id: string;
+    country: string;
     status: ClinicianStatus | 'expired';
     submitted_at: string;
     reviewed_at: string | null;
@@ -125,7 +124,7 @@ export type AdminClinicianRow = {
   joined: string;
   profession: ClinicianProfession;
   regulator: string;
-  province_id: string;
+  country: string;
   registration_number: string;
   document_id: string | null;
   statement: string;
@@ -155,7 +154,6 @@ export type MyCampaign = {
   id: string;
   name: string;
   package: AdPackage;
-  zone_id: string | null;
   category_id: string | null;
   budget: number;
   cpm: number;
@@ -190,7 +188,7 @@ export type MyAdvertiser = {
   website: string;
   billing_email: string;
   billing_address: string;
-  billing_province: Province;
+  billing_country: string;
   status: AdvertiserStatus;
   review_note: string;
   created_at: string;
@@ -205,7 +203,7 @@ export type MyAdvertiser = {
 export type ServedAd = { id: string; advertiser: string; headline: string; body: string; cta: string; image_id: string | null };
 
 export type AdminAdvertiserRow = {
-  id: string; name: string; website: string; billing_email: string; billing_province: Province; status: AdvertiserStatus; review_note: string;
+  id: string; name: string; website: string; billing_email: string; billing_country: string; status: AdvertiserStatus; review_note: string;
   owner: string; owner_tier: number; created_at: string; balance: number; reserved: number; campaigns: number; in_review: number;
 };
 export type AdminCampaignRow = Omit<MyCampaign, 'days' | 'created_at' | 'updated_at' | 'reviewed_at'> & {

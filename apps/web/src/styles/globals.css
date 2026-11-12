@@ -93,10 +93,6 @@ svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none;
 .avatar { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex: none; overflow: hidden; }
 .avatar.sm { width: 24px; height: 24px; font-size: 10px; } .avatar.lg { width: 56px; height: 56px; font-size: 20px; }
 
-.zonebar { background: var(--surface); border-bottom: 1px solid var(--border); }
-.zonebar-in { max-width: 1320px; margin: 0 auto; padding: 8px 20px; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.zonebar-in::-webkit-scrollbar { display: none; }
-.zonebar .lbl { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--text-3); margin-right: 4px; text-transform: uppercase; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--r-pill); border: 1px solid var(--border); background: var(--surface); font-weight: 600; font-size: 13px; white-space: nowrap; color: var(--text-2); }
 .chip:hover { border-color: var(--border-strong); color: var(--text); }
 .chip[aria-current="page"], .chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
@@ -175,7 +171,6 @@ textarea.input { min-height: 120px; resize: vertical; }
 
 /* ── Pills, badges, tiers ── */
 .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--r-pill); font-size: 11px; font-weight: 600; background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); white-space: nowrap; }
-.pill.zone { background: var(--navy); color: #fff; border-color: var(--navy); }
 .pill.green { background: var(--green-soft); color: var(--green); border-color: transparent; }
 .pill.amber { background: var(--amber-soft); color: var(--amber); border-color: transparent; }
 .pill.red { background: var(--accent-soft); color: var(--accent); border-color: transparent; }

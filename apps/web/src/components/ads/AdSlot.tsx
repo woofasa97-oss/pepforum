@@ -18,7 +18,7 @@ export const REPORT_AD_LABEL_KEYS = [
  * nothing is booked. The click goes through /ads/go/<id>; the landing URL is
  * never in the page.
  */
-export async function AdSlot({ pkg, target }: { pkg: 'national' | 'zone' | 'category'; target: string | null }) {
+export async function AdSlot({ pkg, target }: { pkg: 'national' | 'category'; target: string | null }) {
   const [t, locale, standing] = await Promise.all([getT(), getLocale(), getStanding()]);
   const ad = await getAd(pkg, target, locale);
   if (!ad) return null;

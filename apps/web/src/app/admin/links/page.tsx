@@ -10,20 +10,15 @@ import { formatDate, relativeTime } from '@/lib/format';
 import { linkDecisionAction, linkSiteAction } from '@/server/actions/admin';
 import { adminLinks } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Links' };
 
 export default async function AdminLinksPage() {
-  const [t, locale, result, taxonomy] = await Promise.all([getT(), getLocale(), adminLinks(), getTaxonomy()]);
+  const [t, locale, result] = await Promise.all([getT(), getLocale(), adminLinks()]);
   const header = <PageHeader title={t('admin.links.title')} sub={t('admin.links.sub')} />;
   if (!result.ok) return <>{header}<DataUnavailable result={result} t={t} /></>;
   const l = result.data;
   const labels = { reason: t('admin.reasonLabel'), reasonHint: t('admin.reasonHint') };
-  const zoneName = (id: string) => {
-    const z = taxonomy.zones.find((x) => x.id === id);
-    return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
-  };
 
   return (
     <>
@@ -77,7 +72,6 @@ export default async function AdminLinksPage() {
                 <div className="row between wrap mb8" style={{ gap: 8 }}>
                   <span className="row wrap" style={{ gap: 6 }}>
                     <span className="pill">{t(item.target_kind === 'post' ? 'admin.links.post' : 'admin.links.comment')}</span>
-                    <span className="pill zone">{zoneName(item.zone_id)}</span>
                     {item.held_reason ? <span className="pill amber">{t('admin.links.alsoHeld', { rule: item.held_reason })}</span> : null}
                   </span>
                   <span className="xs muted">{t('admin.links.waitingSince', { time: relativeTime(item.waiting_since, t) })}</span>

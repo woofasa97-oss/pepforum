@@ -15,7 +15,7 @@ import { PLATFORM_NAMES, audienceKey, displayHandle } from '@/lib/social-names';
 import { configuredPlatforms } from '@/lib/socials';
 import { unlinkSocialAction } from '@/server/actions/social';
 import { getLocale, getStanding, getSupabase, getT, getViewer } from '@/server/context';
-import { getMySocialAccounts, getSocialBonusRules, getTaxonomy } from '@/server/queries';
+import { getMySocialAccounts, getSocialBonusRules } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Settings', robots: { index: false } };
 
@@ -23,8 +23,8 @@ const PICTURE_RESULTS = ['saved', 'removed', 'invalid', 'too_large', 'unsupporte
 const SOCIAL_RESULTS = ['linked', 'removed', 'cancelled', 'failed', 'taken', 'no_channel', 'rate_limited', 'unavailable'] as const;
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ avatar?: string; social?: string }> }) {
-  const [t, locale, viewer, taxonomy, standing, query, socials, rules] = await Promise.all([
-    getT(), getLocale(), getViewer(), getTaxonomy(), getStanding(), searchParams, getMySocialAccounts(), getSocialBonusRules(),
+  const [t, locale, viewer, standing, query, socials, rules] = await Promise.all([
+    getT(), getLocale(), getViewer(), getStanding(), searchParams, getMySocialAccounts(), getSocialBonusRules(),
   ]);
   if (!viewer) redirect('/auth/sign-in?next=/settings');
   const pictureResult = PICTURE_RESULTS.find((r) => r === query.avatar);
@@ -33,7 +33,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   const supabase = await getSupabase();
   const [{ data: profile }, { data: factors }, { data: account }] = await Promise.all([
-    supabase.from('profiles').select('bio, coi, locale, home_zone_id').eq('id', viewer.id).single(),
+    supabase.from('profiles').select('bio, coi, locale').eq('id', viewer.id).single(),
     supabase.auth.mfa.listFactors(),
     supabase.auth.getUser(),
   ]);
@@ -115,9 +115,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <section className="card card-p mb16" aria-labelledby="profile-h">
           <h2 id="profile-h" className="mb12">{t('settings.profile')}</h2>
           <ProfileForm
-            labels={pick(t, ['settings.bio', 'settings.coi', 'settings.coiHint', 'settings.save', 'auth.homeZone', 'auth.locale'])}
-            defaults={{ bio: profile?.bio ?? '', coi: profile?.coi ?? '', locale: profile?.locale ?? locale, homeZone: profile?.home_zone_id ?? '' }}
-            zones={taxonomy.zones.filter((z) => taxonomy.regions && z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
+            labels={pick(t, ['settings.bio', 'settings.coi', 'settings.coiHint', 'settings.save', 'auth.locale'])}
+            defaults={{ bio: profile?.bio ?? '', coi: profile?.coi ?? '', locale: profile?.locale ?? locale }}
           />
         </section>
 

@@ -121,3 +121,7 @@ An editorial Prices section, off until `features.prices` is switched on ([ADR-00
 | Links (…032) | `prices.click_daily_stats`; `price_link` (plain links, ADR-0009) | `/prices/go/[id]` (302, no referrer) | — |
 
 The invariants hold with one addition: the pipeline is a second writer, and it reaches the database as its own login with column-level grants in `prices` only. It cannot touch a forum table, and the web app still reads only through functions.
+
+## No zones (migration …034)
+
+Zones, cities, home zones and province fields were removed ([ADR-0010](adr/0010-no-zones.md)). Moderators are site-wide (`public.moderators`, `private.is_moderator`, `private.require_moderator`, `public.set_moderator`); `mod_queue()` and `open_appeals()` take no arguments; clinicians and advertisers give an ISO country. `/zone/*` redirects to `/` (`next.config.ts`). `packages/database/tests/zones-removed.test.ts` fails if any function still mentions a zone.

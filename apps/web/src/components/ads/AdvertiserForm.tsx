@@ -1,6 +1,5 @@
 'use client';
 
-import { PROVINCES } from '@pepforum/database';
 import { useActionState } from 'react';
 
 import { FieldError, FormMessage } from '@/components/ui/Bits';
@@ -8,7 +7,7 @@ import { SubmitButton } from '@/components/ui/SubmitButton';
 import { initialActionState } from '@/lib/action-state';
 import { createAdvertiserAction } from '@/server/actions/features';
 
-export function AdvertiserForm({ labels }: { labels: Record<string, string> }) {
+export function AdvertiserForm({ labels, countries }: { labels: Record<string, string>; countries: Array<{ id: string; name: string }> }) {
   const [state, action] = useActionState(createAdvertiserAction, initialActionState);
   const errors = state.fieldErrors ?? {};
   return (
@@ -35,9 +34,10 @@ export function AdvertiserForm({ labels }: { labels: Record<string, string> }) {
           <input id="adv-addr" name="billingAddress" className="input" maxLength={300} />
         </div>
         <div className="field">
-          <label htmlFor="adv-prov">{labels['ads.billingProvince']}</label>
-          <select id="adv-prov" name="billingProvince" className="input" defaultValue="ON">
-            {PROVINCES.map((p) => <option key={p} value={p}>{p}</option>)}
+          <label htmlFor="adv-country">{labels['ads.billingCountry']}</label>
+          <select id="adv-country" name="billingCountry" className="input" defaultValue="" required>
+            <option value="" disabled>—</option>
+            {countries.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
       </div>

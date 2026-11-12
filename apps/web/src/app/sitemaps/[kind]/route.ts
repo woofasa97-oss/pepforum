@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 const KINDS = ['pages', 'posts', 'notes', 'profiles', 'prices'] as const;
 type Kind = (typeof KINDS)[number];
 
-/** One sitemap: static pages (with zones and categories) or a page of database entries. */
+/** One sitemap: static pages (with categories) or a page of database entries. */
 export async function GET(request: Request, { params }: { params: Promise<{ kind: string }> }) {
   const { kind } = await params;
   if (!KINDS.includes(kind as Kind)) return new NextResponse('Not found', { status: 404 });
@@ -19,7 +19,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
     const taxonomy = await getTaxonomy();
     entries = [
       ...STATIC_PATHS.map((path) => ({ path })),
-      ...taxonomy.zones.filter((z) => taxonomy.regions && z.id !== 'national').map((z) => ({ path: `/zone/${z.id}` })),
       ...taxonomy.categories.map((c) => ({ path: `/category/${c.id}` })),
     ];
   } else if (kind === 'prices') {

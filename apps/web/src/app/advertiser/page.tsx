@@ -9,6 +9,7 @@ import { Icon } from '@/components/ui/Icon';
 import { campaignTone } from '@/lib/ads';
 import { formatDate, formatDay } from '@/lib/format';
 import { type MessageKey, pick } from '@/lib/i18n';
+import { countryOptions } from '@/lib/countries';
 import { getLocale, getT, getViewer } from '@/server/context';
 import { getAdRateCard, getMyAdvertiser } from '@/server/queries';
 
@@ -29,7 +30,7 @@ export default async function AdvertiserPage() {
           <p className="muted mb16">{t('ads.noOrg')} <Link className="link" href="/advertise">{t('ads.readPolicy')}</Link></p>
           <section className="card card-p">
             <h2 className="mb12">{t('ads.createOrg')}</h2>
-            <AdvertiserForm labels={pick(t, ['ads.orgName', 'ads.orgWebsite', 'ads.billingEmail', 'ads.billingAddress', 'ads.billingProvince', 'ads.orgAck', 'ads.orgSubmit'])} />
+            <AdvertiserForm labels={pick(t, ['ads.orgName', 'ads.orgWebsite', 'ads.billingEmail', 'ads.billingAddress', 'ads.billingCountry', 'ads.orgAck', 'ads.orgSubmit'])} countries={countryOptions(locale)} />
           </section>
         </main>
       </div>
@@ -70,7 +71,7 @@ export default async function AdvertiserPage() {
                       <span className={`pill ${campaignTone(c.status)}`}>{t(`ads.status.${c.status}` as MessageKey)}</span>
                     </span>
                     <span className="small muted">
-                      {t(`ads.package.${c.package}` as MessageKey)}{c.zone_id ? ` · ${c.zone_id.toUpperCase()}` : ''}{c.category_id ? ` · ${c.category_id}` : ''} · {fmt(c.budget)}
+                      {t(`ads.package.${c.package}` as MessageKey)}{c.category_id ? ` · ${c.category_id}` : ''} · {fmt(c.budget)}
                       {c.starts_on && c.ends_on ? ` · ${formatDay(c.starts_on, locale)} – ${formatDay(c.ends_on, locale)}` : ''}
                     </span>
                     <span className="xs muted">{t('ads.stats', { impressions: c.impressions.toLocaleString(), clicks: c.clicks.toLocaleString(), spent: fmt(c.spent) })}</span>

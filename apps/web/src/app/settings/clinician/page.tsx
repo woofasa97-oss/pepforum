@@ -9,14 +9,15 @@ import { Icon } from '@/components/ui/Icon';
 import { canApplyForVerification } from '@/lib/clinician';
 import { formatDate } from '@/lib/format';
 import { type MessageKey, pick } from '@/lib/i18n';
+import { countryOptions } from '@/lib/countries';
 import { withdrawClinicianAction } from '@/server/actions/features';
 import { getLocale, getT, getViewer } from '@/server/context';
-import { getMyClinicianVerification, getTaxonomy } from '@/server/queries';
+import { getMyClinicianVerification } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Clinician verification', robots: { index: false } };
 
 const FORM_LABEL_KEYS = [
-  'clinician.profession', 'clinician.province', 'clinician.regulator', 'clinician.regulatorHint', 'clinician.registration', 'clinician.registrationHint',
+  'clinician.profession', 'clinician.country', 'clinician.regulator', 'clinician.regulatorHint', 'clinician.registration', 'clinician.registrationHint',
   'clinician.statement', 'clinician.statementHint', 'clinician.submit',
   'media.document', 'media.documentHint', 'media.chooseDocument', 'media.viewDocument', 'media.remove', 'media.uploading',
   'media.err.tooLarge', 'media.err.type', 'media.err.denied', 'media.err.rateLimited', 'media.err.failed',
@@ -24,7 +25,7 @@ const FORM_LABEL_KEYS = [
 ] satisfies MessageKey[];
 
 export default async function ClinicianSettingsPage() {
-  const [t, locale, viewer, taxonomy] = await Promise.all([getT(), getLocale(), getViewer(), getTaxonomy()]);
+  const [t, locale, viewer] = await Promise.all([getT(), getLocale(), getViewer()]);
   if (!viewer) redirect('/auth/sign-in?next=/settings/clinician');
   const mine = await getMyClinicianVerification();
   const latest = mine?.latest ?? null;
@@ -61,7 +62,7 @@ export default async function ClinicianSettingsPage() {
             <h2 id="form-h" className="mb8">{latest ? t('clinician.renew') : t('clinician.apply')}</h2>
             <p className="small muted mb12">{t('clinician.applyBody', { days: mine?.valid_days ?? 730 })}</p>
             <ClinicianForm labels={pick(t, FORM_LABEL_KEYS)}
-              provinces={taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))} />
+              countries={countryOptions(locale)} />
           </section>
         ) : null}
       </main>

@@ -123,7 +123,7 @@ describe('resolving tickets', () => {
   it('only admins in an MFA session can read or resolve', async () => {
     const member = await db.createUser({ karma: TIER.contributor });
     const mod = await db.createUser({ karma: TIER.contributor });
-    await db.sql(`insert into public.zone_moderators (zone_id, user_id) values ('on', $1)`, [mod]);
+    await db.sql(`insert into public.moderators (user_id) values ($1)`, [mod]);
     const target = await db.createUser();
     for (const actor of [anon, user(member, 'aal2'), user(mod, 'aal2'), user(admin, 'aal1')]) {
       await expect(db.as(actor, `select public.admin_member_reports()`)).rejects.toThrow();

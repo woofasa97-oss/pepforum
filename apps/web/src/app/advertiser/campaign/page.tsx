@@ -17,7 +17,7 @@ import { getAdRateCard, getMyAdvertiser, getTaxonomy } from '@/server/queries';
 export const metadata: Metadata = { title: 'Campaign', robots: { index: false } };
 
 const FORM_LABEL_KEYS = [
-  'ads.campaignName', 'ads.packageLabel', 'ads.cpm', 'submit.zone', 'submit.category', 'ads.budget', 'ads.budgetHint', 'ads.creative', 'ads.creativeHint',
+  'ads.campaignName', 'ads.packageLabel', 'ads.cpm', 'submit.category', 'ads.budget', 'ads.budgetHint', 'ads.creative', 'ads.creativeHint',
   'ads.copy.en', 'ads.copy.fr', 'ads.optional', 'ads.headline', 'ads.body', 'ads.cta', 'ads.landing', 'ads.landingHint', 'ads.locked', 'ads.createCampaign', 'submit.save',
   'media.images', 'media.imagesHint', 'media.add', 'media.alt', 'media.remove', 'media.uploading',
   'media.err.tooLarge', 'media.err.type', 'media.err.denied', 'media.err.rateLimited', 'media.err.failed',
@@ -95,9 +95,8 @@ export default async function CampaignPage({ searchParams }: { searchParams: Pro
 
         <CampaignForm
           labels={pick(t, FORM_LABEL_KEYS)}
-          zones={taxonomy.zones.filter((z) => z.id !== 'national').map((z) => ({ id: z.id, name: locale === 'fr' ? z.name_fr : z.name_en }))}
           categories={taxonomy.categories.map((c) => ({ id: c.id, name: locale === 'fr' ? c.name_fr : c.name_en }))}
-          cpm={{ zone: fmt(card.cpm.zone), category: fmt(card.cpm.category), national: fmt(card.cpm.national) }}
+          cpm={{ category: fmt(card.cpm.category), national: fmt(card.cpm.national) }}
           minBudgetCad={Math.ceil(card.min_booking / 1_000_000)}
           campaign={campaign}
         />

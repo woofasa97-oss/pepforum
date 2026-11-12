@@ -31,6 +31,10 @@ const config: NextConfig = {
       allowedOrigins: siteHost ? [siteHost] : [],
     },
   },
+  async redirects() {
+    // Zones went in …034 (ADR-0010): old zone pages land on the community feed.
+    return [{ source: '/zone/:path*', destination: '/', permanent: true }];
+  },
   async headers() {
     // Click-throughs to stores (…032) tell the store nothing about where the visitor came from, so
     // that one route gets the same headers with a stricter Referrer-Policy. The two rules never

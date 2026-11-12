@@ -7,7 +7,6 @@ import type {
   CategoryRow,
   FollowRow,
   MySocialAccounts,
-  CityRow,
   CommentRow,
   FeedRow,
   LedgerEventRow,
@@ -34,7 +33,6 @@ import type {
   ProfileView,
   SiteAnnouncement,
   TransparencyStats,
-  ZoneRow,
 } from '@pepforum/database';
 import { createHash } from 'node:crypto';
 import { headers } from 'next/headers';
@@ -59,28 +57,15 @@ function unwrap<T>(context: string, result: { data: T | null; error: DbErrorLike
   return result.data as T;
 }
 
+/** The official categories (zones and cities went in …034). */
 export interface Taxonomy {
-  readonly zones: ZoneRow[];
   readonly categories: CategoryRow[];
-  readonly cities: CityRow[];
-  /** features.regions: show provinces and cities to members (…026). Off if the setting can't be read. */
-  readonly regions: boolean;
 }
 
 export const getTaxonomy = cache(async (): Promise<Taxonomy> => {
   const supabase = await getSupabase();
-  const [zones, categories, cities, regions] = await Promise.all([
-    supabase.from('zones').select('*').order('sort_order'),
-    supabase.from('categories').select('*').is('archived_at', null).order('sort_order'),
-    supabase.from('cities').select('*').order('sort_order'),
-    supabase.from('app_config').select('value').eq('key', 'features.regions').maybeSingle(),
-  ]);
-  return {
-    zones: unwrap('zones', zones),
-    categories: unwrap('categories', categories),
-    cities: unwrap('cities', cities),
-    regions: !regions.error && regions.data?.value === true,
-  };
+  const categories = await supabase.from('categories').select('*').is('archived_at', null).order('sort_order');
+  return { categories: unwrap('categories', categories) };
 });
 
 /**
@@ -144,9 +129,7 @@ export const getTransparency = cache(async (month: string | null): Promise<Trans
 });
 
 export interface FeedQuery {
-  readonly zone?: string;
   readonly category?: string;
-  readonly city?: string;
   readonly author?: string;
   readonly sort?: 'hot' | 'new' | 'top';
   readonly page?: number;
@@ -161,9 +144,7 @@ export async function getFeed(query: FeedQuery): Promise<FeedRow[]> {
   return unwrap(
     'get_feed',
     await supabase.rpc('get_feed', {
-      p_zone: query.zone ?? null,
       p_category: query.category ?? null,
-      p_city: query.city ?? null,
       p_author_username: query.author ?? null,
       p_sort: query.sort ?? 'hot',
       p_limit: FEED_PAGE_SIZE,
@@ -225,7 +206,7 @@ export async function getActionsOnMe(): Promise<Array<ModActionRow & { appeal: A
   const supabase = await getSupabase();
   const [actions, appeals] = await Promise.all([
     // Explicit columns: the acting moderator's identity is not granted to members.
-    supabase.from('mod_actions').select('id, action, target_kind, target_id, target_user_id, zone_id, reason, metadata, created_at')
+    supabase.from('mod_actions').select('id, action, target_kind, target_id, target_user_id, reason, metadata, created_at')
       .eq('target_user_id', viewer.id).in('action', ['remove', 'sanction'])
       .order('created_at', { ascending: false }).limit(20),
     supabase.from('appeals').select('id, mod_action_id, appellant_id, body, status, decided_at, decision_note, created_at')
@@ -235,20 +216,10 @@ export async function getActionsOnMe(): Promise<Array<ModActionRow & { appeal: A
   return unwrap('mod_actions', actions).map((a) => ({ ...a, appeal: appealByAction.get(a.id) ?? null }));
 }
 
-export async function getMyModZones(): Promise<string[]> {
-  const viewer = await getViewer();
-  if (!viewer) return [];
+/** The site-wide queue and open appeals (moderators, in an MFA session; …034). */
+export async function getModQueue(): Promise<{ items: ModQueueItem[]; appeals: AppealView[] } | { error: DbErrorLike }> {
   const supabase = await getSupabase();
-  const rows = unwrap('zone_moderators', await supabase.from('zone_moderators').select('zone_id').eq('user_id', viewer.id));
-  return rows.map((r) => r.zone_id);
-}
-
-export async function getModQueue(zone: string): Promise<{ items: ModQueueItem[]; appeals: AppealView[] } | { error: DbErrorLike }> {
-  const supabase = await getSupabase();
-  const [queue, appeals] = await Promise.all([
-    supabase.rpc('mod_queue', { p_zone: zone }),
-    supabase.rpc('open_appeals', { p_zone: zone }),
-  ]);
+  const [queue, appeals] = await Promise.all([supabase.rpc('mod_queue'), supabase.rpc('open_appeals')]);
   if (queue.error) return { error: queue.error };
   if (appeals.error) return { error: appeals.error };
   return { items: queue.data, appeals: appeals.data };
@@ -396,7 +367,7 @@ async function visitorToken(): Promise<string> {
 }
 
 /** One running campaign for a slot, or null (ads off, nothing booked, or an error). */
-export async function getAd(pkg: 'national' | 'zone' | 'category', target: string | null, locale: 'en' | 'fr'): Promise<ServedAd | null> {
+export async function getAd(pkg: 'national' | 'category', target: string | null, locale: 'en' | 'fr'): Promise<ServedAd | null> {
   const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('get_ad', { p_package: pkg, p_target: target, p_visitor: await visitorToken(), p_locale: locale });
   if (error) {

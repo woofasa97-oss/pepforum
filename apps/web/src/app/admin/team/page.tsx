@@ -10,19 +10,14 @@ import { formatDate, relativeTime } from '@/lib/format';
 import { foundingAction, setModeratorAction, setRoleAction } from '@/server/actions/admin';
 import { adminOverview, adminTeam } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
-import { getTaxonomy } from '@/server/queries';
 
 export const metadata: Metadata = { title: 'Team & access' };
 
 export default async function AdminTeamPage() {
-  const [t, locale, result, taxonomy, overview] = await Promise.all([getT(), getLocale(), adminTeam(), getTaxonomy(), adminOverview()]);
+  const [t, locale, result, overview] = await Promise.all([getT(), getLocale(), adminTeam(), adminOverview()]);
   if (!result.ok) return <><PageHeader title={t('admin.team.title')} sub={t('admin.team.sub')} /><DataUnavailable result={result} t={t} /></>;
   const team = result.data;
   const reasonLabels = { reason: t('admin.reasonLabel'), reasonHint: t('admin.reasonHint') };
-  const zoneName = (id: string) => {
-    const z = taxonomy.zones.find((x) => x.id === id);
-    return z ? (locale === 'fr' ? z.name_fr : z.name_en) : id;
-  };
   const withoutMfa = [...team.admins.filter((a) => !a.mfa).map((a) => a.username), ...team.moderators.filter((m) => !m.mfa).map((m) => m.username)];
   const member = (username: string) => <Link className="link" href={`/admin/people/${encodeURIComponent(username)}`}>u/{username}</Link>;
   const mfaPill = (on: boolean) => <span className={`pill ${on ? 'green' : 'red'}`}>{on ? <Icon name="check" /> : <Icon name="alert" />}{on ? t('admin.team.mfaOn') : t('admin.team.mfaOff')}</span>;
@@ -105,34 +100,27 @@ export default async function AdminTeamPage() {
         <div className="row between wrap mb8">
           <h2 id="mods-h" style={{ fontSize: 16 }}>{t('admin.team.moderators')}</h2>
           <ActionForm action={setModeratorAction} label={t('admin.team.addModerator')} submit={t('admin.member.appoint')}
-            consequence={t('admin.member.addZoneHelp')} hidden={{ appoint: 'true' }} labels={reasonLabels}>
+            consequence={t('admin.member.appointHelp')} hidden={{ appoint: 'true' }} labels={reasonLabels}>
             <div className="field">
               <label htmlFor="mod-username">{t('admin.username')}</label>
               <input id="mod-username" name="username" className="input" pattern="[A-Za-z0-9_]{3,20}" required />
-            </div>
-            <div className="field">
-              <label htmlFor="mod-zone-team">{t('admin.zone')}</label>
-              <select id="mod-zone-team" name="zone" className="input" required>
-                {taxonomy.zones.map((z) => <option key={z.id} value={z.id}>{zoneName(z.id)}</option>)}
-              </select>
             </div>
           </ActionForm>
         </div>
         {team.moderators.length === 0 ? <EmptyState title={t('admin.team.noModerators')} /> : (
           <div className="tbl-wrap">
             <table className="tbl">
-              <thead><tr><th scope="col">{t('admin.zone')}</th><th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.member.mfa')}</th><th scope="col" className="num">{t('admin.team.actions30')}</th><th scope="col">{t('admin.team.lastAction')}</th><th scope="col" /></tr></thead>
+              <thead><tr><th scope="col">{t('admin.people.member')}</th><th scope="col">{t('admin.member.mfa')}</th><th scope="col" className="num">{t('admin.team.actions30')}</th><th scope="col">{t('admin.team.lastAction')}</th><th scope="col" /></tr></thead>
               <tbody>
                 {team.moderators.map((m) => (
-                  <tr key={`${m.zone_id}-${m.username}`}>
-                    <td><span className="pill zone">{zoneName(m.zone_id)}</span></td>
+                  <tr key={m.username}>
                     <td>{member(m.username)}</td>
                     <td>{mfaPill(m.mfa)}</td>
                     <td className="num">{m.actions_30d}</td>
                     <td>{m.last_action_at ? relativeTime(m.last_action_at, t) : '—'}</td>
                     <td>
                       <ActionForm action={setModeratorAction} label={t('admin.member.remove')} submit={t('admin.member.remove')} tone="danger"
-                        hidden={{ username: m.username, zone: m.zone_id, appoint: 'false' }} labels={reasonLabels} />
+                        hidden={{ username: m.username, appoint: 'false' }} labels={reasonLabels} />
                     </td>
                   </tr>
                 ))}

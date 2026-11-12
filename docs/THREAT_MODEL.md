@@ -22,10 +22,10 @@
 | **Spoofing** | Credential stuffing; fake sign-ups | Confirmed email; 12+ character passwords plus leaked-password check (Pro); Turnstile CAPTCHA; Supabase Auth rate limits; generic login and reset messages (no enumeration) | `supabase/config.toml`, `server/actions/auth.ts` |
 | | Stolen session used to erase the account | Deleting an account re-checks the password | `deleteAccountAction` |
 | | Hijacked moderator account | TOTP MFA required; checked in SQL via `aal = 'aal2'` from the verified JWT | `private.require_aal2()` |
-| **Tampering** | Member sets their own karma or tier through the REST API | No write grants; column grant limited to bio/coi/locale/zone; values derived from the ledger | `…003_identity.sql`, `security.test.ts` |
+| **Tampering** | Member sets their own karma or tier through the REST API | No write grants; column grant limited to bio/coi/locale; values derived from the ledger | `…003_identity.sql`, `security.test.ts` |
 | | Forged scoring results | `apply_note_scores` executable by service_role only; idempotent per run; stale-snapshot check | `…006_notes.sql` |
 | | Editing the audit trail | Triggers make `ledger_events`, `mod_actions`, `note_status_history` and `app_config_history` append-only, even for the owner | `private.forbid_mutation` |
-| | Privileges smuggled through user metadata | Sign-up trigger reads only username, locale and zone, and validates them; privileges come from tables | `handle_new_auth_user` |
+| | Privileges smuggled through user metadata | Sign-up trigger reads only username and locale, and validates them; privileges come from tables | `handle_new_auth_user` |
 | | Social sign-up skipping the sign-up form (username, age, terms) or importing a provider display name | Social sign-ups get a placeholder username and `needs_onboarding`; every capability is denied (`onboarding`) until `complete_onboarding()` validates a username and the adult acknowledgement. Nothing from the provider's profile is used | `…014_social_sign_in.sql` |
 | | OAuth code injection / login CSRF | PKCE: the code only exchanges in the browser holding the verifier cookie set when the flow started; `redirectTo` is our own `/auth/confirm` and `next` goes through `safeRedirectPath` | `auth/oauth/[provider]`, `auth/confirm` |
 | | Account takeover by linking a provider identity to an existing account | Supabase links identities automatically only when the provider has verified the email; manual linking is off (`enable_manual_linking = false`) | `supabase/config.toml` |

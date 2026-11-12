@@ -9,7 +9,7 @@ import { SubmitButton } from '@/components/ui/SubmitButton';
 import { initialActionState } from '@/lib/action-state';
 import { submitClinicianAction } from '@/server/actions/features';
 
-export function ClinicianForm({ labels, provinces }: { labels: Record<string, string>; provinces: Array<{ id: string; name: string }> }) {
+export function ClinicianForm({ labels, countries }: { labels: Record<string, string>; countries: Array<{ id: string; name: string }> }) {
   const [state, action] = useActionState(submitClinicianAction, initialActionState);
   const errors = state.fieldErrors ?? {};
   return (
@@ -23,10 +23,12 @@ export function ClinicianForm({ labels, provinces }: { labels: Record<string, st
           </select>
         </div>
         <div className="field grow">
-          <label htmlFor="cl-prov">{labels['clinician.province']}</label>
-          <select id="cl-prov" name="province" className="input" defaultValue={provinces[0]?.id}>
-            {provinces.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          <label htmlFor="cl-country">{labels['clinician.country']}</label>
+          <select id="cl-country" name="country" className="input" defaultValue="" required aria-invalid={Boolean(errors.country)}>
+            <option value="" disabled>—</option>
+            {countries.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
+          <FieldError message={errors.country} />
         </div>
       </div>
       <div className="field">
