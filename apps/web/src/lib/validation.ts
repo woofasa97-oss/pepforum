@@ -16,7 +16,6 @@ import {
   MEMBER_REPORT_REASONS,
   NOTE_CLASSIFICATIONS,
   POST_TYPES,
-  PRICE_ORIGINS,
   PRICE_VENDOR_STATUSES,
   COUNTRIES,
   RATING_REASONS,
@@ -268,7 +267,7 @@ const priceSlug = z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*
 const httpsUrl = (max: number) => z.string().trim().max(max).regex(/^https:\/\/\S+$/);
 const blankToNull = <T extends z.ZodType>(schema: T) => z.preprocess((v) => (typeof v === 'string' && v.trim() === '' ? null : v), schema.nullable());
 export const PriceVendorSchema = z.object({
-  slug: priceSlug, name: trimmed(1, 120), websiteUrl: httpsUrl(300), originCountry: z.enum(PRICE_ORIGINS),
+  slug: priceSlug, name: trimmed(1, 120), websiteUrl: httpsUrl(300), originCountry: z.union([z.enum(COUNTRIES), z.literal('')]).transform((c) => c || null),
   originSource: blankToNull(trimmed(1, 500)), reason,
 });
 export const PriceVendorStatusSchema = z.object({ slug: priceSlug, status: z.enum(PRICE_VENDOR_STATUSES), unreadable: z.literal('on').optional(), reason });

@@ -104,6 +104,28 @@ Never record a figure the document does not state, never round a purity up, and 
 
 Plain links only ([ADR-0009](adr/0009-global-catalogue.md)): Pepforums earns nothing from a store, and there are no affiliate addresses, referral tags or discount codes anywhere. A price links to `/prices/go/<id>`, which redirects with no referrer; clicks are counted per store per day only.
 
+## Stores directory
+
+Every store found, worldwide, with a public-information audit under the Standard §9.1 ([ADR-0011](adr/0011-stores-directory.md)). The data lives in `apps/prices/seed/`:
+
+| File | Holds |
+|---|---|
+| `stores.json` | every store: name, address, kind, and where it is based and ships to once its own pages say so |
+| `store-hints.json` | what the researchers read: a country and its words (used only if our reader finds the same words), and a tester's page for the store |
+| `store-audits.json` | the audits, one per store per day |
+| `labs.json`, `lab-aliases.json` | the laboratories, their tier, and the distinctive names a page uses for them |
+
+```sh
+pnpm --filter @pepforum/prices stores:audit --cache <dir> [--stores a,b] [--verdicts <file>]   # read the stores' pages and audit them
+pnpm --filter @pepforum/prices stores:read <https url>      # a page's text and links, as the audit reads it
+pnpm --filter @pepforum/prices stores:check                 # find every quote again on its page
+pnpm --filter @pepforum/prices stores:sql ../../supabase/migrations/<timestamp>_stores_data.sql
+```
+
+The audit reads at most nine pages per store, as PepforumsBot, honouring robots.txt, one page a second per site. Possible human-use claims are written to `<dir>/human-use-candidates.json`. A reviewer judges them against the rubric in ADR-0011 (in the first audit, an AI model, with staff to confirm), and the verdicts (`[{ slug, quote, claim }]`) are passed back with `--verdicts`. A finding against a store whose words were not found again is published as "could not check".
+
+To update production, run the audit and the check, then generate a new data migration (never edit one already applied). It loads idempotently: a store keeps what an admin set, and an audit already loaded is skipped.
+
 ## Known limitations
 
 - Ported from PepSpotter and run here only against fixtures and a local database: the first live reads of real stores are still to be done (step 4 above).

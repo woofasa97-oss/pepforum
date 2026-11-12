@@ -25,7 +25,7 @@ export interface UserMenuLabels {
  * <details>, so it works without JavaScript; with it, the menu also closes on
  * navigation, an outside click or Escape.
  */
-export function UserMenu({ username, avatar, unread, isModerator, isAdmin, labels, signOut }: {
+export function UserMenu({ username, avatar, unread, isModerator, isAdmin, labels, signOut, extra }: {
   username: string;
   avatar: ReactNode;
   unread: number;
@@ -33,6 +33,8 @@ export function UserMenu({ username, avatar, unread, isModerator, isAdmin, label
   isAdmin: boolean;
   labels: UserMenuLabels;
   signOut: () => Promise<void>;
+  /** Rendered above Sign out: the theme switch, which leaves the header on the narrowest phones. */
+  extra?: ReactNode;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
@@ -86,6 +88,7 @@ export function UserMenu({ username, avatar, unread, isModerator, isAdmin, label
         {isModerator || isAdmin ? <div className="um-sep" /> : null}
         {isModerator ? <Link href="/mod"><Icon name="flag" />{labels.mod}</Link> : null}
         {isAdmin ? <Link href="/admin"><Icon name="shield" />{labels.admin}</Link> : null}
+        {extra}
         <div className="um-sep" />
         <form action={signOut}>
           <button type="submit"><Icon name="undo" />{labels.signOut}</button>

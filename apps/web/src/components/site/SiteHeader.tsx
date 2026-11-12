@@ -5,7 +5,7 @@ import { Icon } from '@/components/ui/Icon';
 import { signOutAction } from '@/server/actions/auth';
 import { setLocaleAction, setThemeAction } from '@/server/actions/settings';
 import { getLocale, getStanding, getT, getViewer } from '@/server/context';
-import { getAnnouncement, getPricesEnabled } from '@/server/queries';
+import { getAnnouncement, getPricesEnabled, getStoresEnabled } from '@/server/queries';
 
 import { Logo } from './Logo';
 import { NavLink } from './NavLink';
@@ -14,7 +14,9 @@ import { UserMenu } from './UserMenu';
 
 /** Global header. Server-rendered; forms work without JavaScript. */
 export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefined }) {
-  const [t, locale, viewer, standing, announcement, prices] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getAnnouncement(), getPricesEnabled()]);
+  const [t, locale, viewer, standing, announcement, prices, storesOn] = await Promise.all([getT(), getLocale(), getViewer(), getStanding(), getAnnouncement(), getPricesEnabled(), getStoresEnabled()]);
+  // Admins see the Stores directory while it is off, as a preview (…035).
+  const stores = storesOn || Boolean(standing?.is_admin);
   const announcementText = announcement ? (locale === 'fr' ? announcement.fr || announcement.en : announcement.en || announcement.fr) : '';
 
   return (
@@ -25,6 +27,7 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
           <nav className="nav" aria-label="Primary">
             <NavLink href="/" className="hide-sm">{t('nav.home')}</NavLink>
             <NavLink href="/notes">{t('nav.notes')}</NavLink>
+            {stores ? <NavLink href="/stores">{t('nav.stores')}</NavLink> : null}
             {prices ? <NavLink href="/prices" className="hide-sm">{t('nav.prices')}</NavLink> : null}
             {standing?.is_moderator ? <NavLink href="/mod" className="hide-md">{t('nav.mod')}</NavLink> : null}
             {standing?.is_admin ? <NavLink href="/admin" className="hide-md">{t('nav.admin')}</NavLink> : null}
@@ -35,7 +38,8 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
                 <span className="only-md" aria-hidden="true">{locale === 'fr' ? 'EN' : 'FR'}</span>
               </button>
             </form>
-            <form action={setThemeAction}>
+            {/* On the narrowest phones the theme follows the device, or the account menu for members. */}
+            <form action={setThemeAction} className="theme-toggle">
               <input type="hidden" name="theme" value={theme === 'dark' ? 'light' : 'dark'} />
               <button type="submit" className="icon-btn" aria-label={t('nav.theme')} title={t('nav.theme')}><Icon name="moon" /></button>
             </form>
@@ -55,6 +59,12 @@ export async function SiteHeader({ theme }: { theme: 'light' | 'dark' | undefine
                   isModerator={standing.is_moderator}
                   isAdmin={standing.is_admin}
                   signOut={signOutAction}
+                  extra={
+                    <form action={setThemeAction} className="um-theme">
+                      <input type="hidden" name="theme" value={theme === 'dark' ? 'light' : 'dark'} />
+                      <button type="submit"><Icon name="moon" />{t('nav.theme')}</button>
+                    </form>
+                  }
                   labels={{
                     open: standing.support_unread > 0
                       ? `${t('nav.menu', { user: standing.username })} · ${t('nav.contactUnread', { n: standing.support_unread })}`

@@ -13,8 +13,13 @@ export function normalise(text: string): string {
     .toLowerCase();
 }
 
-/** The visible text of an HTML page: scripts, styles, comments and tags removed, entities decoded. */
+/** The visible text of an HTML page: scripts, styles, comments and tags removed, entities decoded, normalised. */
 export function pageText(html: string): string {
+  return normalise(visibleText(html));
+}
+
+/** The visible text as the page shows it (case kept, whitespace collapsed): what a quote is copied from. */
+export function visibleText(html: string): string {
   const stripped = html
     .replace(/<(script|style|noscript|template)\b[\s\S]*?<\/\1>/gi, " ")
     .replace(/<!--[\s\S]*?-->/g, " ")
@@ -26,7 +31,7 @@ export function pageText(html: string): string {
     }
     return ENTITIES[e.toLowerCase()] ?? whole;
   });
-  return normalise(decoded);
+  return decoded.replace(/\s+/g, " ").trim();
 }
 
 /** A quote's fragments: the parts between "…" or "...", normalised; empty ones dropped. */

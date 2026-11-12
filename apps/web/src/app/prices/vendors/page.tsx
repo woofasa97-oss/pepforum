@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 import { PriceNotes, PricesOff, VendorName } from '@/components/prices/PriceBits';
 import { EmptyState } from '@/components/ui/Bits';
+import { countryName } from '@/lib/countries';
 import { formatDate } from '@/lib/format';
-import type { MessageKey } from '@/lib/i18n';
 import { usdToCad } from '@/lib/prices/model';
 import { getLocale, getT } from '@/server/context';
 import { getPriceCatalog } from '@/server/queries';
@@ -49,7 +49,7 @@ export default async function PriceVendorsPage() {
                   {vendors.map((v) => (
                     <tr key={v.slug}>
                       <td><VendorName vendor={v} t={t} /><span className="muted xs">{v.domain}</span></td>
-                      <td>{t(`prices.country.${v.origin_country}` as MessageKey)}</td>
+                      <td>{v.origin_country ? countryName(v.origin_country, locale) : '—'}</td>
                       <td className="num">{counts.get(v.slug)?.size ?? 0}</td>
                       <td>{v.coas.length > 0 ? t('prices.vendor.coaCount', { n: v.coas.length }) : <span className="muted">{t('prices.coa.noneShort')}</span>}</td>
                       <td>{v.last_ingested_at ? formatDate(v.last_ingested_at, locale) : '—'}</td>

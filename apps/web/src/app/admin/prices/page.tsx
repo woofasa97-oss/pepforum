@@ -1,10 +1,11 @@
-import { COA_METHODS, COA_SCOPES, PRICE_ORIGINS, PRICE_VENDOR_STATUSES, type AdminPriceCoa } from '@pepforum/database';
+import { COA_METHODS, COA_SCOPES, PRICE_VENDOR_STATUSES, type AdminPriceCoa } from '@pepforum/database';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ActionForm } from '@/components/admin/ActionForm';
 import { DataUnavailable, PageHeader } from '@/components/admin/AdminBits';
 import { EmptyState } from '@/components/ui/Bits';
+import { countryName, countryOptions } from '@/lib/countries';
 import { formatDate, relativeTime } from '@/lib/format';
 import type { MessageKey } from '@/lib/i18n';
 import {
@@ -173,8 +174,9 @@ export default async function AdminPricesPage() {
             <div className="field"><label htmlFor="pv-url">{t('admin.prices.website')}</label><input id="pv-url" name="websiteUrl" type="url" className="input" pattern="https://.+" maxLength={300} placeholder="https://" required /></div>
             <div className="field">
               <label htmlFor="pv-country">{t('prices.vendor.basedIn')}</label>
-              <select id="pv-country" name="originCountry" className="input" defaultValue="CA">
-                {PRICE_ORIGINS.map((c) => <option key={c} value={c}>{t(`prices.country.${c}` as MessageKey)}</option>)}
+              <select id="pv-country" name="originCountry" className="input" defaultValue="">
+                <option value="">{t('stores.notStated')}</option>
+                {countryOptions(locale).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
             <div className="field">
@@ -203,7 +205,7 @@ export default async function AdminPricesPage() {
                   <tr key={v.slug}>
                     <td>
                       <b>{v.name}</b>
-                      <span className="muted">{v.slug} · {t(`prices.country.${v.origin_country}` as MessageKey)} · {v.platform ?? t('admin.prices.notProbed')}</span>
+                      <span className="muted">{v.slug} · {v.origin_country ? countryName(v.origin_country, locale) : t('stores.notStated')} · {v.platform ?? t('admin.prices.notProbed')}</span>
                     </td>
                     <td>
                       <span className={`pill ${STATUS_TONE[v.status]}`}>{t(`admin.prices.vendorStatus.${v.status}` as MessageKey)}</span>

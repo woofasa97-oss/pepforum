@@ -125,3 +125,17 @@ The invariants hold with one addition: the pipeline is a second writer, and it r
 ## No zones (migration …034)
 
 Zones, cities, home zones and province fields were removed ([ADR-0010](adr/0010-no-zones.md)). Moderators are site-wide (`public.moderators`, `private.is_moderator`, `private.require_moderator`, `public.set_moderator`); `mod_queue()` and `open_appeals()` take no arguments; clinicians and advertisers give an ISO country. `/zone/*` redirects to `/` (`next.config.ts`). `packages/database/tests/zones-removed.test.ts` fails if any function still mentions a zone.
+
+## Stores directory (migration …035)
+
+Every store found selling research peptides online, worldwide, with a public-information audit against the Standard §9.1 ([ADR-0011](adr/0011-stores-directory.md)). Off until `features.stores` is on; admins see a preview.
+
+| Part | Database | Web | Pipeline |
+|---|---|---|---|
+| Stores | `prices.vendors` (any ISO country or null, any ISO currency, `kind`, `ships_worldwide`); read API `get_store_directory`, `get_store` | `/stores`, `/stores/[slug]`, header link, filters in `lib/stores.ts` | `seed/stores.json` |
+| Audits | `prices.store_audits`, `prices.store_audit_checks` (append-only, latest shown) | check list on `/stores/[slug]` | `stores:audit` (rules in `src/stores/audit.ts`), `stores:check` (quotes found again), `stores:sql` (writes a data migration) |
+| Laboratories | `prices.labs` (tier under §3) | `/stores/labs` | `seed/labs.json`, `seed/lab-aliases.json` |
+| Links | `price_link('store' \| 'evidence' \| 'lab', …)` | `/prices/go/[s\|e\|l]-<id>` | — |
+
+The data reaches production as a generated migration, so it is applied with the code on merge.
+

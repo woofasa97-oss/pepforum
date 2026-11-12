@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 
 import { STATIC_PATHS, urlsetXml } from '@/lib/seo';
-import { getPriceCatalog, getSitemapEntries, getTaxonomy } from '@/server/queries';
+import { getPriceCatalog, getSitemapEntries, getStoreDirectory, getTaxonomy } from '@/server/queries';
 
 export const dynamic = 'force-dynamic';
 
-const KINDS = ['pages', 'posts', 'notes', 'profiles', 'prices'] as const;
+const KINDS = ['pages', 'posts', 'notes', 'profiles', 'prices', 'stores'] as const;
 type Kind = (typeof KINDS)[number];
 
 /** One sitemap: static pages (with categories) or a page of database entries. */
@@ -32,8 +32,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
       ...catalog.compounds.filter((c) => listed.has(c.slug)).map((c) => ({ path: `/prices/${c.slug}`, updated_at })),
       ...catalog.vendors.map((v) => ({ path: `/prices/vendor/${v.slug}`, updated_at })),
     ] : [];
+  } else if (kind === 'stores') {
+    // Store pages (…035): only once the directory is public, never an admin's preview.
+    const directory = await getStoreDirectory();
+    entries = directory && !directory.preview ? [
+      { path: '/stores' },
+      { path: '/stores/labs' },
+      ...directory.stores.map((s) => ({ path: `/stores/${s.slug}`, updated_at: s.audit?.audited_on ?? null })),
+    ] : [];
   } else {
-    entries = await getSitemapEntries(kind as Exclude<Kind, 'pages' | 'prices'>, page);
+    entries = await getSitemapEntries(kind as Exclude<Kind, 'pages' | 'prices' | 'stores'>, page);
   }
   return new NextResponse(urlsetXml(entries), {
     headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' },

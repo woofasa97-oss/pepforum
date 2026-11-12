@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { CoaTable, GoLink, PriceNotes, PricesOff } from '@/components/prices/PriceBits';
+import { countryName } from '@/lib/countries';
 import { formatDate, formatDay } from '@/lib/format';
-import type { MessageKey } from '@/lib/i18n';
 import { formatCad, isCurrent, mgText, toCad, usdToCad } from '@/lib/prices/model';
 import { getLocale, getNow, getT } from '@/server/context';
 import { getPriceCatalog } from '@/server/queries';
@@ -58,8 +58,8 @@ export default async function PriceVendorPage({ params }: Props) {
         <section className="card card-p mb16" aria-labelledby="facts-h">
           <h2 id="facts-h" className="mb12" style={{ fontSize: 16 }}>{t('prices.vendor.about')}</h2>
           <dl className="facts">
-            <div><dt>{t('prices.vendor.basedIn')}</dt><dd>{t(`prices.country.${vendor.origin_country}` as MessageKey)}</dd></div>
-            <div><dt>{t('prices.vendor.shipsTo')}</dt><dd>{vendor.ships_to.length ? vendor.ships_to.map((c) => t(`prices.country.${c}` as MessageKey)).join(', ') : t('prices.vendor.shipsUnknown')}</dd></div>
+            <div><dt>{t('prices.vendor.basedIn')}</dt><dd>{vendor.origin_country ? countryName(vendor.origin_country, locale) : '—'}</dd></div>
+            <div><dt>{t('prices.vendor.shipsTo')}</dt><dd>{vendor.ships_to.length ? vendor.ships_to.map((c) => countryName(c, locale)).join(', ') : t('prices.vendor.shipsUnknown')}</dd></div>
             <div><dt>{t('prices.vendor.currency')}</dt><dd>{vendor.native_currency ?? '—'}</dd></div>
             <div><dt>{t('prices.vendor.lastRead')}</dt><dd>{vendor.last_ingested_at ? formatDate(vendor.last_ingested_at, locale) : '—'}</dd></div>
             {vendor.quantity_tiers.length ? (

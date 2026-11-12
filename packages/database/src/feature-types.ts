@@ -23,6 +23,10 @@ import type {
   PriceCurrency,
   PriceOrigin,
   PriceVendorStatus,
+  LabTier,
+  StoreAuditCriterion,
+  StoreAuditResult,
+  StoreKind,
 } from './domain.ts';
 
 // ── SEO (…021) ──────────────────────────────────────────────────────────────
@@ -256,7 +260,7 @@ export type PriceVendor = {
   domain: string;
   origin_country: PriceOrigin;
   ships_to: string[];
-  native_currency: PriceCurrency | null;
+  native_currency: string | null;
   coa_scope: CoaScope | 'none' | 'unknown';
   last_ingested_at: string | null;
   coas: PriceCoa[];
@@ -296,6 +300,59 @@ export type PriceCatalog = {
   offers: PriceOffer[];
 };
 export type PriceHistoryPoint = { day: string; vendor: string; currency: PriceCurrency; per_mg_minor_e4: number };
+
+// ── Stores directory (…035, ADR-0011) ──────────────────────────────────────
+type StoreBase = {
+  slug: string;
+  name: string;
+  domain: string;
+  kind: StoreKind;
+  /** ISO 3166-1 alpha-2, or null when the store's own site doesn't say. */
+  country: string | null;
+  ships_to: string[];
+  ships_worldwide: boolean;
+  currency: string | null;
+  /** Its prices are on the Prices pages (the section is on and the store is active with published offers). */
+  has_prices: boolean;
+};
+export type StoreListItem = StoreBase & {
+  audit: {
+    audited_on: string;
+    standard_version: string;
+    reachable: boolean;
+    results: Partial<Record<StoreAuditCriterion, StoreAuditResult>>;
+  } | null;
+};
+export type LabListItem = {
+  slug: string;
+  name: string;
+  country: string | null;
+  tier: LabTier;
+  accreditation_body: string | null;
+  accreditation_number: string | null;
+  verify_how: string | null;
+  has_website: boolean;
+  has_evidence: boolean;
+  evidence_quote: string | null;
+  checked_on: string;
+};
+/** get_store_directory(): null unless features.stores is on or the caller is an admin (then `preview`). */
+export type StoreDirectory = { preview: boolean; stores: StoreListItem[]; labs: LabListItem[] };
+export type StoreAuditCheck = {
+  id: string;
+  criterion: StoreAuditCriterion;
+  result: StoreAuditResult;
+  value: string | null;
+  quote: string | null;
+  has_source: boolean;
+  quote_verified_on: string | null;
+};
+/** get_store(slug): one listed store and its latest audit. */
+export type StoreDetail = StoreBase & {
+  preview: boolean;
+  audits: number;
+  audit: { audited_on: string; standard_version: string; method: 'public_pages'; reachable: boolean; checks: StoreAuditCheck[] } | null;
+};
 
 export type AdminPriceVendor = {
   slug: string;

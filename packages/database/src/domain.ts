@@ -234,9 +234,8 @@ export function inferSourceKind(url: string): SourceKind {
 export const PRICE_VENDOR_STATUSES = ['pending', 'active', 'paused', 'delisted'] as const;
 export type PriceVendorStatus = (typeof PRICE_VENDOR_STATUSES)[number];
 
-/** Where a vendor is based (prices.vendors.origin_country). */
-export const PRICE_ORIGINS = ['US', 'CA', 'GB', 'AU', 'NZ', 'EU', 'OTHER'] as const;
-export type PriceOrigin = (typeof PRICE_ORIGINS)[number];
+/** Where a vendor is based (prices.vendors.origin_country): an ISO country its own site states, or null (…035). */
+export type PriceOrigin = Country | null;
 
 export const PRICE_CURRENCIES = ['USD', 'CAD', 'GBP', 'AUD', 'NZD', 'EUR'] as const;
 export type PriceCurrency = (typeof PRICE_CURRENCIES)[number];
@@ -257,3 +256,33 @@ export type CoaMethod = (typeof COA_METHODS)[number];
 
 export const COA_STATUSES = ['candidate', 'published', 'withdrawn'] as const;
 export type CoaStatus = (typeof COA_STATUSES)[number];
+
+// ── Stores directory (…035, ADR-0011) ──────────────────────────────────────
+/** prices.vendors.kind */
+export const STORE_KINDS = ['store', 'manufacturer'] as const;
+export type StoreKind = (typeof STORE_KINDS)[number];
+
+/** prices.labs.tier: the Standard §3. */
+export const LAB_TIERS = ['accredited', 'recognised', 'not_accepted', 'unknown'] as const;
+export type LabTier = (typeof LAB_TIERS)[number];
+
+/**
+ * The public-information audit's checks (prices.store_audit_checks.criterion), in display order,
+ * grouped by the Standard section they come from (docs/QUALITY_ASSURANCE.md §9.1).
+ */
+export const STORE_AUDIT_GROUPS = {
+  identity: ['identity_name', 'identity_country', 'identity_address', 'ships_to'],
+  certificates: ['coa_published', 'coa_lab_named', 'coa_lab_tier', 'coa_verifiable', 'coa_identity_ms', 'coa_endotoxin', 'coa_current'],
+  testing: ['independent_results'],
+  conduct: ['no_human_use_claims', 'lot_notice_process'],
+} as const;
+export type StoreAuditGroup = keyof typeof STORE_AUDIT_GROUPS;
+export const STORE_AUDIT_CRITERIA = Object.values(STORE_AUDIT_GROUPS).flat() as Array<(typeof STORE_AUDIT_GROUPS)[StoreAuditGroup][number]>;
+export type StoreAuditCriterion = (typeof STORE_AUDIT_GROUPS)[StoreAuditGroup][number];
+
+/**
+ * A check's result. `met`, `partly` and `not_met` rest on what the store published; `not_found` means we read
+ * its pages and found nothing; `unchecked` means we could not read them.
+ */
+export const STORE_AUDIT_RESULTS = ['met', 'partly', 'not_met', 'not_found', 'unchecked'] as const;
+export type StoreAuditResult = (typeof STORE_AUDIT_RESULTS)[number];

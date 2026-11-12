@@ -163,6 +163,7 @@ New settings:
 |---|---|---|
 | `rate_limit.admin_action` | 300 / hour | Admin console writes per admin |
 | `features.prices` | false | Show the Prices section (…030). Off: the pages, the header link and the price read functions return nothing; the pipeline may keep running |
+| `features.stores` | false | Show the Stores directory (…035, ADR-0011). Off: only admins see it, as a preview; the read functions return nothing to anyone else |
 | `prices.stale_hours` | 48 | A published price not rechecked within this many hours is marked and no longer ranked (12–720) |
 | `prices.lead_vials` | 10 | The order size a price comparison opens on: 1, 3, 5 or 10 |
 | `links.require_approval` | true | Posts and comments with a link wait for an admin (…018) |

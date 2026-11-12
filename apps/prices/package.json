@@ -10,9 +10,14 @@
     "vendors:discounts": "node --env-file-if-exists=.env.local src/vendors/discounts-cli.ts",
     "vendors:quote-check": "node src/vendors/quote-check-cli.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "stores:check": "node src/stores/directory-cli.ts check",
+    "stores:sql": "node src/stores/directory-cli.ts sql",
+    "stores:read": "node src/stores/read-cli.ts",
+    "stores:audit": "node --env-file-if-exists=.env.local src/stores/audit-cli.ts"
   },
   "dependencies": {
+    "@pepforum/database": "workspace:*",
     "postgres": "3.4.9",
     "tldts": "7.4.16"
   },

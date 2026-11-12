@@ -127,6 +127,7 @@ export const CONFIG_FIELDS: readonly ConfigField[] = [
   f('ads.min_booking_microcad', 'features', 'integer', 'microcad'),
   f('ads.flight_days', 'features', 'integer', 'days'),
   f('features.prices', 'features', 'boolean'),
+  f('features.stores', 'features', 'boolean'),
   f('prices.stale_hours', 'features', 'integer', 'hours'),
   f('prices.lead_vials', 'features', 'integer'),
   f('socials.bonus_min_audience', 'features', 'integer', 'followers'),
