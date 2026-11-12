@@ -13,7 +13,8 @@
     "test": "vitest run",
     "stores:check": "node src/stores/directory-cli.ts check",
     "stores:sql": "node src/stores/directory-cli.ts sql",
-    "stores:read": "node src/stores/read-cli.ts"
+    "stores:read": "node src/stores/read-cli.ts",
+    "stores:audit": "node --env-file-if-exists=.env.local src/stores/audit-cli.ts"
   },
   "dependencies": {
     "@pepforum/database": "workspace:*",

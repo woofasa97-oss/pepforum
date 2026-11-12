@@ -128,12 +128,14 @@ async function main(): Promise<void> {
   const updated = stores.map((s) => {
     const r = results.get(s.slug);
     if (!r) return s;
+    // A readable site's latest audit is what its pages say now; an unreadable one changes nothing.
+    if (!r.audit.reachable) return s;
     return {
       ...s,
-      origin_country: r.store.origin_country ?? s.origin_country,
-      origin_source: r.store.origin_country ? (r.store.origin_source ?? s.origin_source) : s.origin_source,
-      ships_to: r.store.ships_to?.length ? r.store.ships_to : s.ships_to,
-      ships_worldwide: r.store.ships_worldwide || s.ships_worldwide,
+      origin_country: r.store.origin_country ?? null,
+      origin_source: r.store.origin_country ? (r.store.origin_source ?? null) : null,
+      ships_to: r.store.ships_to ?? [],
+      ships_worldwide: r.store.ships_worldwide ?? false,
     };
   });
   validateStores(updated);

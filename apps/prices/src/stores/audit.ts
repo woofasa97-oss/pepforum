@@ -235,6 +235,7 @@ export function auditPages(input: {
   for (const lab of labs) {
     // The lab's full name, or the distinctive names in seed/lab-aliases.json ("Janoshik"), never a bare common word.
     const names = (input.labAliases?.[lab.slug] ?? [lab.name]).filter((n) => n.length >= 4).map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    if (names.length === 0) continue; // an empty pattern would match every page
     const hit = firstMatch(pages, new RegExp(`\\b(?:${names.join("|")})\\b`, "i"));
     if (hit) named.push({ lab, hit });
   }

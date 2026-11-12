@@ -71,6 +71,11 @@ describe("the audit rules", () => {
     }
   });
 
+  it("a lab with no usable name is skipped, not matched everywhere", () => {
+    const f = auditPages({ store: STORE, pages: shop, labs: [lab("x", "X", "accredited")], labAliases: { x: ["ab"] }, today });
+    expect(f.checks.coa_lab_named.result).toBe("not_found");
+  });
+
   it("an old certificate is not recent; an unknown or in-house lab is not a pass", () => {
     const old = [page("https://old.example/coa", "Certificates of analysis: BPC-157 batch 7, tested March 2024 by Inhouse Lab.")];
     const f = auditPages({ store: STORE, pages: old, labs: LABS, today });
