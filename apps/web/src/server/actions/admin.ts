@@ -34,8 +34,6 @@ import {
   LinkSiteSchema,
   PriceCoaSchema,
   PriceCoaStatusSchema,
-  PriceLinkRemoveSchema,
-  PriceLinkSchema,
   PriceVendorSchema,
   PriceVendorStatusSchema,
   MemberReasonSchema,
@@ -562,26 +560,6 @@ export async function priceCoaStatusAction(_prev: ActionState, form: FormData): 
   const parsed = PriceCoaStatusSchema.safeParse(formToObject(form));
   if (!parsed.success) return invalid(parsed.error);
   const state = await run('admin_price_coa_set_status', { p_id: parsed.data.id, p_status: parsed.data.status, p_reason: parsed.data.reason });
-  if (state.ok) priceDone();
-  return state;
-}
-
-export async function priceLinkSaveAction(_prev: ActionState, form: FormData): Promise<ActionState> {
-  const parsed = PriceLinkSchema.safeParse(formToObject(form));
-  if (!parsed.success) return invalid(parsed.error);
-  const l = parsed.data;
-  const state = await run('admin_price_link_save', {
-    p_vendor: l.vendor, p_affiliate_url: l.affiliateUrl, p_product_param: l.productParam, p_code: l.code, p_code_terms: l.codeTerms,
-    p_evidence: l.evidence, p_expires_at: l.expiresAt, p_reason: l.reason,
-  });
-  if (state.ok) priceDone();
-  return state;
-}
-
-export async function priceLinkRemoveAction(_prev: ActionState, form: FormData): Promise<ActionState> {
-  const parsed = PriceLinkRemoveSchema.safeParse(formToObject(form));
-  if (!parsed.success) return invalid(parsed.error);
-  const state = await run('admin_price_link_remove', { p_vendor: parsed.data.vendor, p_reason: parsed.data.reason });
   if (state.ok) priceDone();
   return state;
 }

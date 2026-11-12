@@ -19,7 +19,7 @@ describe("vendorAuthorizationFromEnv", () => {
   const keys: VendorKey[] = [{ hosts: ["shop.example.ca", "www.shop.example.ca"], variable: "EXAMPLE_PRICE_KEY" }];
   const at = (url: string) => vendorAuthorizationFromEnv(keys)(new URL(url));
 
-  it("no vendor key is configured for Pepforum yet", () => {
+  it("no vendor key is configured for Pepforums yet", () => {
     expect(VENDOR_KEYS).toEqual([]);
     expect(vendorAuthorizationFromEnv()(new URL("https://shop.example.ca/products/x"))).toBeNull();
   });

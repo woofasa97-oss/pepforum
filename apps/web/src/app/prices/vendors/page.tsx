@@ -21,7 +21,6 @@ export default async function PriceVendorsPage() {
   const counts = new Map<string, Set<string>>();
   for (const o of catalog.offers) counts.set(o.vendor, (counts.get(o.vendor) ?? new Set<string>()).add(o.compound));
   const vendors = [...catalog.vendors].sort((a, b) => a.name.localeCompare(b.name));
-  const affiliates = vendors.filter((v) => v.is_affiliate);
 
   return (
     <div className="page">
@@ -60,15 +59,6 @@ export default async function PriceVendorsPage() {
               </table>
             </div>
           )}
-        </section>
-
-        <section className="card card-p mb16" aria-labelledby="aff-h">
-          <h2 id="aff-h" className="mb8" style={{ fontSize: 16 }}>{t('prices.affiliates.title')}</h2>
-          <p className="small muted mb8">{t('prices.affiliates.help')}</p>
-          {affiliates.length === 0 ? <p className="small">{t('prices.affiliates.none')}</p> : (
-            <ul className="caps">{affiliates.map((v) => <li key={v.slug}><span>{v.name}</span><span className="muted">{v.domain}</span></li>)}</ul>
-          )}
-          <p className="xs faint mt8"><Link className="link" href="/legal/affiliate-disclosure">{t('prices.disclosure')}</Link></p>
         </section>
 
         <PriceNotes rate={usdToCad(catalog.rates)} publishedAt={catalog.publication?.published_at ?? null} staleHours={catalog.stale_hours} locale={locale} t={t} />

@@ -159,7 +159,7 @@ Members can verify an X, YouTube, Instagram, TikTok or Reddit account from Setti
 
 - **Vendors.** Add a store (it starts Pending), then set it Active after a clean dry run. Paused keeps its data without reading or showing it; Delisted hides it at once, which is what to do when a vendor asks to be removed. Tick "refuses our reader" for a store that answers 401/403 so it stops holding runs.
 - **Certificates of analysis.** Links the pipeline found wait under "To check". Open the document, record exactly what it states, then publish. The site always presents it as the vendor's own document.
-- **Affiliate terms.** Record them only once agreed with the vendor, with the evidence. The vendor is then labelled Affiliate everywhere; nothing about its prices or ranking changes.
+- **Clicks.** Clicks to each store over 7 and 30 days. Links are plain: Pepforums earns nothing from them (ADR-0009).
 - **Recent runs.** A held run published nothing; the site is still showing the last checked prices.
 
 Every change needs MFA and a reason and is written to the moderation log (`price_vendor_*`, `price_coa_*`, `price_link_*`).

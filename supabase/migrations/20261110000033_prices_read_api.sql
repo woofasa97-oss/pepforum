@@ -7,8 +7,7 @@
 --   * of vendors whose status is 'active' and compounds that are active;
 --   * never a store or document URL — links go through price_link (…032), so
 --     no vendor address is rendered raw, as with ads (ADR-0007);
---   * published certificates of analysis (…031) and whether a vendor is an
---     affiliate (…032), so the site can label both.
+--   * published certificates of analysis (…031), labelled as the vendor's claim.
 -- Both return null while `features.prices` is off.
 --
 -- Prices stay in the vendor's own currency as integer minor units; the web app
@@ -53,11 +52,6 @@ begin
                'slug', v.slug, 'name', v.name, 'domain', v.canonical_domain, 'origin_country', v.origin_country,
                'ships_to', v.ships_to, 'native_currency', v.native_currency, 'coa_scope', v.coa_scope,
                'last_ingested_at', v.last_ingested_at,
-               'is_affiliate', private.price_is_affiliate(v.id),
-               'code', (select jsonb_build_object('code', l.code, 'terms', l.code_terms)
-                        from prices.vendor_links l
-                        where l.vendor_id = v.id and l.code is not null
-                          and (l.expires_at is null or l.expires_at >= current_date)),
                'coas', coalesce((
                  select jsonb_agg(jsonb_build_object(
                           'id', d.id, 'compound', dc.slug, 'scope', d.scope, 'batch', d.batch, 'lab', d.lab,

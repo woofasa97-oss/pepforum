@@ -1,5 +1,5 @@
 /**
- * The one HTTP client the pipeline uses. Honest user-agent naming pepforum.ca, one attempt
+ * The one HTTP client the pipeline uses. Honest user-agent naming pepforums.com, one attempt
  * per URL (no retries — observation is not free when the failure is load), a 20 s timeout,
  * robots.txt honoured before the request, and every result recorded in the raw capture after
  * it. It never throws: a failure is a FetchResult with state "unknown" and an error.
@@ -8,8 +8,8 @@ import type { RawCapture } from "./raw-capture.ts";
 import { loadRobots, type RobotsPolicy } from "./robots.ts";
 import type { FetchOptions, FetchResult, FetchState, FetchText } from "./types.ts";
 
-export const ROBOTS_AGENT = "PepforumBot";
-export const PEPFORUM_USER_AGENT = `${ROBOTS_AGENT}/1.0 (+https://pepforum.ca/legal/price-methodology)`;
+export const ROBOTS_AGENT = "PepforumsBot";
+export const PEPFORUM_USER_AGENT = `${ROBOTS_AGENT}/1.0 (+https://pepforums.com/legal/price-methodology)`;
 export const DEFAULT_TIMEOUT_MS = 20_000;
 
 /** The three-state rule at the HTTP layer. See `pipeline/fetch/types.ts`. */

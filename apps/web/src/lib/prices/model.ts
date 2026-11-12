@@ -12,7 +12,7 @@
  *     needs at least two current vendors, and a tie is a tie.
  *   - A blend is compared per vial within one exact mix, never per mg; a
  *     blend whose mix is not stated is listed, never ranked.
- *   - No discount code, shipping cost or affiliate relationship ever changes
+ *   - Shipping cost never changes
  *     a price, an order or a "lowest" label.
  */
 import type { PriceCatalog, PriceCompound, PriceCurrency, PriceOffer, PriceQuantityTier, PriceRate, PriceVendor } from '@pepforum/database';

@@ -14,7 +14,7 @@
 | Karma ledger, strikes, sanctions, moderator log | `ledger_events`, `strikes`, `sanctions`, `mod_actions` | Accountability, appeals | Kept; ledger rows point at the anonymised id |
 | Rate-limit events | `private.rate_limit_events` | Abuse prevention | 2 days |
 | Staff notes on members | `staff_notes` | Moderation context (staff only, append-only) | Kept with the moderation record |
-| Clicks from price pages to stores: a count per vendor per day, with no member, address or token | `prices.click_daily_stats` | Measuring the section; affiliate reporting | Kept |
+| Clicks from price pages to stores: a count per vendor per day, with no member, address or token | `prices.click_daily_stats` | Measuring the section | Kept |
 | Sourcing-shield holds (member + rule matched, never the text) | `shield_hits` | Abuse prevention | Kept; reviewed in the admin console |
 | Staff access to an email (lookup or reveal) | `mod_actions` (`lookup_email`, `reveal_email`) | Accountability for staff access to personal information | Kept with the moderation record |
 | Notifications and preferences | `notifications`, `notification_settings`: what happened (never who wrote a note or which moderator acted), read state, category switches | Telling members about replies, note outcomes, moderation and the team | `notifications.retention_days` (90 by default), and deleted with the account |

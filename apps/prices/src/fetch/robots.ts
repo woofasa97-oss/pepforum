@@ -79,7 +79,7 @@ export function parseRobots(text: string, agent: string, origin = "", source: Ro
 }
 
 /** Fetch and parse `<origin>/robots.txt`. Never throws; an unreadable file allows everything. */
-export async function loadRobots(origin: string, fetchText: FetchText, agent = "PepforumBot"): Promise<RobotsPolicy> {
+export async function loadRobots(origin: string, fetchText: FetchText, agent = "PepforumsBot"): Promise<RobotsPolicy> {
   const url = `${origin.replace(/\/$/, "")}/robots.txt`;
   const res = await fetchText(url, { accept: "text/plain" });
   if (res.state === "hit" && typeof res.body === "string") return parseRobots(res.body, agent, origin, "fetched");

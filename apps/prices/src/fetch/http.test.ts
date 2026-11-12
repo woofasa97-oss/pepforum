@@ -82,14 +82,14 @@ describe("createFetcher", () => {
     expect(r.error).toBe("timeout");
   });
 
-  it("sends the PepforumBot user-agent and the accept header asked for", async () => {
+  it("sends the PepforumsBot user-agent and the accept header asked for", async () => {
     const { impl, calls } = stubFetch(() => text(200, "{}"));
     const fetchText = createFetcher({ fetchImpl: impl, robots: false });
     await fetchText("https://v.test/products.json", { accept: "application/json" });
     const headers = new Headers(calls[0].init.headers);
     expect(headers.get("user-agent")).toBe(PEPFORUM_USER_AGENT);
     // The page named here must exist: /methodology is a real route; a UA that points at a 404 identifies nobody.
-    expect(PEPFORUM_USER_AGENT).toBe("PepforumBot/1.0 (+https://pepforum.ca/legal/price-methodology)");
+    expect(PEPFORUM_USER_AGENT).toBe("PepforumsBot/1.0 (+https://pepforums.com/legal/price-methodology)");
     expect(PEPFORUM_USER_AGENT.startsWith(ROBOTS_AGENT)).toBe(true);
     expect(headers.get("accept")).toBe("application/json");
   });

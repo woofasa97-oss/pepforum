@@ -118,6 +118,6 @@ An editorial Prices section, off until `features.prices` is switched on ([ADR-00
 |---|---|---|---|
 | Prices (…030, …033) | Schema `prices` (closed to every API role): `vendors`, `compounds`, `offers` → `published_offers`, append-only `offer_observations`, run records; `publish_offers`; read API `get_price_catalog`, `get_price_history` | `/prices`, `/prices/[compound]`, `/prices/vendors`, `/prices/vendor/[slug]`, pricing rules in `lib/prices/model.ts` | `apps/prices`: `refresh` → `gate` → `publish`, scheduled by `.github/workflows/refresh-prices.yml` |
 | Certificates (…031) | `prices.coa_documents`; `admin_price_coa_*`; `prices.file_coa_candidate` (pipeline, candidates only) | `/admin/prices`, certificate tables on price pages | `coa-scan` |
-| Links (…032) | `prices.vendor_links`, `prices.click_daily_stats`; `price_link` | `/prices/go/[id]` (302, no referrer), `/legal/affiliate-disclosure` | — |
+| Links (…032) | `prices.click_daily_stats`; `price_link` (plain links, ADR-0009) | `/prices/go/[id]` (302, no referrer) | — |
 
 The invariants hold with one addition: the pipeline is a second writer, and it reaches the database as its own login with column-level grants in `prices` only. It cannot touch a forum table, and the web app still reads only through functions.

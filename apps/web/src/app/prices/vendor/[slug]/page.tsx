@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { AffiliateBadge, CoaTable, GoLink, PriceNotes, PricesOff } from '@/components/prices/PriceBits';
+import { CoaTable, GoLink, PriceNotes, PricesOff } from '@/components/prices/PriceBits';
 import { formatDate, formatDay } from '@/lib/format';
 import type { MessageKey } from '@/lib/i18n';
 import { formatCad, isCurrent, mgText, toCad, usdToCad } from '@/lib/prices/model';
@@ -51,7 +51,6 @@ export default async function PriceVendorPage({ params }: Props) {
             <p>{vendor.domain}</p>
           </div>
           <div className="row wrap">
-            {vendor.is_affiliate ? <AffiliateBadge t={t} /> : null}
             <GoLink kind="vendor" id={vendor.slug} className="btn sm dark" label={t('prices.visitLabel', { vendor: vendor.name })}>{t('prices.visit')}</GoLink>
           </div>
         </div>
@@ -70,7 +69,6 @@ export default async function PriceVendorPage({ params }: Props) {
                   <span className="muted xs"> {t('prices.coa.checked', { date: formatDay(vendor.quantity_tiers[0]?.checked ?? '', locale) })}</span></dd>
               </div>
             ) : null}
-            {vendor.code ? <div><dt>{t('prices.vendor.code')}</dt><dd><code>{vendor.code.code}</code>{vendor.code.terms ? ` · ${vendor.code.terms}` : ''}<span className="muted xs"> {t('prices.codeNote')}</span></dd></div> : null}
           </dl>
         </section>
 

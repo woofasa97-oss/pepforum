@@ -17,7 +17,7 @@ const offer = (vendor: string, over: Partial<PriceOffer> = {}): PriceOffer => ({
 });
 const vendor = (slug: string, over: Partial<PriceVendor> = {}): PriceVendor => ({
   slug, name: slug, domain: `${slug}.ca`, origin_country: 'CA', ships_to: ['CA'], native_currency: 'CAD', coa_scope: 'unknown',
-  last_ingested_at: FRESH, is_affiliate: false, code: null, coas: [], quantity_tiers: [], ...over,
+  last_ingested_at: FRESH, coas: [], quantity_tiers: [], ...over,
 });
 const catalog = (offers: PriceOffer[], vendors: PriceVendor[]): PriceCatalog => ({
   stale_hours: 48, lead_vials: 10, publication: { published_at: FRESH, run_finished_at: FRESH },
@@ -107,7 +107,7 @@ describe('a vendor\'s price for N vials', () => {
 });
 
 describe('the comparison table', () => {
-  const vendors = [vendor('north'), vendor('south'), vendor('west'), vendor('east', { is_affiliate: true })];
+  const vendors = [vendor('north'), vendor('south'), vendor('west'), vendor('east')];
 
   it('ranks current offers by price per mg, then lists out-of-stock and stale ones', () => {
     const c = catalog([
@@ -122,7 +122,7 @@ describe('the comparison table', () => {
     expect([...table.lowest]).toEqual(['south']);
   });
 
-  it('an affiliate vendor gets no advantage: order and "lowest" follow price alone', () => {
+  it('order and "lowest" follow price alone, whoever the vendor is', () => {
     const c = catalog([offer('east', { price_minor: 5000 }), offer('north', { price_minor: 4000 })], vendors);
     const table = compare(c, 'bpc-157', startingVariant(variantsOf(c.offers, 48, NOW))!, 1, NOW);
     expect(table.quotes.map((q) => q.vendor.slug)).toEqual(['north', 'east']);

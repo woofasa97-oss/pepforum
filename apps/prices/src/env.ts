@@ -17,9 +17,9 @@ export interface VendorKey {
 }
 
 /**
- * Vendors that gave Pepforum a key for prices they show only to signed-in visitors: the hosts it
+ * Vendors that gave Pepforums a key for prices they show only to signed-in visitors: the hosts it
  * is for and the variable that holds it. Empty today. A key is an agreement with that vendor: add
- * an entry only once the vendor has issued one to Pepforum, and record the terms in docs/PRICES.md.
+ * an entry only once the vendor has issued one to Pepforums, and record the terms in docs/PRICES.md.
  */
 export const VENDOR_KEYS: readonly VendorKey[] = [];
 

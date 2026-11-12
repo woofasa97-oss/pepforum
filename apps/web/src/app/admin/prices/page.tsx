@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/Bits';
 import { formatDate, relativeTime } from '@/lib/format';
 import type { MessageKey } from '@/lib/i18n';
 import {
-  priceCoaSaveAction, priceCoaStatusAction, priceLinkRemoveAction, priceLinkSaveAction, priceVendorSaveAction, priceVendorStatusAction,
+  priceCoaSaveAction, priceCoaStatusAction, priceVendorSaveAction, priceVendorStatusAction,
 } from '@/server/actions/admin';
 import { adminPriceCoas, adminPriceLinks, adminPriceOverview } from '@/server/admin';
 import { getLocale, getT } from '@/server/context';
@@ -19,7 +19,7 @@ const STATUS_TONE = { active: 'green', pending: 'amber', paused: '', delisted: '
 
 /**
  * Price tracking: which stores are read and shown, the certificates of
- * analysis recorded for them, affiliate terms, and how the last runs went.
+ * analysis recorded for them, clicks per store, and how the last runs went.
  * Prices themselves are never edited here: they come only from the pipeline.
  */
 export default async function AdminPricesPage() {
@@ -255,60 +255,10 @@ export default async function AdminPricesPage() {
       </section>
 
       <section className="card card-p mb16" aria-labelledby="links-h">
-        <div className="row between wrap mb8">
-          <h2 id="links-h" style={{ fontSize: 16 }}>{t('admin.prices.linksTitle')}</h2>
-          {o.vendors.length ? (
-            <ActionForm action={priceLinkSaveAction} label={t('admin.prices.addLink')} submit={t('admin.prices.save')}
-              consequence={t('admin.prices.linkHelp')} labels={labels}>
-              <div className="field"><label htmlFor="pl-vendor">{t('admin.prices.vendor')}</label><select id="pl-vendor" name="vendor" className="input" required>{vendorOptions}</select></div>
-              <div className="field">
-                <label htmlFor="pl-url">{t('admin.prices.affiliateUrl')}</label>
-                <input id="pl-url" name="affiliateUrl" type="url" className="input" pattern="https://.+" maxLength={1000} aria-describedby="pl-url-hint" />
-                <span id="pl-url-hint" className="hint">{t('admin.prices.affiliateUrlHint')}</span>
-              </div>
-              <div className="field">
-                <label htmlFor="pl-param">{t('admin.prices.productParam')}</label>
-                <input id="pl-param" name="productParam" className="input" maxLength={200} placeholder="ref=pepforum" aria-describedby="pl-param-hint" />
-                <span id="pl-param-hint" className="hint">{t('admin.prices.productParamHint')}</span>
-              </div>
-              <div className="field"><label htmlFor="pl-code">{t('admin.prices.code')}</label><input id="pl-code" name="code" className="input" maxLength={40} pattern="[A-Za-z0-9_-]{2,40}" /></div>
-              <div className="field"><label htmlFor="pl-terms">{t('admin.prices.codeTerms')}</label><input id="pl-terms" name="codeTerms" className="input" maxLength={200} /></div>
-              <div className="field">
-                <label htmlFor="pl-evidence">{t('admin.prices.evidence')}</label>
-                <input id="pl-evidence" name="evidence" className="input" minLength={3} maxLength={500} required aria-describedby="pl-evidence-hint" />
-                <span id="pl-evidence-hint" className="hint">{t('admin.prices.evidenceHint')}</span>
-              </div>
-              <div className="field"><label htmlFor="pl-expires">{t('admin.prices.expires')}</label><input id="pl-expires" name="expiresAt" type="date" className="input" /></div>
-            </ActionForm>
-          ) : null}
-        </div>
+        <h2 id="links-h" className="mb8" style={{ fontSize: 16 }}>{t('admin.prices.clicks')}</h2>
         <p className="small muted mb12">{t('admin.prices.linksHelp')}</p>
-        {links.data.links.length === 0 ? <p className="small muted">{t('admin.prices.noLinks')}</p> : (
-          <div className="tbl-wrap">
-            <table className="tbl">
-              <thead><tr><th scope="col">{t('admin.prices.vendor')}</th><th scope="col">{t('admin.prices.terms')}</th><th scope="col">{t('admin.prices.evidence')}</th><th scope="col" /></tr></thead>
-              <tbody>
-                {links.data.links.map((l) => (
-                  <tr key={l.vendor}>
-                    <td><b>{l.vendor_name}</b>{l.active ? null : <span className="pill red xs">{t('admin.prices.expired')}</span>}</td>
-                    <td>
-                      <span className="cell-path">{[l.affiliate_url, l.product_param, l.code ? `${t('admin.prices.code')}: ${l.code}` : null].filter(Boolean).join(' · ')}</span>
-                      {l.code_terms ? <span className="muted">{l.code_terms}</span> : null}
-                    </td>
-                    <td>{l.evidence}<span className="muted">{l.confirmed_at}{l.expires_at ? ` → ${l.expires_at}` : ''}</span></td>
-                    <td>
-                      <ActionForm action={priceLinkRemoveAction} label={t('admin.member.remove')} submit={t('admin.member.remove')} tone="danger"
-                        consequence={t('admin.prices.linkRemoveHelp')} hidden={{ vendor: l.vendor }} labels={labels} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
         {links.data.clicks.length ? (
           <>
-            <h3 className="mb8 mt16" style={{ fontSize: 14 }}>{t('admin.prices.clicks')}</h3>
             <div className="tbl-wrap">
               <table className="tbl">
                 <thead><tr><th scope="col">{t('admin.prices.vendor')}</th><th scope="col" className="num">{t('admin.prices.clicks7')}</th><th scope="col" className="num">{t('admin.prices.clicks30')}</th></tr></thead>
@@ -316,7 +266,7 @@ export default async function AdminPricesPage() {
               </table>
             </div>
           </>
-        ) : null}
+        ) : <p className="small muted">{t('admin.prices.noClicks')}</p>}
       </section>
 
       <section className="card card-p" aria-labelledby="runs-h">

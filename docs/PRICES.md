@@ -6,7 +6,7 @@ How the Prices section gets its numbers, what an admin does, and how to run it. 
 
 ```
 Vendors' own stores (WooCommerce Store API · Shopify products.json · product pages)
-      │  twice a day, as PepforumBot, robots.txt obeyed
+      │  twice a day, as PepforumsBot, robots.txt obeyed
       ▼
 apps/prices   read → match to one compound → build rows → reconcile → GATE → publish
       │  direct Postgres login `pepforum_prices` (never the secret key)
@@ -30,7 +30,7 @@ apps/web   /prices · /prices/<compound> · /prices/vendors · /prices/vendor/<s
 | N vials = N singles less the vendor's own multipack discount, or a real N-vial kit when cheaper | `model.ts` `vendorQuote` |
 | Stale (default 48 h) and out-of-stock prices are listed last and never "Lowest"; "Lowest" needs two current vendors | `model.ts` `compare`, `lowestOf` |
 | Blends are compared per vial within one exact mix; an unstated mix is listed, never ranked | `src/units/blend-*.ts`, `model.ts` |
-| Codes, shipping and affiliate terms never change a price or an order | `model.ts`; tests in `apps/web/tests/prices.test.ts` |
+| Shipping never changes a price or an order | `model.ts`; tests in `apps/web/tests/prices.test.ts` |
 
 ### The gate
 
@@ -89,20 +89,20 @@ pnpm --filter @pepforum/prices vendors:quote-check # re-read every evidence page
 
 - All 16 seeded vendors are Canadian and start `pending`. Ten have recorded evidence of where they are based (`src/vendors/origin-evidence.json`); the other six carry the seed's country only and should get evidence before activation.
 - Add more in `/admin/prices` (name, https address, country, how we know). A new vendor is `pending`: never read live, never shown.
-- **Peptide Confidential** shows prices only to signed-in visitors. PepSpotter read it with a key that vendor issued to PepSpotter; Pepforum has none, so it stays pending unless the vendor issues one (then add it to `VENDOR_KEYS` in `src/env.ts`).
+- **Peptide Confidential** shows prices only to signed-in visitors. PepSpotter read it with a key that vendor issued to PepSpotter; Pepforums has none, so it stays pending unless the vendor issues one (then add it to `VENDOR_KEYS` in `src/env.ts`).
 - **vialcrest** was paused by PepSpotter after a data audit; read its dry run carefully.
 - A store that refuses the reader (401/403/406) is never worked around: no other address, user agent or cart. Tick "refuses our reader" so it stops counting against the gate; its last prices age out.
 - Removal on request: set the vendor to Delisted. The site hides it at once.
 
 ## Certificates of analysis
 
-`coa-scan` files links that look like certificates (a document whose address names a COA, or a page on a known testing lab's site) as candidates. In `/admin/prices` a person opens each one and records what it states: lab, accreditation as printed, method, batch, test date, purity, and optionally the line that states it. Publishing needs the lab and the purity. The site shows the certificate beside that vendor's prices as "published by the vendor, not verified by Pepforum", with the day it was read, and links to the document through `/prices/go/c-<id>`.
+`coa-scan` files links that look like certificates (a document whose address names a COA, or a page on a known testing lab's site) as candidates. In `/admin/prices` a person opens each one and records what it states: lab, accreditation as printed, method, batch, test date, purity, and optionally the line that states it. Publishing needs the lab and the purity. The site shows the certificate beside that vendor's prices as "published by the vendor, not verified by Pepforums", with the day it was read, and links to the document through `/prices/go/c-<id>`.
 
 Never record a figure the document does not state, never round a purity up, and withdraw a certificate the vendor has replaced or removed.
 
-## Affiliate terms
+## Links to stores
 
-Recorded in `/admin/prices` only after a vendor has agreed them with Pepforum, with the evidence (agreement, email, page) and an optional end date. While in force: links to that vendor carry the affiliate address or tag, the vendor is labelled "Affiliate" everywhere, and it appears in the list on `/prices/vendors`. Clicks are counted per vendor per day only.
+Plain links only ([ADR-0009](adr/0009-global-catalogue.md)): Pepforums earns nothing from a store, and there are no affiliate addresses, referral tags or discount codes anywhere. A price links to `/prices/go/<id>`, which redirects with no referrer; clicks are counted per store per day only.
 
 ## Known limitations
 

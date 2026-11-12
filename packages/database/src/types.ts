@@ -800,14 +800,6 @@ export type Database = {
       };
       admin_price_coa_set_status: { Args: { p_id: string; p_status: CoaStatus; p_reason: string }; Returns: undefined };
       admin_price_links: { Args: Record<string, never>; Returns: AdminPriceLinks };
-      admin_price_link_save: {
-        Args: {
-          p_vendor: string; p_affiliate_url: string | null; p_product_param: string | null; p_code: string | null;
-          p_code_terms: string | null; p_evidence: string; p_expires_at: string | null; p_reason: string;
-        };
-        Returns: undefined;
-      };
-      admin_price_link_remove: { Args: { p_vendor: string; p_reason: string }; Returns: undefined };
       report_ad: { Args: { p_id: string; p_reason: AdReportReason; p_details?: string }; Returns: undefined };
       admin_ads: { Args: Record<string, never>; Returns: AdminAds };
       admin_review_advertiser: { Args: { p_id: string; p_decision: 'approve' | 'suspend'; p_reason: string }; Returns: undefined };

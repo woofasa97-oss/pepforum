@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { loadRobots, parseRobots } from "./robots.ts";
 import type { FetchResult, FetchText } from "./types.ts";
 
-const AGENT = "PepforumBot";
+const AGENT = "PepforumsBot";
 
 const result = (url: string, status: number | null, body: string | null): FetchResult => ({
   url,
@@ -23,7 +23,7 @@ describe("parseRobots", () => {
   });
 
   it("matches the agent token case-insensitively and as a prefix", () => {
-    const p = parseRobots(`user-agent: pepforumbot\ndisallow: /private/\n`, AGENT);
+    const p = parseRobots(`user-agent: pepforumsbot\ndisallow: /private/\n`, AGENT);
     expect(p.allows("/private/x")).toBe(false);
   });
 

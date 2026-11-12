@@ -1,7 +1,7 @@
 /**
  * Price tracking (…030–…033): the `prices` schema is closed to every API
  * role, the site sees only published offers of active vendors, publishing
- * needs a passing run, certificates and affiliate terms are admin-only.
+ * needs a passing run, certificates are admin-only, links are plain (no affiliate terms).
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -18,7 +18,7 @@ type Catalog = {
   publication: { published_at: string } | null;
   rates: Array<{ base: string; quote: string; rate: number }>;
   compounds: Array<{ slug: string }>;
-  vendors: Array<{ slug: string; domain: string; is_affiliate: boolean; coa_scope: string; code: { code: string } | null; coas: Array<Record<string, unknown>> }>;
+  vendors: Array<{ slug: string; domain: string; coa_scope: string; coas: Array<Record<string, unknown>> }>;
   offers: Array<{ id: string; vendor: string; compound: string; price_minor: number } & Record<string, unknown>>;
 };
 
@@ -98,7 +98,6 @@ describe('the prices schema is closed to API roles', () => {
     ['select * from prices.vendors'],
     ['select * from prices.published_offers'],
     ['select * from prices.coa_documents'],
-    ['select * from prices.vendor_links'],
     [`insert into prices.vendors (slug, name, website_url, canonical_domain, origin_country) values ('x', 'x', 'https://x.ca', 'x.ca', 'CA')`],
     [`select prices.publish_offers(gen_random_uuid())`],
     [`select prices.quarantine_offers('{}', 'x', null)`],
@@ -284,7 +283,7 @@ describe('certificates of analysis', () => {
   });
 });
 
-describe('links to stores and affiliate terms', () => {
+describe('links to stores', () => {
   it('sends a visitor to the listing over https and counts the click per vendor only', async () => {
     const { url } = await db.asOne<{ url: string }>(anon, `select public.price_link('offer', $1) as url`, [ids.offer]);
     expect(url).toBe('https://example.ca/product/bpc-157');
@@ -305,40 +304,18 @@ describe('links to stores and affiliate terms', () => {
     }
   });
 
-  it('affiliate terms are admin-only, need evidence, and are labelled in the catalogue', async () => {
-    const save = `select public.admin_price_link_save('north', 'https://north.example.ca/?aff=pepforum', 'ref=pepforum', 'PEPFORUM', '10% off', $1, null, 'Signed affiliate terms')`;
-    expect((await db.expectError(user(member, 'aal2'), save, ['Agreement of 2026-11-01'])).message).toBe('not_admin');
-    expect((await db.expectError(user(admin, 'aal2'), save, [''])).message).toBe('link_evidence_required');
-    expect((await db.expectError(user(admin, 'aal2'),
-      `select public.admin_price_link_save('north', null, 'ref=x&redirect=https://evil.example', null, null, 'Email', null, 'Signed affiliate terms')`)).message)
-      .toBe('invalid_link_param');
-    expect((await catalog())!.vendors.find((v) => v.slug === 'north')).toMatchObject({ is_affiliate: false, code: null });
-
-    await db.as(user(admin, 'aal2'), save, ['Agreement of 2026-11-01']);
+  it('links are plain: no affiliate table, address, tag or code exists anywhere (ADR-0009)', async () => {
+    const tables = await db.sql<{ table_name: string }>(`select table_name from information_schema.tables where table_schema = 'prices' order by 1`);
+    expect(tables.map((x) => x.table_name)).not.toContain('vendor_links');
+    const fns = await db.sql<{ proname: string }>(`select proname from pg_proc where proname like '%affiliate%' or proname in ('admin_price_link_save', 'admin_price_link_remove')`);
+    expect(fns).toEqual([]);
     const north = (await catalog())!.vendors.find((v) => v.slug === 'north')!;
-    expect(north).toMatchObject({ is_affiliate: true, code: { code: 'PEPFORUM', terms: '10% off' } });
-
-    const { url } = await db.asOne<{ url: string }>(anon, `select public.price_link('offer', $1) as url`, [ids.offer]);
-    expect(url).toBe('https://example.ca/product/bpc-157?ref=pepforum');
-    const { v } = await db.asOne<{ v: string }>(anon, `select public.price_link('vendor', 'north') as v`);
-    expect(v).toBe('https://north.example.ca/?aff=pepforum');
-
-    // The cheaper vendor is still listed first by nothing in the API: order carries no affiliate preference.
-    const offers = (await catalog())!.offers;
-    expect(offers.find((o) => o.vendor === 'south')!.price_minor).toBeLessThan(offers.find((o) => o.vendor === 'north')!.price_minor);
-  });
-
-  it('expired terms stop applying, and removing them is logged', async () => {
-    await db.sql(`update prices.vendor_links set expires_at = current_date - 1`);
-    expect((await catalog())!.vendors.find((v) => v.slug === 'north')).toMatchObject({ is_affiliate: false, code: null });
-    const { url } = await db.asOne<{ url: string }>(anon, `select public.price_link('offer', $1) as url`, [ids.offer]);
-    expect(url).toBe('https://example.ca/product/bpc-157');
-
-    await db.as(user(admin, 'aal2'), `select public.admin_price_link_remove('north', 'Agreement ended')`);
-    expect(await db.sql(`select 1 from prices.vendor_links`)).toEqual([]);
-    const { l } = await db.asOne<{ l: { links: unknown[]; clicks: Array<{ vendor: string; clicks_30d: number }> } }>(
+    expect(north).not.toHaveProperty('is_affiliate');
+    expect(north).not.toHaveProperty('code');
+    const { l } = await db.asOne<{ l: { clicks: Array<{ vendor: string; clicks_30d: number }> } }>(
       user(admin, 'aal2'), `select public.admin_price_links() as l`);
-    expect(l.links).toEqual([]);
-    expect(l.clicks.find((x) => x.vendor === 'north')?.clicks_30d).toBeGreaterThanOrEqual(4);
+    expect(Object.keys(l)).toEqual(['clicks']);
+    expect(l.clicks.find((x) => x.vendor === 'north')?.clicks_30d).toBeGreaterThanOrEqual(2);
+    expect((await db.expectError(user(member, 'aal2'), `select public.admin_price_links()`)).message).toBe('not_admin');
   });
 });

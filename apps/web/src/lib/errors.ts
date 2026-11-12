@@ -35,7 +35,7 @@ const SPECIFIC_MESSAGES = new Set<string>([
   'invalid_amount', 'reference_required', 'invalid_creative', 'invalid_decision',
   // Price tracking (…031, …032)
   'invalid_vendor_slug', 'invalid_vendor_url', 'vendor_not_found', 'compound_not_found', 'coa_exists', 'coa_incomplete',
-  'coa_batch_required', 'invalid_coa_purity', 'invalid_coa_date', 'invalid_link_param', 'link_empty', 'link_evidence_required',
+  'coa_batch_required', 'invalid_coa_purity', 'invalid_coa_date',
 ]);
 
 const SIMPLE_REQUIREMENTS = new Set<string>([

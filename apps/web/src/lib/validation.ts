@@ -285,13 +285,6 @@ export const PriceCoaSchema = z.object({
   purity: blankToNull(z.coerce.number().gt(0).max(100)), quote: blankToNull(trimmed(1, 500)), reason,
 });
 export const PriceCoaStatusSchema = z.object({ id, status: z.enum(COA_STATUSES), reason });
-export const PriceLinkSchema = z.object({
-  vendor: priceSlug, affiliateUrl: blankToNull(httpsUrl(1000)),
-  productParam: blankToNull(z.string().trim().regex(/^[?&]?[A-Za-z0-9_.~-]+=[A-Za-z0-9_.~-]+(&[A-Za-z0-9_.~-]+=[A-Za-z0-9_.~-]+)*$/).max(200)),
-  code: blankToNull(z.string().trim().regex(/^[A-Za-z0-9_-]{2,40}$/)), codeTerms: blankToNull(trimmed(1, 200)),
-  evidence: trimmed(3, 500), expiresAt: blankToNull(isoDate), reason,
-});
-export const PriceLinkRemoveSchema = z.object({ vendor: priceSlug, reason });
 
 export const ConfigChangeSchema = z.object({ key: z.string().regex(/^[a-z0-9_]+(\.[a-z0-9_]+)*$/), raw: z.string().max(4000).optional(), reason });
 export const AnnouncementSchema = z.object({

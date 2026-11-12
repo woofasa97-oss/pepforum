@@ -1,4 +1,4 @@
-// pnpm vendors:quote-check — reads each evidence page once (robots.txt honoured, as PepforumBot,
+// pnpm vendors:quote-check — reads each evidence page once (robots.txt honoured, as PepforumsBot,
 // one page a second) and says whether every quote in origin-evidence.json and shipping-evidence.json
 // is still on its page. Reads only. Exit 1 when a quote is missing; a page it could not read is
 // reported, not counted as missing.

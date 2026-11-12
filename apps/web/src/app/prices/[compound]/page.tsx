@@ -124,7 +124,6 @@ export default async function ComparePage({ params, searchParams }: Props) {
                           <span className="muted xs">{q.offer.product_name}{q.offer.variant_label ? ` · ${q.offer.variant_label}` : ''}</span>
                           {q.kit ? <span className="muted xs">{t('prices.kit', { n: quantity })}</span> : null}
                           {q.tier ? <span className="muted xs">{t('prices.tier', { percent: q.tier.percent, n: q.tier.vials })}</span> : null}
-                          {q.vendor.code ? <span className="muted xs">{t('prices.code', { code: q.vendor.code.code })}{q.vendor.code.terms ? ` (${q.vendor.code.terms})` : ''}</span> : null}
                         </td>
                         <td className="num">
                           <b>{formatCad(q.perMgCad ?? q.perVialCad, locale)}</b>

@@ -11,32 +11,24 @@ type Locale = 'en' | 'fr';
 
 /**
  * A link out to a store or a document. The address is never in the page: the
- * link goes to /prices/go/<kind>-<id>, which redirects with no referrer. Every
- * such link is marked sponsored/nofollow, affiliate or not.
+ * link goes to /prices/go/<kind>-<id>, which redirects with no referrer.
+ * Plain links only (ADR-0009): Pepforums earns nothing from them, so they are
+ * nofollow but not "sponsored".
  */
 export function GoLink({ kind, id, className = 'link', children, label }: {
   kind: 'offer' | 'vendor' | 'coa'; id: string; className?: string; children: ReactNode; label?: string;
 }) {
   const prefix = kind === 'offer' ? 'o' : kind === 'vendor' ? 'v' : 'c';
   return (
-    <a className={className} href={`/prices/go/${prefix}-${id}`} target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label={label}>
+    <a className={className} href={`/prices/go/${prefix}-${id}`} target="_blank" rel="nofollow noopener noreferrer" aria-label={label}>
       {children}
     </a>
   );
 }
 
-export function AffiliateBadge({ t }: { t: Translate }) {
-  return <Link className="pill amber xs" href="/legal/affiliate-disclosure" title={t('prices.affiliateHelp')}>{t('prices.affiliate')}</Link>;
-}
-
-/** Vendor name linking to its page, with the affiliate label when it applies. */
-export function VendorName({ vendor, t }: { vendor: PriceVendor; t: Translate }) {
-  return (
-    <span className="row wrap" style={{ gap: 6 }}>
-      <Link className="link" href={`/prices/vendor/${vendor.slug}`}><b>{vendor.name}</b></Link>
-      {vendor.is_affiliate ? <AffiliateBadge t={t} /> : null}
-    </span>
-  );
+/** Vendor name linking to its page. */
+export function VendorName({ vendor }: { vendor: PriceVendor; t?: Translate }) {
+  return <Link className="link" href={`/prices/vendor/${vendor.slug}`}><b>{vendor.name}</b></Link>;
 }
 
 /** What every price page says about the numbers on it. */
@@ -54,8 +46,6 @@ export function PriceNotes({ rate, publishedAt, staleHours, locale, t }: {
       <p className="mt8">{t('prices.notes.research')}</p>
       <p className="mt8">
         <Link className="link" href="/legal/price-methodology">{t('prices.methodology')}</Link>
-        {' · '}
-        <Link className="link" href="/legal/affiliate-disclosure">{t('prices.disclosure')}</Link>
       </p>
     </div>
   );

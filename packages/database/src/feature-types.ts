@@ -261,8 +261,6 @@ export type PriceVendor = {
   native_currency: PriceCurrency | null;
   coa_scope: CoaScope | 'none' | 'unknown';
   last_ingested_at: string | null;
-  is_affiliate: boolean;
-  code: { code: string; terms: string | null } | null;
   coas: PriceCoa[];
   quantity_tiers: PriceQuantityTier[];
 };
@@ -357,18 +355,7 @@ export type AdminPriceCoa = {
   checked_by: string | null;
   created_at: string;
 };
+/** Clicks per store (plain links only; ADR-0009). */
 export type AdminPriceLinks = {
-  links: Array<{
-    vendor: string;
-    vendor_name: string;
-    affiliate_url: string | null;
-    product_param: string | null;
-    code: string | null;
-    code_terms: string | null;
-    evidence: string;
-    confirmed_at: string;
-    expires_at: string | null;
-    active: boolean;
-  }>;
   clicks: Array<{ vendor: string; vendor_name: string; clicks_7d: number; clicks_30d: number }>;
 };

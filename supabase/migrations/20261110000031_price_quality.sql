@@ -38,8 +38,7 @@ alter table public.mod_actions add constraint mod_actions_action_check check (ac
   'advertiser_approved', 'advertiser_suspended', 'ad_approved', 'ad_rejected', 'ad_suspended',
   'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved',
   'social_unlinked',
-  'price_vendor_saved', 'price_vendor_status', 'price_coa_saved', 'price_coa_status',
-  'price_link_saved', 'price_link_removed'));
+  'price_vendor_saved', 'price_vendor_status', 'price_coa_saved', 'price_coa_status'));
 
 alter table public.mod_actions drop constraint mod_actions_target_kind_check;
 alter table public.mod_actions add constraint mod_actions_target_kind_check check (target_kind in (

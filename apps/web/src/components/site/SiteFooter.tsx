@@ -31,7 +31,6 @@ export async function SiteFooter() {
           <Link href="/legal/content-policy">{t('footer.contentPolicy')}</Link>
           <Link href="/legal/loi-25">{t('footer.loi25')}</Link>
           <Link href="/legal/price-methodology">{t('prices.methodology')}</Link>
-          <Link href="/legal/affiliate-disclosure">{t('prices.disclosure')}</Link>
         </div>
         <div className="copy">{t('footer.copyright')}</div>
       </div>

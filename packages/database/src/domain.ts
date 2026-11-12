@@ -129,7 +129,7 @@ export const MOD_ACTIONS = [
   'clinician_approved', 'clinician_rejected', 'clinician_revoked',
   'advertiser_approved', 'advertiser_suspended', 'ad_approved', 'ad_rejected', 'ad_suspended',
   'ad_payment_recorded', 'ad_adjustment', 'ad_report_resolved', 'social_unlinked',
-  'price_vendor_saved', 'price_vendor_status', 'price_coa_saved', 'price_coa_status', 'price_link_saved', 'price_link_removed'
+  'price_vendor_saved', 'price_vendor_status', 'price_coa_saved', 'price_coa_status'
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 

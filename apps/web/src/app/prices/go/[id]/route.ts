@@ -10,8 +10,7 @@ const KINDS = { o: 'offer', v: 'vendor', c: 'coa' } as const;
 /**
  * Click-through from a price page (…032): `o-<offer id>`, `v-<vendor slug>`
  * or `c-<certificate id>`. The database says where it goes (the store's own
- * page, or its affiliate address when terms are recorded) and counts the click
- * per vendor per day. No store address is ever rendered in a page, and no
+ * page; plain links only, ADR-0009) and counts the click per vendor per day. No store address is ever rendered in a page, and no
  * referrer is sent.
  */
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
