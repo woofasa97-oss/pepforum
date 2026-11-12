@@ -25,6 +25,8 @@ const STANDARD = "0.9";
 type Cached = { url: string; ok: boolean; text: string; links: Array<{ href: string; label: string }>; error?: string };
 type Hints = Record<string, { country?: { code: string; quote: string }; independent?: string }>;
 
+const LAB_HOSTS = ["janoshik.com", "freedomdiagnosticstesting.com", "trustpointeanalytics.com", "vanguardlaboratory.com", "mzbiolabs.com", "chromate.org", "btlabtesting.com", "krauselabs.com", "pharmlabs.com", "harrenslab.com"];
+
 function linksOf(html: string, base: string): Array<{ href: string; label: string }> {
   const host = new URL(base).hostname.replace(/^www\./, "");
   const out = new Map<string, string>();
@@ -33,8 +35,9 @@ function linksOf(html: string, base: string): Array<{ href: string; label: strin
       const href = new URL(m[1], base);
       if (href.protocol !== "https:") continue;
       const sameSite = href.hostname.replace(/^www\./, "") === host;
-      // Keep same-site links, and links to a lab's verification page.
-      if (!sameSite && !/janoshik|freedomdiagnostics|trustpointe|vanguard|mzbiolabs|chromate|colmaric|btlabs/i.test(href.hostname)) continue;
+      // Keep same-site links, and links to a known lab's own site (exact host), for "reports can be checked".
+      const target = href.hostname.toLowerCase();
+      if (!sameSite && !LAB_HOSTS.some((h) => target === h || target.endsWith(`.${h}`))) continue;
       if (!out.has(href.href)) out.set(href.href, visibleText(m[2]).slice(0, 100));
     } catch {
       // not an address

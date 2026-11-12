@@ -107,6 +107,8 @@ describe("the audit rules", () => {
       { href: "https://s.example/shipping-policy/", label: "Shipping" },
       { href: "https://s.example/lab-results/#top", label: "Lab results" },
       { href: "https://s.example/coa/x.pdf", label: "COA" },
+      { href: "https://janoshik.attacker.example/lab-results/", label: "Lab results" },
+      { href: "https://other-store.example/about/", label: "About" },
     ]);
     expect(picked).toEqual(["https://s.example/lab-results", "https://s.example/about-us", "https://s.example/shipping-policy"]);
   });

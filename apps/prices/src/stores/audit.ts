@@ -329,9 +329,12 @@ const PRIORITY: Array<[RegExp, number]> = [
 /** The store's own pages most worth reading for the checks, best first. */
 export function pickLinks(home: string, links: Array<{ href: string; label: string }>): string[] {
   const seen = new Set<string>([home.replace(/\/$/, "")]);
+  const site = new URL(home).hostname.replace(/^www\./, "");
   const scored: Array<{ href: string; score: number }> = [];
   for (const l of links) {
     const href = l.href.split("#")[0].replace(/\/$/, "");
+    // Only the store's own pages: evidence is what the store publishes.
+    if (new URL(href).hostname.replace(/^www\./, "") !== site) continue;
     if (seen.has(href) || /\.(?:pdf|png|jpe?g|webp|gif|svg|zip)(?:\?|$)/i.test(href) || /[?&](?:add-to-cart|orderby|filter_)/i.test(href)) continue;
     if (/\/(?:product|products|shop|cart|checkout|my-account|account|login|collections|product-category|tag|category|blog|wp-json)\//i.test(new URL(href).pathname + "/")) continue;
     const words = `${new URL(href).pathname.replace(/[/_-]+/g, " ")} ${l.label}`;

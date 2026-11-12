@@ -23867,7 +23867,8 @@
       "https://oxpeptides.com/legal",
       "https://oxpeptides.com/shipping",
       "https://oxpeptides.com/faq",
-      "https://oxpeptides.com/terms"
+      "https://oxpeptides.com/terms",
+      "https://oxpeptides.com/privacy"
     ],
     "checks": {
       "identity_name": {
@@ -38763,7 +38764,8 @@
       "https://jinjier.wbspeptide.com/certificates/970",
       "https://jinjier.wbspeptide.com/certificates/969",
       "https://jinjier.wbspeptide.com/pages/30",
-      "https://jinjier.wbspeptide.com/contact"
+      "https://jinjier.wbspeptide.com/contact",
+      "https://jinjier.wbspeptide.com/canada-warehouse-inventory"
     ],
     "checks": {
       "identity_name": {
@@ -39572,7 +39574,8 @@
       "https://smartpeptides.de/impressum",
       "https://smartpeptides.de/versand",
       "https://smartpeptides.de/faq",
-      "https://smartpeptides.de/agb"
+      "https://smartpeptides.de/agb",
+      "https://smartpeptides.de/datenschutz"
     ],
     "checks": {
       "identity_name": {
