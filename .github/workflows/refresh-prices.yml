@@ -135,14 +135,14 @@ jobs:
         env:
           PRICES_DB_URL: ${{ secrets.PRICES_DB_URL }}
         run: node src/cli.ts coa-scan --run "$RUN_LABEL" --live | tee prices-out/coa-scan.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ always() && steps.cfg.outputs.ready == 'true' }}
         with:
           name: refresh-${{ github.run_id }}-${{ github.run_attempt }}
           path: apps/prices/prices-out/
           retention-days: 90
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         # The raw captures: every response exactly as the vendor sent it, the audit trail behind
         # each stored price. Kept as a private artifact of this (private) repository.
         if: ${{ always() && steps.cfg.outputs.ready == 'true' }}
